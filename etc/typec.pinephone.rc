@@ -1,0 +1,2 @@
+on early-init
+    write /sys/class/typec/port0/device/flash_eeprom 1

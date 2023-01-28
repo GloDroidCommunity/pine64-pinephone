@@ -1,0 +1,30 @@
+From 38c89ee2e376fcdd357d88017172cc5fdfb9c3da Mon Sep 17 00:00:00 2001
+From: Ondrej Jirman <megous@megous.com>
+Date: Sat, 30 Sep 2017 21:31:35 +0200
+Subject: [PATCH] MAINTAINERS: Add entry for Himax HM5065
+
+Signed-off-by: Ondrej Jirman <megous@megous.com>
+---
+ MAINTAINERS | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index e5dd06a1c..3095a23a4 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -8400,6 +8400,12 @@ W:	http://www.highpoint-tech.com
+ F:	Documentation/scsi/hptiop.rst
+ F:	drivers/scsi/hptiop.c
+ 
++HIMAX HM5065 SENSOR DRIVER
++M:	Ondrej Jirman <kernel@xff.cz>
++L:	linux-media@vger.kernel.org
++S:	Supported
++F:	drivers/media/i2c/hm5065.c
++
+ HIPPI
+ M:	Jes Sorensen <jes@trained-monkey.org>
+ L:	linux-hippi@sunsite.dk
+-- 
+2.37.2
+

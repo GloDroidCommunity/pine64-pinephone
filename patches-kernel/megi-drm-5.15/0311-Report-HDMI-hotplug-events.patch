@@ -1,0 +1,26 @@
+From 7dc0f4ea4922800e6ae0e6a88d606f3ce5cb25f3 Mon Sep 17 00:00:00 2001
+From: Ondrej Jirman <megous@megous.com>
+Date: Wed, 16 Jun 2021 22:51:29 +0200
+Subject: [PATCH] Report HDMI hotplug events
+
+Signed-off-by: Ondrej Jirman <megous@megous.com>
+---
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index d3129a3e6..f596fb3ca 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -2340,7 +2340,7 @@ static enum drm_connector_status dw_hdmi_detect(struct dw_hdmi *hdmi)
+ 
+ 	mutex_lock(&hdmi->mutex);
+ 	if (result != hdmi->last_connector_result) {
+-		dev_dbg(hdmi->dev, "read_hpd result: %d", result);
++		dev_info(hdmi->dev, "read_hpd result: %d", result);
+ 		handle_plugged_change(hdmi,
+ 				      result == connector_status_connected);
+ 		hdmi->last_connector_result = result;
+-- 
+2.37.2
+

@@ -1,0 +1,5 @@
+on early-init
+    # Value was found experimentally using bouncing ball test
+    write /sys/devices/system/cpu/cpufreq/schedutil/rate_limit_us 30000
+    # DE2.0 scaler can glitch when CPUFREQ enabled, disable it for now.
+    write /sys/devices/system/cpu/cpufreq/policy0/scaling_min_freq 1152000
