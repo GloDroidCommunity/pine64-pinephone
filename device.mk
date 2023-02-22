@@ -19,7 +19,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/etc/power.pinephone.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/power.pinephone.rc \
 
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/etc/audio.pinephone.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio.pinephone.xml \
+    $(LOCAL_PATH)/etc/audio.pinephone.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio.pine64_pinephone.xml \
 
 # Lights HAL
 PRODUCT_PACKAGES += \
