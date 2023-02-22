@@ -20,7 +20,7 @@ TARGET_2ND_CPU_VARIANT := cortex-a15
 # Product
 PRODUCT_BOARD_PLATFORM := sunxi
 PRODUCT_NAME := pinephone
-PRODUCT_DEVICE := pinephone
+PRODUCT_DEVICE := pine64-pinephone
 PRODUCT_BRAND := Pine64
 PRODUCT_MODEL := PinePhone
 PRODUCT_MANUFACTURER := Pine64
@@ -31,7 +31,6 @@ ATF_PLAT        := sun50i_a64
 
 CRUST_FIRMWARE_DEFCONFIG := pinephone_defconfig
 
-KERNEL_DTB_FILE_PP11 := allwinner/sun50i-a64-pinephone-1.1.dtb
-KERNEL_DTB_FILE_PP12 := allwinner/sun50i-a64-pinephone-1.2.dtb
-
 GD_LCD_DENSITY := 269
+GD_NO_DEFAULT_GEN_DTBCFG := true
+# GD_USE_RS_HWCOMPOSER := true
