@@ -1,0 +1,35 @@
+From 9cf945ca6add28f4c5697062f97a8bff8aec3641 Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Thu, 9 Jun 2022 20:44:54 +0300
+Subject: [PATCH 1/2] Don't use stretch effect by default
+
+Old SOCs simply can't handle it and FPS is dropped down to 10.
+
+I hope someday we will be able to choose it using sysprops or RROs
+
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+Change-Id: Ic91f23d4f57aa2043b5acf8f5bc2f38b827db5ac
+---
+ core/java/android/widget/EdgeEffect.java | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/core/java/android/widget/EdgeEffect.java b/core/java/android/widget/EdgeEffect.java
+index c110ab956030..0352da3a068f 100644
+--- a/core/java/android/widget/EdgeEffect.java
++++ b/core/java/android/widget/EdgeEffect.java
+@@ -245,8 +245,10 @@ public class EdgeEffect {
+                 attrs, com.android.internal.R.styleable.EdgeEffect);
+         final int themeColor = a.getColor(
+                 com.android.internal.R.styleable.EdgeEffect_colorEdgeEffect, 0xff666666);
+-        mEdgeEffectType = Compatibility.isChangeEnabled(USE_STRETCH_EDGE_EFFECT_BY_DEFAULT)
+-                ? TYPE_STRETCH : TYPE_GLOW;
++        // mEdgeEffectType = TYPE_GLOW
++        // Glow effect has an issue in settings app:
++        // After edge effect the buttons don't work until content scrolled, therefore use NONE
++        mEdgeEffectType = TYPE_NONE;
+         a.recycle();
+ 
+         mPaint.setAntiAlias(true);
+-- 
+2.34.1
+

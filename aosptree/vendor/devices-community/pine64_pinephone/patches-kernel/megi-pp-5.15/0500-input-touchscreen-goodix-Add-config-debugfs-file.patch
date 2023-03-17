@@ -1,0 +1,76 @@
+From d4e5c1bc3fafab7e863463cd122bceea28660132 Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Thu, 26 Jan 2023 00:27:35 +0200
+Subject: [PATCH] input: touchscreen: goodix: Add config debugfs file
+
+Signed-off-by: Ondrej Jirman <megous@megous.com>
+---
+ drivers/input/touchscreen/goodix.c | 17 +++++++++++++++++
+ drivers/input/touchscreen/goodix.h |  2 ++
+ 2 files changed, 19 insertions(+)
+
+diff --git a/drivers/input/touchscreen/goodix.c b/drivers/input/touchscreen/goodix.c
+index 0b513fcd51d1..9bd70734a1e2 100644
+--- a/drivers/input/touchscreen/goodix.c
++++ b/drivers/input/touchscreen/goodix.c
+@@ -21,6 +21,7 @@
+ #include <linux/slab.h>
+ #include <linux/acpi.h>
+ #include <linux/of.h>
++#include <linux/debugfs.h>
+ #include <asm/unaligned.h>
+ #include "goodix.h"
+ 
+@@ -899,6 +900,16 @@ static int goodix_get_gpio_config(struct goodix_ts_data *ts)
+ 	return 0;
+ }
+ 
++static int ts_config_bin_show(struct seq_file *s, void *data)
++{
++        struct goodix_ts_data *ts = s->private;
++
++        seq_write(s, ts->config, ts->chip->config_len);
++
++        return 0;
++}
++DEFINE_SHOW_ATTRIBUTE(ts_config_bin);
++
+ /**
+  * goodix_read_config - Read the embedded configuration of the panel
+  *
+@@ -932,6 +943,10 @@ static void goodix_read_config(struct goodix_ts_data *ts)
+ 	}
+ 
+ 	ts->chip->calc_config_checksum(ts);
++
++        ts->debug_root = debugfs_create_dir("goodix", NULL);
++        debugfs_create_file("config.bin", 0444, ts->debug_root, ts,
++                            &ts_config_bin_fops);
+ }
+ 
+ /**
+@@ -1254,6 +1269,8 @@ static int goodix_ts_remove(struct i2c_client *client)
+ 	if (ts->load_cfg_from_disk)
+ 		wait_for_completion(&ts->firmware_loading_complete);
+ 
++        debugfs_remove(ts->debug_root);
++
+ 	return 0;
+ }
+ 
+diff --git a/drivers/input/touchscreen/goodix.h b/drivers/input/touchscreen/goodix.h
+index 1a1571ad2cd2..e6db5bcbaa05 100644
+--- a/drivers/input/touchscreen/goodix.h
++++ b/drivers/input/touchscreen/goodix.h
+@@ -63,6 +63,8 @@ struct goodix_ts_data {
+ 	unsigned int contact_size;
+ 	u8 config[GOODIX_CONFIG_MAX_LENGTH];
+ 	unsigned short keymap[GOODIX_MAX_KEYS];
++	struct dentry *debug_root;
++	bool poweroff_in_suspend;
+ };
+ 
+ int goodix_i2c_read(struct i2c_client *client, u16 reg, u8 *buf, int len);
+-- 
+2.34.1
+

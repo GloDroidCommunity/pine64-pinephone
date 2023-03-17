@@ -1,0 +1,17 @@
+service vendor.light-default /vendor/bin/hw/android.hardware.lights-service.pinephone
+    class hal
+    user system
+    group system
+    # FIXME: actually do this
+    # shutting off lights while powering-off
+    shutdown critical
+
+on early-init
+    chown system system /sys/class/backlight/backlight/brightness
+    chmod 0660 /sys/class/backlight/backlight/brightness
+    chown system system /sys/class/leds/red:indicator/brightness
+    chmod 0660 /sys/class/leds/red:indicator/brightness
+    chown system system /sys/class/leds/green:indicator/brightness
+    chmod 0660 /sys/class/leds/green:indicator/brightness
+    chown system system /sys/class/leds/blue:indicator/brightness
+    chmod 0660 /sys/class/leds/blue:indicator/brightness

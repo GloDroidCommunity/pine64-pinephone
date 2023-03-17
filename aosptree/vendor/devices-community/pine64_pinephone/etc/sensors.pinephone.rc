@@ -1,0 +1,10 @@
+on early-init
+    setprop ro.hardware.sensors iio
+    setprop ro.iio.accel.mpu6050.name "MPU6050 Accelerometer"
+    setprop ro.iio.accel.quirks "no-trig,no-event"
+    setprop ro.iio.anglvel.mpu6050.name "MPU6050 Gyroscope"
+    setprop ro.iio.anglvel.quirks "no-trig,no-event"
+    setprop ro.iio.magn.lis3mdl.name "LIS3MDL Magnetometer"
+    setprop ro.iio.magn.quirks "no-trig,no-event"
+    setprop ro.iio.illuminance.stk3310.name "STK3310 ALS"
+    setprop ro.iio.proximity.stk3310.name "STK3310 Proximity"

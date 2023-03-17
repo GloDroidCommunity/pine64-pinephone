@@ -1,0 +1,11 @@
+on early-init
+    write /sys/class/modem-power/modem-power/device/powered 1
+
+# Avoid USB resets
+on property:sys.boot_completed=1
+    wait /sys/bus/usb/devices/2-1/power/control
+    write /sys/bus/usb/devices/2-1/power/control              auto
+    write /sys/bus/usb/devices/2-1/power/autosuspend_delay_ms 8000
+    write /sys/bus/usb/devices/2-1/power/wakeup               enabled
+    write /sys/bus/usb/devices/2-1/avoid_reset_quirk          1
+    write /sys/bus/usb/devices/2-1/power/persist              0

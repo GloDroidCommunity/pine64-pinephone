@@ -1,0 +1,38 @@
+From 6749bcad7028d03d42860fd8ded7c41e03d068e0 Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Sun, 12 Jun 2022 13:49:13 +0300
+Subject: [PATCH] [DO NOT MERGE] SurfaceFlinger: Disable cornerRadius on
+ windows
+
+This will reduce the load on slow GPUs by utilizing display
+controller for more composition cases.
+
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+Change-Id: I7243e0114b324f5296addb3a7e9f1830b2b65362
+---
+ services/surfaceflinger/Layer.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/services/surfaceflinger/Layer.cpp b/services/surfaceflinger/Layer.cpp
+index be16942d40..409de4d251 100644
+--- a/services/surfaceflinger/Layer.cpp
++++ b/services/surfaceflinger/Layer.cpp
+@@ -953,6 +953,7 @@ bool Layer::setBackgroundColor(const half3& color, float alpha, ui::Dataspace da
+ }
+ 
+ bool Layer::setCornerRadius(float cornerRadius) {
++    cornerRadius = 0;
+     if (mDrawingState.cornerRadius == cornerRadius) return false;
+ 
+     mDrawingState.sequence++;
+@@ -963,6 +964,7 @@ bool Layer::setCornerRadius(float cornerRadius) {
+ }
+ 
+ bool Layer::setBackgroundBlurRadius(int backgroundBlurRadius) {
++    backgroundBlurRadius = 0;
+     if (mDrawingState.backgroundBlurRadius == backgroundBlurRadius) return false;
+     // If we start or stop drawing blur then the layer's visibility state may change so increment
+     // the magic sequence number.
+-- 
+2.34.1
+
