@@ -30,6 +30,10 @@ pushd aosptree/frameworks/native
 repo sync -l .
 git am ${LOCAL_PATH}/patches-aosp/frameworks/native/*
 popd
+pushd aosptree/glodroid/bootloader/u-boot
+repo sync -l .
+git am ${LOCAL_PATH}/patches-aosp/glodroid/bootloader/u-boot/*
+popd
 
 # Hack to avoid rebuilding AOSP from scratch
 touch -c -t 200101010101 aosptree/external/libcxx/include/chrono
