@@ -1,0 +1,22 @@
+From bd1a2d2e211af3de676c5399911c332543e96aa5 Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Sun, 19 Mar 2023 12:40:06 +0200
+Subject: [PATCH] GLODROID: Set autoboot countdown timeout to 0
+
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ configs/pinephone_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/configs/pinephone_defconfig b/configs/pinephone_defconfig
+index 66e9accaa1..a5f3aed1ed 100644
+--- a/configs/pinephone_defconfig
++++ b/configs/pinephone_defconfig
+@@ -22,3 +22,4 @@ CONFIG_SUN8I_EMAC=y
+ CONFIG_USB_EHCI_HCD=y
+ CONFIG_USB_OHCI_HCD=y
+ CONFIG_PREBOOT=""
++CONFIG_BOOTDELAY=0
+-- 
+2.34.1
+
