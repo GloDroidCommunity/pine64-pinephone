@@ -1,0 +1,25 @@
+From 04d1b3f92eb49db58a45f24c96910831a9f00ca1 Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Sun, 19 Mar 2023 12:31:25 +0200
+Subject: [PATCH] GLODROID: Disable scanning of USB busses
+
+By default CONFIG_PREBOOT contains "usb start" command,
+which consumes a few seconds of boot time.
+
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ configs/pinephone_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/configs/pinephone_defconfig b/configs/pinephone_defconfig
+index b8e7752d69..66e9accaa1 100644
+--- a/configs/pinephone_defconfig
++++ b/configs/pinephone_defconfig
+@@ -21,3 +21,4 @@ CONFIG_LED_STATUS_STATE=2
+ CONFIG_SUN8I_EMAC=y
+ CONFIG_USB_EHCI_HCD=y
+ CONFIG_USB_OHCI_HCD=y
++CONFIG_PREBOOT=""
+-- 
+2.34.1
+
