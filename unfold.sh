@@ -18,22 +18,22 @@ repo sync -cq
 popd
 
 echo Patch AOSP tree
-pushd aosptree/external/libcxx
-repo sync -l .
-git am ${LOCAL_PATH}/patches-aosp/external/libcxx/*
+patch_dir() {
+    pushd aosptree/$1
+    repo sync -l .
+    git am ${LOCAL_PATH}/patches-aosp/$1/*
+    popd
+}
+
+pushd patches-aosp
+directories=$(find -name *patch | xargs dirname | uniq)
 popd
-pushd aosptree/frameworks/base
-repo sync -l .
-git am ${LOCAL_PATH}/patches-aosp/frameworks/base/*
-popd
-pushd aosptree/frameworks/native
-repo sync -l .
-git am ${LOCAL_PATH}/patches-aosp/frameworks/native/*
-popd
-pushd aosptree/glodroid/bootloader/u-boot
-repo sync -l .
-git am ${LOCAL_PATH}/patches-aosp/glodroid/bootloader/u-boot/*
-popd
+
+for dir in ${directories}
+do
+    echo "Patching: $dir"
+    patch_dir $dir
+done
 
 # Hack to avoid rebuilding AOSP from scratch
 touch -c -t 200101010101 aosptree/external/libcxx/include/chrono
