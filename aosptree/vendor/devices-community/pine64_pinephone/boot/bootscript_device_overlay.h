@@ -1,5 +1,7 @@
 #pragma once
 
+#include "bootscript.h"
+
 #define DEVICE_HANDLE_BUTTONS() \
  if test STRESC(\$volume_key) = STRESC("up");   \
  then                                           \
@@ -29,3 +31,6 @@
 /* Set blue LED when in fastboot mode */
 #define PRE_ENTER_FASTBOOT() \
  gpio clear PD18; gpio set PD20; \
+
+#define POSTPROCESS_FDT() \
+ EXTENV(bootargs, " loglevel=4"); \
