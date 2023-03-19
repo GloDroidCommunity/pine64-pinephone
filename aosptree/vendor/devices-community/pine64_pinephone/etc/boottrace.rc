@@ -1,0 +1,5 @@
+on property:sys.boot_completed=1          // This stops tracing on boot complete
+    write /d/tracing/tracing_on 0
+    write /d/tracing/events/ext4/enable 0
+    write /d/tracing/events/f2fs/enable 0
+    write /d/tracing/events/block/enable 0

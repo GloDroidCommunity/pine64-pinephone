@@ -1,0 +1,31 @@
+From 9383729f7a887c908dd60566340304758d27b7e9 Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Sun, 19 Mar 2023 18:04:33 +0200
+Subject: [PATCH] TEST: Don't disable tracing by default
+
+Required for boot tracing.
+
+Change-Id: I37d1fd137897f3d387fc70887c2adcec88beaf89
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ cmds/atrace/atrace.rc | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/cmds/atrace/atrace.rc b/cmds/atrace/atrace.rc
+index 5267b0294c..f047d91268 100644
+--- a/cmds/atrace/atrace.rc
++++ b/cmds/atrace/atrace.rc
+@@ -227,8 +227,8 @@ on late-init
+     chmod 0666 /sys/kernel/tracing/events/thermal/cdev_update/enable
+ 
+ # Tracing disabled by default
+-    write /sys/kernel/debug/tracing/tracing_on 0
+-    write /sys/kernel/tracing/tracing_on 0
++#    write /sys/kernel/debug/tracing/tracing_on 0
++#    write /sys/kernel/tracing/tracing_on 0
+ 
+ # Read and truncate the kernel trace.
+     chmod 0666 /sys/kernel/debug/tracing/trace
+-- 
+2.34.1
+
