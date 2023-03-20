@@ -71,8 +71,24 @@ sudo pip3 install mako jinja2 ply pyyaml
 ```bash
 git clone https://github.com/GloDroidCommunity/pine64-pinephone.git
 cd pine64-pinephone
-./unfold.sh && ./build.sh
 ```
 
-Depending on your hardware and internet connection, downloading and building may take 8h or more.  
-After the successful build, find the images at `./out/images.tar.gz`
+### Building AOSP
+
+```bash
+./unfold_aosp.sh && ./build.sh
+```
+
+### Building LineageOS
+
+To enable GMS (microg), set the environment variable `export WITH_GMS=true`.
+
+```bash
+./unfold_lineage.sh && ./build.sh
+```
+
+### Notes
+
+- Depending on your hardware and internet connection, downloading and building may take 8h or more.  
+- After the successful build, find the images at `./out/images.tar.gz`
+- To disable GloDroid's prebuild apps (like skytube, Firefox, etc.), set the environment variable before building `export GD_NO_DEFAULT_APPS=true`.

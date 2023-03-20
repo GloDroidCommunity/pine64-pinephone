@@ -1,0 +1,42 @@
+From ccc9de05b7013fa503ff7577b1c758f9bd14ebc9 Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Mon, 20 Mar 2023 19:27:37 +0200
+Subject: [PATCH 2/4] common: Increase super partition to 2GiB
+
+Just enough to fit both AOSP and LineageOS v20.
+
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ common/base/board.mk          | 2 +-
+ platform/uboot/bootscript.cpp | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/common/base/board.mk b/common/base/board.mk
+index 60c30a9..364e003 100644
+--- a/common/base/board.mk
++++ b/common/base/board.mk
+@@ -102,7 +102,7 @@ BOARD_BUILD_SYSTEM_ROOT_IMAGE := false
+ BOARD_EXT4_SHARE_DUP_BLOCKS := true
+ 
+ # Dynamic partition 1800 MiB
+-BOARD_SUPER_PARTITION_SIZE := $(shell echo $$(( 1800 * 1024 * 1024 )))
++BOARD_SUPER_PARTITION_SIZE := $(shell echo $$(( 2000 * 1024 * 1024 )))
+ BOARD_BUILD_SUPER_IMAGE_BY_DEFAULT := true
+ BOARD_SUPER_PARTITION_GROUPS := glodroid_dynamic_partitions
+ BOARD_GLODROID_DYNAMIC_PARTITIONS_SIZE := $(shell echo $$(( $(BOARD_SUPER_PARTITION_SIZE) - (10 * 1024 * 1024) )))
+diff --git a/platform/uboot/bootscript.cpp b/platform/uboot/bootscript.cpp
+index c8b7f5c..ac37a64 100644
+--- a/platform/uboot/bootscript.cpp
++++ b/platform/uboot/bootscript.cpp
+@@ -39,7 +39,7 @@ EXTENV(partitions, ";name=vbmeta_a,size=512K,uuid=\${uuid_gpt_vbmeta_a}")
+ EXTENV(partitions, ";name=vbmeta_b,size=512K,uuid=\${uuid_gpt_vbmeta_b}")
+ EXTENV(partitions, ";name=vbmeta_system_a,size=512K,uuid=\${uuid_gpt_vbmeta_system_a}")
+ EXTENV(partitions, ";name=vbmeta_system_b,size=512K,uuid=\${uuid_gpt_vbmeta_system_b}")
+-EXTENV(partitions, ";name=super,size=1800M,uuid=\${uuid_gpt_super}")
++EXTENV(partitions, ";name=super,size=2000M,uuid=\${uuid_gpt_super}")
+ EXTENV(partitions, ";name=metadata,size=16M,uuid=\${uuid_gpt_metadata}")
+ EXTENV(partitions, ";name=userdata,size=-,uuid=\${uuid_gpt_userdata}")
+ 
+-- 
+2.34.1
+

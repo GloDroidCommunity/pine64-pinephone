@@ -1,0 +1,65 @@
+From c219e3aac67e60f4442b2dd2d6288ac939913082 Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Mon, 20 Mar 2023 19:28:50 +0200
+Subject: [PATCH 3/4] wifi: Use our own wpa supplicant configuration files
+ instead of hikey's
+
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ common/wifi/device.mk                   | 6 +++---
+ common/wifi/p2p_supplicant_overlay.conf | 1 +
+ common/wifi/wpa_supplicant.conf         | 6 ++++++
+ common/wifi/wpa_supplicant_overlay.conf | 3 +++
+ 4 files changed, 13 insertions(+), 3 deletions(-)
+ create mode 100644 common/wifi/p2p_supplicant_overlay.conf
+ create mode 100644 common/wifi/wpa_supplicant.conf
+ create mode 100644 common/wifi/wpa_supplicant_overlay.conf
+
+diff --git a/common/wifi/device.mk b/common/wifi/device.mk
+index 33be239..7b00b11 100644
+--- a/common/wifi/device.mk
++++ b/common/wifi/device.mk
+@@ -5,9 +5,9 @@ PRODUCT_PROPERTY_OVERRIDES += wifi.interface=wlan0 \
+ 
+ PRODUCT_COPY_FILES += \
+         frameworks/native/data/etc/android.hardware.wifi.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.xml \
+-        device/linaro/hikey/wpa_supplicant.conf:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/wpa_supplicant.conf \
+-        device/linaro/hikey/wpa_supplicant_overlay.conf:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/wpa_supplicant_overlay.conf \
+-        device/linaro/hikey/p2p_supplicant_overlay.conf:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/p2p_supplicant_overlay.conf \
++        $(LOCAL_PATH)/wpa_supplicant.conf:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/wpa_supplicant.conf \
++        $(LOCAL_PATH)/wpa_supplicant_overlay.conf:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/wpa_supplicant_overlay.conf \
++        $(LOCAL_PATH)/p2p_supplicant_overlay.conf:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/p2p_supplicant_overlay.conf \
+ 
+ PRODUCT_COPY_FILES += \
+     $(LOCAL_PATH)/init.wifi.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.wifi.rc \
+diff --git a/common/wifi/p2p_supplicant_overlay.conf b/common/wifi/p2p_supplicant_overlay.conf
+new file mode 100644
+index 0000000..acbace2
+--- /dev/null
++++ b/common/wifi/p2p_supplicant_overlay.conf
+@@ -0,0 +1 @@
++disable_scan_offload=1
+diff --git a/common/wifi/wpa_supplicant.conf b/common/wifi/wpa_supplicant.conf
+new file mode 100644
+index 0000000..109d46b
+--- /dev/null
++++ b/common/wifi/wpa_supplicant.conf
+@@ -0,0 +1,6 @@
++##### wpa_supplicant configuration file template #####
++update_config=1
++eapol_version=1
++ap_scan=1
++fast_reauth=1
++disable_scan_offload=1
+diff --git a/common/wifi/wpa_supplicant_overlay.conf b/common/wifi/wpa_supplicant_overlay.conf
+new file mode 100644
+index 0000000..e1f530d
+--- /dev/null
++++ b/common/wifi/wpa_supplicant_overlay.conf
+@@ -0,0 +1,3 @@
++disable_scan_offload=1
++p2p_disabled=1
++tdls_external_control=1
+-- 
+2.34.1
+

@@ -1,0 +1,53 @@
+From 69f17c91bad2e5aa69b094a57af06f0702addc10 Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Mon, 20 Mar 2023 19:30:43 +0200
+Subject: [PATCH 4/4] WIP: LineageOS support
+
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ common/board-common.mk  | 10 ++++++++++
+ common/device-common.mk |  4 ++++
+ 2 files changed, 14 insertions(+)
+
+diff --git a/common/board-common.mk b/common/board-common.mk
+index 638d705..298a7d8 100644
+--- a/common/board-common.mk
++++ b/common/board-common.mk
+@@ -1,5 +1,15 @@
+ CBC_LOCAL_PATH := $(patsubst $(CURDIR)/%,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
+ 
++# Lineage OS support
++ifeq ($(wildcard lineage),lineage)
++TARGET_KERNEL_CONFIG := defconfig
++TARGET_KERNEL_SOURCE := $(BOARD_KERNEL_SRC_DIR)
++TARGET_KERNEL_CLANG_COMPILE := true
++TARGET_KERNEL_VERSION :=
++TARGET_NO_KERNEL_OVERRIDE := true
++include vendor/lineage/config/BoardConfigLineage.mk
++endif
++
+ include $(CBC_LOCAL_PATH)/base/board.mk
+ 
+ include $(CBC_LOCAL_PATH)/other-hals/board.mk
+diff --git a/common/device-common.mk b/common/device-common.mk
+index 6f0b41c..c2b005d 100644
+--- a/common/device-common.mk
++++ b/common/device-common.mk
+@@ -5,10 +5,14 @@ ifneq (,$(filter %_tv,$(TARGET_PRODUCT)))
+ else ifneq (,$(filter %_auto,$(TARGET_PRODUCT)))
+ # TODO: Implement
+     $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base.mk)
++else
++ifeq ($(wildcard lineage),lineage)
++    $(call inherit-product, vendor/lineage/config/common_full_phone.mk)
+ else
+     $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base.mk)
+ endif
+ 
++endif
+ 
+ $(call inherit-product, $(LOCAL_PATH)/base/device.mk)
+ 
+-- 
+2.34.1
+

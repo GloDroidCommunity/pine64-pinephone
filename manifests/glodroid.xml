@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
 
-  <include name="aosp.xml" />
-
-  <remote  name="github"   fetch="https://github.com/" />
   <remote  name="glodroid" fetch="https://github.com/glodroid/" />
   <remote  name="megous"   fetch="https://megous.com/git/" />
   <remote  name="gnome"    fetch="https://github.com/GNOME/" />

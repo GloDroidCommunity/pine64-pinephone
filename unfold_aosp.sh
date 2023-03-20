@@ -7,9 +7,10 @@ pushd aosptree
 repo init -u https://android.googlesource.com/platform/manifest -b refs/tags/android-13.0.0_r35
 cd .repo/manifests
 mv default.xml aosp.xml
-cp ${LOCAL_PATH}/manifests/glodroid.xml default.xml
+cp ${LOCAL_PATH}/manifests/glodroid.xml glodroid.xml
+cp ${LOCAL_PATH}/manifests/default_aosp.xml default.xml
 git add *
-git commit -m "Add GloDroid" --no-edit
+git commit -m "Add GloDroid Project" --no-edit
 popd
 
 echo Sync repo tree
