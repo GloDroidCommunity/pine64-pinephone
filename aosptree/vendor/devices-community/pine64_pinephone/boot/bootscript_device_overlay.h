@@ -33,4 +33,4 @@
  gpio clear PD18; gpio set PD20; \
 
 #define POSTPROCESS_FDT() \
- EXTENV(bootargs, " loglevel=4"); \
+ EXTENV(bootargs, " loglevel=4 trace_buf_size=64M trace_event=sched_wakeup,sched_switch,sched_blocked_reason,sched_cpu_hotplug,block,ext4"); \

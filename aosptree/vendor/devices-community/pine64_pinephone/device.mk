@@ -42,3 +42,7 @@ PRODUCT_VENDOR_PROPERTIES += \
 # RRO that disables round items in quicksetting menu to increase performance
 PRODUCT_PACKAGES += \
     SystemUISlowGpu
+
+PRODUCT_PROPERTY_OVERRIDES +=    debug.atrace.tags.enableflags=802922
+PRODUCT_PROPERTY_OVERRIDES +=    persist.traced.enable=0
+PRODUCT_COPY_FILES         +=    $(LOCAL_PATH)/etc/boottrace.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/boottrace.rc
