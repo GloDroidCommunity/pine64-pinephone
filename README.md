@@ -12,16 +12,14 @@ The user is fully responsible for any issues arising from using the project.
 
 ## Flashing images
 
-Find the archive with images [here](https://github.com/GloDroidCommunity/pine64-pinephone/releases)
+Find the sdcard image or archive with fastboot images [here](https://github.com/GloDroidCommunity/pine64-pinephone/releases)
 
-Content of the archive:
-* Utilities: **adb**, **fastboot**  
-* Partition images: **bootloader-sd.img**, **bootloader-emmc.img**, **env.img**, **boot.img**, **boot_dtbo.img**, **super.img**  
-* Recovery GPT image: **deploy-gpt.img**  
-* Recovery sdcard images: **deploy-sd.img**, **deploy-sd-for-emmc.img**  
-* Scripts: **flash-sd.sh**, **flash-emmc.sh**  
-  
+Use the SDCard raw image to flash the Android into SDCard.
+
+Or use the fastboot images archive to download Android on SDCard or EMMC using fastboot mode:  
+
 ### Step 1
+Extract the content of the archive.  
 Using any available iso-to-usb utility, prepare recovery SDCARD.  
 To flash Android on a sdcard, use *deploy-sd.img*  
 To flash Android on eMMC, use *deploy-sd-for.emmc.img*  
@@ -90,5 +88,5 @@ To enable GMS (microg), set the environment variable `export WITH_GMS=true`.
 ### Notes
 
 - Depending on your hardware and internet connection, downloading and building may take 8h or more.  
-- After the successful build, find the images at `./out/images.tar.gz`
+- After the successful build, find the fastboot images at `./out/images.tar.gz` or sdcard image at `./out/sdcard.img`.
 - To disable GloDroid's prebuild apps (like skytube, Firefox, etc.), set the environment variable before building `export GD_NO_DEFAULT_APPS=true`.
