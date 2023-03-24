@@ -25,12 +25,12 @@ To flash Android on a sdcard, use *deploy-sd.img*
 To flash Android on eMMC, use *deploy-sd-for.emmc.img*  
   
 ### Step 2
-Insert recovery sdcard into the target board.  
+Ensure you have installed the adb package: ```$ sudo apt install adb``` (required to set up udev rules)  
+Insert recovery sdcard into the phone.  
 Connect the phone and your PC using a typec cable.  
-Power up the phone.  
+Power up the phone. Blue LED indicates that the phone is in bootloader mode, and you can proceed with flashing.  
   
 ### Step 3
-Ensure you have installed the adb package: ```$ sudo apt install adb``` (required to set up udev rules)  
 Run .*/flash-sd.sh* utility for flashing Android to sdcard or *./flash-emmc.sh* for flashing Android to eMMC  
   
 *After several minutes flashing should complete, and Android should boot*  
@@ -53,7 +53,7 @@ sudo apt-get install -y git-core gnupg flex bison build-essential zip curl zlib1
 
 - Install additional packages
 ```bash
-sudo apt-get install -y swig libssl-dev flex bison device-tree-compiler mtools git gettext libncurses5 libgmp-dev libmpc-dev cpio rsync dosfstools kmod gdisk lz4 meson cmake libglib2.0-dev
+sudo apt-get install -y swig libssl-dev flex bison device-tree-compiler mtools git gettext libncurses5 libgmp-dev libmpc-dev cpio rsync dosfstools kmod gdisk lz4 meson cmake libglib2.0-dev git-lfs
 ```
 
 <br/>
@@ -63,6 +63,15 @@ sudo apt-get install -y swig libssl-dev flex bison device-tree-compiler mtools g
 sudo apt-get install -y python3-pip pkg-config python3-dev ninja-build
 sudo pip3 install mako jinja2 ply pyyaml
 ```
+
+- Install the `repo` tool
+```bash
+sudo apt-get install -y python-is-python3 wget
+wget -P ~/bin http://commondatastorage.googleapis.com/git-repo-downloads/repo
+chmod a+x ~/bin/repo
+```
+
+**NOTE: After this step, you may need to log out and log in to the system to make $HOME/bin added to the PATH environment variable.**
 
 ### Fetching the sources and building the project
 
@@ -77,12 +86,15 @@ cd pine64-pinephone
 ./unfold_aosp.sh && ./build.sh
 ```
 
+**NOTE: If you're using `git` for the first time, it may ask you to configure the user name and email address and confirm the colored terminal.
+Please follow the suggestion you see on the screen in this case.**
+
 ### Building LineageOS
 
 To enable GMS (microg), set the environment variable `export WITH_GMS=true`.
 
 ```bash
-./unfold_lineage.sh && ./build.sh
+./unfold_lineageos.sh && ./build.sh
 ```
 
 ### Notes
