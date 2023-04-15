@@ -1,0 +1,12 @@
+# Bluetooth
+/dev/rfkill                                            0660    bluetooth    bluetooth
+
+/dev/ttyUSB0                                           0660    radio        radio
+/dev/ttyUSB1                                           0660    radio        radio
+/dev/ttyUSB2                                           0660    radio        radio
+/dev/ttyUSB3                                           0660    radio        radio
+
+/dev/iio:device0                                       0660    system       system
+/dev/iio:device1                                       0660    system       system
+/dev/iio:device2                                       0660    system       system
+/dev/iio:device3                                       0660    system       system

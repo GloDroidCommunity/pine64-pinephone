@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 echo Building the Android
 pushd aosptree

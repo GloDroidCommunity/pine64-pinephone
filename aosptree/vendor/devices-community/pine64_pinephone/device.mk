@@ -17,6 +17,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/etc/typec.pinephone.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/typec.pinephone.rc \
     $(LOCAL_PATH)/etc/modem.pinephone.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/modem.pinephone.rc \
     $(LOCAL_PATH)/etc/power.pinephone.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/power.pinephone.rc \
+    $(LOCAL_PATH)/etc/uevent.device.rc:$(TARGET_COPY_OUT_VENDOR)/etc/uevent.device.rc \
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/etc/audio.pinephone.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio.pine64_pinephone.xml \

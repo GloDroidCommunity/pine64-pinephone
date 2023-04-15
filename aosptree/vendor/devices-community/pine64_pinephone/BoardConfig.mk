@@ -33,3 +33,5 @@ BOARD_KERNEL_PATCHES_DIRS := \
     glodroid/configuration/patches/kernel/android13-5.15-2023-01/sun4i-drm \
 
 GD_BOOTSCRIPT_OVERLAY_DEVICE := $(BC_PATH)/boot/bootscript_device_overlay.h
+
+BOARD_DRMHWCOMPOSER_PATCHES_DIRS += glodroid/configuration/common/graphics/patches-drm_hwcomposer-experimental
