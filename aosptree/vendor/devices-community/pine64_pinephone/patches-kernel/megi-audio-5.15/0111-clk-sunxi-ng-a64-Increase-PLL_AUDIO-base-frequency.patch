@@ -1,7 +1,7 @@
-From 46cf22bd64bee34f64224002087ac49256552e2c Mon Sep 17 00:00:00 2001
+From d8ac77015446c71feee9343ef7f2b5233c8ade09 Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Sun, 19 Jul 2020 17:10:15 -0500
-Subject: [PATCH] clk: sunxi-ng: a64: Increase PLL_AUDIO base frequency
+Subject: [PATCH 111/114] clk: sunxi-ng: a64: Increase PLL_AUDIO base frequency
 
 Signed-off-by: Samuel Holland <samuel@sholland.org>
 ---
@@ -9,7 +9,7 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  1 file changed, 32 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/clk/sunxi-ng/ccu-sun50i-a64.c b/drivers/clk/sunxi-ng/ccu-sun50i-a64.c
-index 54f25c624f02..2fafd886c644 100644
+index 54f25c624..2fafd886c 100644
 --- a/drivers/clk/sunxi-ng/ccu-sun50i-a64.c
 +++ b/drivers/clk/sunxi-ng/ccu-sun50i-a64.c
 @@ -47,15 +47,35 @@ static struct ccu_nkmp pll_cpux_clk = {
@@ -83,5 +83,5 @@ index 54f25c624f02..2fafd886c644 100644
  	writel(0x515, reg + SUN50I_A64_PLL_MIPI_REG);
  
 -- 
-2.34.1
+2.37.2
 

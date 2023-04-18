@@ -1,7 +1,8 @@
-From 76eaa52cedd7537a5fe57f3708baed43a7a76b52 Mon Sep 17 00:00:00 2001
+From 7b7b77cd0ff6f5bd80e2b66fcb19b479f1aa3922 Mon Sep 17 00:00:00 2001
 From: Arnaud Ferraris <arnaud.ferraris@collabora.com>
 Date: Thu, 24 Sep 2020 23:01:57 -0500
-Subject: [PATCH] ASoC: sun50i-codec-analog: Enable jack detection on startup
+Subject: [PATCH 107/114] ASoC: sun50i-codec-analog: Enable jack detection on
+ startup
 
 This commit adds the necessary setup to enable jack detection on startup
 as well as the callback function enabling the microphone ADC when
@@ -15,7 +16,7 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  1 file changed, 31 insertions(+), 1 deletion(-)
 
 diff --git a/sound/soc/sunxi/sun50i-codec-analog.c b/sound/soc/sunxi/sun50i-codec-analog.c
-index 1c892ab99a8c..b5de3cbd2062 100644
+index 1c892ab99..b5de3cbd2 100644
 --- a/sound/soc/sunxi/sun50i-codec-analog.c
 +++ b/sound/soc/sunxi/sun50i-codec-analog.c
 @@ -117,8 +117,10 @@
@@ -90,5 +91,5 @@ index 1c892ab99a8c..b5de3cbd2062 100644
  	default:
  		break;
 -- 
-2.34.1
+2.37.2
 

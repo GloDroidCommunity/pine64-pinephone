@@ -1,8 +1,8 @@
-From 041333776c4555252397a1bd1cab1fc6c6e57753 Mon Sep 17 00:00:00 2001
+From 7bc9e0c3e4d5826864c211cfec1371a2542bd4db Mon Sep 17 00:00:00 2001
 From: Arnaud Ferraris <arnaud.ferraris@collabora.com>
 Date: Sun, 20 Sep 2020 20:26:36 -0500
-Subject: [PATCH] ASoC: dt-bindings: sun50i-codec: Add binding for internal
- bias
+Subject: [PATCH 104/114] ASoC: dt-bindings: sun50i-codec: Add binding for
+ internal bias
 
 In order to properly bias headset microphones, there should be a
 resistor between pins HBIAS and MICDET. This can be an external
@@ -20,7 +20,7 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  1 file changed, 5 insertions(+)
 
 diff --git a/Documentation/devicetree/bindings/sound/allwinner,sun50i-a64-codec-analog.yaml b/Documentation/devicetree/bindings/sound/allwinner,sun50i-a64-codec-analog.yaml
-index 3b764415c9ab..66859eb8f79a 100644
+index 3b764415c..66859eb8f 100644
 --- a/Documentation/devicetree/bindings/sound/allwinner,sun50i-a64-codec-analog.yaml
 +++ b/Documentation/devicetree/bindings/sound/allwinner,sun50i-a64-codec-analog.yaml
 @@ -21,6 +21,11 @@ properties:
@@ -36,5 +36,5 @@ index 3b764415c9ab..66859eb8f79a 100644
    - compatible
    - reg
 -- 
-2.34.1
+2.37.2
 

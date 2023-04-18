@@ -1,7 +1,7 @@
-From 0923d61cf751ee96a3e972472782616e4566c237 Mon Sep 17 00:00:00 2001
+From 297221311d46e741864a9b6efd5ecb040ce86c01 Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Fri, 25 Sep 2020 21:42:52 -0500
-Subject: [PATCH] ASoC: ec25: New codec driver for the EC25 modem
+Subject: [PATCH 110/114] ASoC: ec25: New codec driver for the EC25 modem
 
 The EC25 LTE modem has a PCM interface, and supports 16-bit PCM audio at
 an 8 kHz or 16 kHz sameple rate.
@@ -16,7 +16,7 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  create mode 100644 sound/soc/codecs/ec25.c
 
 diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
-index d59a7e99ce42..472c337ee4e7 100644
+index d59a7e99c..472c337ee 100644
 --- a/sound/soc/codecs/Kconfig
 +++ b/sound/soc/codecs/Kconfig
 @@ -815,6 +815,9 @@ config SND_SOC_HDMI_CODEC
@@ -30,7 +30,7 @@ index d59a7e99ce42..472c337ee4e7 100644
  	tristate "Everest Semi ES7134 CODEC"
  
 diff --git a/sound/soc/codecs/Makefile b/sound/soc/codecs/Makefile
-index 8dcea2c4604a..bb3607f331cd 100644
+index 8dcea2c46..bb3607f33 100644
 --- a/sound/soc/codecs/Makefile
 +++ b/sound/soc/codecs/Makefile
 @@ -87,6 +87,7 @@ snd-soc-da7219-objs := da7219.o da7219-aad.o
@@ -51,7 +51,7 @@ index 8dcea2c4604a..bb3607f331cd 100644
  obj-$(CONFIG_SND_SOC_ES8316)    += snd-soc-es8316.o
 diff --git a/sound/soc/codecs/ec25.c b/sound/soc/codecs/ec25.c
 new file mode 100644
-index 000000000000..5dc302d26450
+index 000000000..5dc302d26
 --- /dev/null
 +++ b/sound/soc/codecs/ec25.c
 @@ -0,0 +1,95 @@
@@ -151,5 +151,5 @@ index 000000000000..5dc302d26450
 +MODULE_LICENSE("GPL");
 +MODULE_ALIAS("platform:ec25");
 -- 
-2.34.1
+2.37.2
 

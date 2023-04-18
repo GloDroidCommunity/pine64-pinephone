@@ -1,7 +1,8 @@
-From 00e63889cd298796e06c47cb8afe2dcf3e8264b9 Mon Sep 17 00:00:00 2001
+From 4c6a98516e6d452745862d65e04ad6601484b684 Mon Sep 17 00:00:00 2001
 From: Arnaud Ferraris <arnaud.ferraris@collabora.com>
 Date: Fri, 3 Apr 2020 11:24:39 +0200
-Subject: [PATCH] ASoC: sun50i-codec-analog: Add support for internal bias
+Subject: [PATCH 105/114] ASoC: sun50i-codec-analog: Add support for internal
+ bias
 
 In order to properly bias headset microphones, there should be a
 resistor between pins HBIAS and MICDET. This can be an external
@@ -19,7 +20,7 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  1 file changed, 28 insertions(+)
 
 diff --git a/sound/soc/sunxi/sun50i-codec-analog.c b/sound/soc/sunxi/sun50i-codec-analog.c
-index a41e25ad0aaf..400283b67c82 100644
+index a41e25ad0..400283b67 100644
 --- a/sound/soc/sunxi/sun50i-codec-analog.c
 +++ b/sound/soc/sunxi/sun50i-codec-analog.c
 @@ -117,8 +117,13 @@
@@ -84,5 +85,5 @@ index a41e25ad0aaf..400283b67c82 100644
  	if (IS_ERR(base)) {
  		dev_err(&pdev->dev, "Failed to map the registers\n");
 -- 
-2.34.1
+2.37.2
 

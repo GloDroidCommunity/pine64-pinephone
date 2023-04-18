@@ -1,8 +1,8 @@
-From 6625c91b0cb4945fba0b5048176a45e17b63648e Mon Sep 17 00:00:00 2001
+From 5005a74c8a1decbfb47cf0402761a17c0dfc5af1 Mon Sep 17 00:00:00 2001
 From: Ondrej Jirman <megous@megous.com>
 Date: Sun, 17 Jan 2021 20:55:04 +0100
-Subject: [PATCH] ASoC: codecs: bt-sco: Fix stream_name conflict that leads to
- debugfs errors
+Subject: [PATCH 113/114] ASoC: codecs: bt-sco: Fix stream_name conflict that
+ leads to debugfs errors
 
 Signed-off-by: Ondrej Jirman <megous@megous.com>
 ---
@@ -10,7 +10,7 @@ Signed-off-by: Ondrej Jirman <megous@megous.com>
  1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/sound/soc/codecs/bt-sco.c b/sound/soc/codecs/bt-sco.c
-index 4d286844e3c8..ecb73d119a5b 100644
+index 4d286844e..ecb73d119 100644
 --- a/sound/soc/codecs/bt-sco.c
 +++ b/sound/soc/codecs/bt-sco.c
 @@ -17,7 +17,9 @@ static const struct snd_soc_dapm_widget bt_sco_widgets[] = {
@@ -41,5 +41,5 @@ index 4d286844e3c8..ecb73d119a5b 100644
  			.channels_max = 1,
  			.rates = SNDRV_PCM_RATE_8000 | SNDRV_PCM_RATE_16000,
 -- 
-2.34.1
+2.37.2
 
