@@ -43,3 +43,6 @@ PRODUCT_VENDOR_PROPERTIES += \
 # RRO that disables round items in quicksetting menu to increase performance
 PRODUCT_PACKAGES += \
     SystemUISlowGpu
+
+PRODUCT_PACKAGES += \
+    call-audio \

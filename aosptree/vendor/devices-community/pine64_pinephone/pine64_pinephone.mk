@@ -33,4 +33,5 @@ CRUST_FIRMWARE_DEFCONFIG := pinephone_defconfig
 
 GD_LCD_DENSITY := 269
 GD_NO_DEFAULT_GEN_DTBCFG := true
+GD_AUDIOPOLICY_FILE := vendor/devices-community/pine64_pinephone/etc/audio_policy_configuration.xml
 # GD_USE_RS_HWCOMPOSER := true
