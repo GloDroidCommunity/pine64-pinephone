@@ -1,0 +1,32 @@
+From ae25237ce68d81e4ae2b159faba8a27f0b7ce1ab Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Sun, 29 May 2022 17:26:58 +0300
+Subject: [PATCH 3/3] lima: Disable tiling for all buffers (even non-shared)
+
+Android animator tries to mmap tiled buffers, which runs
+software detiling algorythm and slows-down animations.
+
+TODO: Find a way to resolve such buffers to linear
+      while keeping other buffers tiled.
+
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ src/gallium/drivers/lima/lima_resource.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/gallium/drivers/lima/lima_resource.c b/src/gallium/drivers/lima/lima_resource.c
+index 0b7691f2b46..a297dde7b4e 100644
+--- a/src/gallium/drivers/lima/lima_resource.c
++++ b/src/gallium/drivers/lima/lima_resource.c
+@@ -194,7 +194,7 @@ _lima_resource_create_with_modifiers(struct pipe_screen *pscreen,
+                                      int count)
+ {
+    struct lima_screen *screen = lima_screen(pscreen);
+-   bool should_tile = lima_debug & LIMA_DEBUG_NO_TILING ? false : true;
++   bool should_tile = false;
+    unsigned width, height;
+    bool has_user_modifiers = true;
+    bool align_to_tile = false;
+-- 
+2.39.2
+

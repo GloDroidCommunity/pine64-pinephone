@@ -8,9 +8,6 @@ include glodroid/configuration/common/board-common.mk
 
 BOARD_VENDOR_SEPOLICY_DIRS += $(BC_PATH)/sepolicy/vendor
 
-# Apply mesa3d patches to reduce CPU load during frame processing.
-BOARD_MESA3D_PATCHES_DIRS += glodroid/configuration/common/graphics/patches-mesa3d_slowgpu
-
 BOARD_KERNEL_SRC_DIR := glodroid/kernel/common-android13-5.15-lts
 KERNEL_DEFCONFIG := $(BC_PATH)/kernel.defconfig
 KERNEL_FRAGMENTS := glodroid/configuration/platform/common/sunxi/a64_overlay.config
