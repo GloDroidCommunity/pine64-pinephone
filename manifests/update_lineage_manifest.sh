@@ -15,7 +15,7 @@ fi
 
 echo Init repo tree using LineageOS manifest
 pushd ../aosptree
-repo init -u https://github.com/LineageOS/android.git -b refs/heads/lineage-20.0
+repo init -u https://github.com/LineageOS/android.git -b refs/heads/lineage-21.0
 repo sync -c
 repo manifest -r -o ../manifests/lineage-static.xml
 popd

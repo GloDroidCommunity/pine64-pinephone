@@ -1,4 +1,4 @@
-# Android 13 for the PinePhone based on the GloDroid project
+# Android 14 for the PinePhone based on the GloDroid project
 
 [![GloDroid](https://img.shields.io/badge/GLODROID-PROJECT-blue)](https://github.com/GloDroid/glodroid_manifest)
 [![ProjectStatus](https://img.shields.io/badge/PROJECT-STATUS-yellowgreen)](https://github.com/GloDroidCommunity/pine64-pinephone/issues/2)
