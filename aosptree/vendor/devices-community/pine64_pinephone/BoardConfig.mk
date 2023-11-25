@@ -11,6 +11,7 @@ BOARD_VENDOR_SEPOLICY_DIRS += $(BC_PATH)/sepolicy/vendor
 BOARD_KERNEL_SRC_DIR := glodroid/kernel/common-android13-5.15-lts
 KERNEL_DEFCONFIG := $(BC_PATH)/kernel.defconfig
 KERNEL_FRAGMENTS := glodroid/configuration/platform/common/sunxi/a64_overlay.config
+KERNEL_DTB_FILES := allwinner/sun50i-a64-pinephone-1.1.dtb allwinner/sun50i-a64-pinephone-1.2.dtb
 
 BOARD_KERNEL_PATCHES_DIRS := \
     $(BC_PATH)/patches-kernel/megi-audio-5.15     \

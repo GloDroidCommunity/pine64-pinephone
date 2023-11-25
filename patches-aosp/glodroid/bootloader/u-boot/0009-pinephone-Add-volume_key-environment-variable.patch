@@ -1,7 +1,7 @@
-From 0dff2b7f924362700ec11aa5e3f969a8b0cd6139 Mon Sep 17 00:00:00 2001
+From a97cd083d6b8b0adc2d1c47a924b2675675bbda6 Mon Sep 17 00:00:00 2001
 From: Ondrej Jirman <megous@megous.com>
 Date: Tue, 11 Feb 2020 14:10:05 +0100
-Subject: [PATCH 4/8] pinephone: Add volume_key environment variable
+Subject: [PATCH 09/11] pinephone: Add volume_key environment variable
 
 When the user has a volume key pressed volume_key variable will
 contain either value 'down' or 'up', otherwise it will be empty.
@@ -26,7 +26,7 @@ index d96b7897b6..a096a5c771 100644
  obj-$(CONFIG_CHIP_DIP_SCAN)	+= chip.o
 +obj-$(CONFIG_MACH_SUN50I)	+= lradc.o
 diff --git a/board/sunxi/board.c b/board/sunxi/board.c
-index 827e545032..736faafedb 100644
+index f321cd58a6..b191816431 100644
 --- a/board/sunxi/board.c
 +++ b/board/sunxi/board.c
 @@ -49,6 +49,48 @@
@@ -78,7 +78,7 @@ index 827e545032..736faafedb 100644
  
  DECLARE_GLOBAL_DATA_PTR;
  
-@@ -581,6 +623,12 @@ void sunxi_board_init(void)
+@@ -578,6 +620,12 @@ void sunxi_board_init(void)
  		status_led_init();
  #endif
  
@@ -91,7 +91,7 @@ index 827e545032..736faafedb 100644
  #ifdef CONFIG_SY8106A_POWER
  	power_failed = sy8106a_set_vout1(CONFIG_SY8106A_VOUT1_VOLT);
  #endif
-@@ -859,6 +907,17 @@ int misc_init_r(void)
+@@ -856,6 +904,17 @@ int misc_init_r(void)
  		env_set("fdtfile", str);
  	}
  
@@ -214,5 +214,5 @@ index 0000000000..c908401b5b
 +void lradc_enable(void);
 +void lradc_disable(void);
 -- 
-2.34.1
+2.39.2
 

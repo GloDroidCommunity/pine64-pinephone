@@ -1,7 +1,7 @@
-From 04d1b3f92eb49db58a45f24c96910831a9f00ca1 Mon Sep 17 00:00:00 2001
+From fac678d0cc76837fdea24cc608a1d16d25dc4e81 Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Sun, 19 Mar 2023 12:31:25 +0200
-Subject: [PATCH] GLODROID: Disable scanning of USB busses
+Subject: [PATCH 10/11] GLODROID: Disable scanning of USB busses
 
 By default CONFIG_PREBOOT contains "usb start" command,
 which consumes a few seconds of boot time.
@@ -21,5 +21,5 @@ index b8e7752d69..66e9accaa1 100644
  CONFIG_USB_OHCI_HCD=y
 +CONFIG_PREBOOT=""
 -- 
-2.34.1
+2.39.2
 

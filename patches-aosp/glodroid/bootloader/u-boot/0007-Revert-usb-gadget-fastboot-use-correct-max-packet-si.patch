@@ -1,7 +1,7 @@
-From 180f02627976d181e7e535cdf99b8482ece42155 Mon Sep 17 00:00:00 2001
+From 1bfe00979533e4dacb749adb842d57d276a0cebd Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Thu, 22 Apr 2021 17:28:46 +0300
-Subject: [PATCH 6/8] Revert "usb: gadget: fastboot: use correct max packet
+Subject: [PATCH 07/11] Revert "usb: gadget: fastboot: use correct max packet
  size"
 
 Causing fastboot download to stuck.
@@ -12,10 +12,10 @@ This reverts commit 27c9141b1114fd5721437abbb1c694e45e765f19.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/usb/gadget/f_fastboot.c b/drivers/usb/gadget/f_fastboot.c
-index 07b1681c8a..aaea0db392 100644
+index 6d97b4bbdc..d2a33e20b5 100644
 --- a/drivers/usb/gadget/f_fastboot.c
 +++ b/drivers/usb/gadget/f_fastboot.c
-@@ -428,7 +428,7 @@ static unsigned int rx_bytes_expected(struct usb_ep *ep)
+@@ -429,7 +429,7 @@ static unsigned int rx_bytes_expected(struct usb_ep *ep)
  {
  	int rx_remain = fastboot_data_remaining();
  	unsigned int rem;
@@ -25,5 +25,5 @@ index 07b1681c8a..aaea0db392 100644
  	if (rx_remain <= 0)
  		return 0;
 -- 
-2.34.1
+2.39.2
 

@@ -1,8 +1,8 @@
-From ee8c2f4d89ce2aba3ac6ef3a0d657062e6a9a723 Mon Sep 17 00:00:00 2001
+From f4f6406243088c9273b7aff921401afbaee67b5f Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Sat, 1 Aug 2020 22:39:39 +0300
-Subject: [PATCH 2/8] Extra configs for pinephone_defconfig to fix usb download
- gadget
+Subject: [PATCH 08/11] Extra configs for pinephone_defconfig to fix usb
+ download gadget
 
 Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
 ---
@@ -33,5 +33,5 @@ index 9d39204a43..b8e7752d69 100644
 +CONFIG_USB_EHCI_HCD=y
 +CONFIG_USB_OHCI_HCD=y
 -- 
-2.34.1
+2.39.2
 
