@@ -1,0 +1,89 @@
+From dfa284e8d311b85fdf73511a6eb33a69424d617c Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Sun, 26 Nov 2023 08:10:27 +0200
+Subject: [PATCH 5/6] kconfig: Sync android-base config with
+ kernel/configs/u/android-5.15
+
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ platform/common/amlogic/amlogic_defconfig |  6 +++---
+ platform/kernel/android-base.config       | 11 ++++-------
+ 2 files changed, 7 insertions(+), 10 deletions(-)
+
+diff --git a/platform/common/amlogic/amlogic_defconfig b/platform/common/amlogic/amlogic_defconfig
+index 52a3a16..93623a4 100644
+--- a/platform/common/amlogic/amlogic_defconfig
++++ b/platform/common/amlogic/amlogic_defconfig
+@@ -255,7 +255,7 @@ CONFIG_NFT_OSF=m
+ CONFIG_NFT_TPROXY=m
+ CONFIG_NFT_SYNPROXY=m
+ CONFIG_NFT_DUP_NETDEV=m
+-CONFIG_NFT_FWD_NETDEV=m
++CONFIG_NFT_FWD_NETDEV=y
+ CONFIG_NFT_FIB_NETDEV=m
+ CONFIG_NFT_REJECT_NETDEV=m
+ CONFIG_NF_FLOW_TABLE_INET=m
+@@ -539,7 +539,7 @@ CONFIG_NET_CLS_ACT=y
+ CONFIG_NET_ACT_POLICE=y
+ CONFIG_NET_ACT_GACT=m
+ CONFIG_GACT_PROB=y
+-CONFIG_NET_ACT_MIRRED=m
++CONFIG_NET_ACT_MIRRED=y
+ CONFIG_NET_ACT_SAMPLE=m
+ CONFIG_NET_ACT_IPT=m
+ CONFIG_NET_ACT_NAT=m
+@@ -868,7 +868,7 @@ CONFIG_BONDING=m
+ CONFIG_DUMMY=y
+ CONFIG_WIREGUARD=m
+ CONFIG_EQUALIZER=m
+-CONFIG_IFB=m
++CONFIG_IFB=y
+ CONFIG_NET_TEAM=m
+ CONFIG_NET_TEAM_MODE_BROADCAST=m
+ CONFIG_NET_TEAM_MODE_ROUNDROBIN=m
+diff --git a/platform/kernel/android-base.config b/platform/kernel/android-base.config
+index 5ce4ef6..bf4c7e5 100644
+--- a/platform/kernel/android-base.config
++++ b/platform/kernel/android-base.config
+@@ -36,6 +36,9 @@ CONFIG_CGROUP_BPF=y
+ CONFIG_CGROUP_CPUACCT=y
+ CONFIG_CGROUP_FREEZER=y
+ CONFIG_CGROUP_SCHED=y
++CONFIG_CPU_FREQ=y
++CONFIG_CPU_FREQ_STAT=y
++CONFIG_CPU_FREQ_TIMES=y
+ CONFIG_CROSS_MEMORY_ATTACH=y
+ CONFIG_CRYPTO_AES=y
+ CONFIG_CRYPTO_CBC=y
+@@ -75,6 +78,7 @@ CONFIG_HIDRAW=y
+ CONFIG_HID_SONY=y
+ CONFIG_SONY_FF=y
+ CONFIG_HIGH_RES_TIMERS=y
++CONFIG_IFB=y
+ CONFIG_IKCONFIG=y
+ CONFIG_IKCONFIG_PROC=y
+ CONFIG_INET6_ESP=y
+@@ -119,7 +123,6 @@ CONFIG_IP_NF_TARGET_NETMAP=y
+ CONFIG_IP_NF_TARGET_REDIRECT=y
+ CONFIG_IP_NF_TARGET_REJECT=y
+ CONFIG_JOYSTICK_XPAD=y
+-CONFIG_L2TP=y
+ CONFIG_LD_IS_LLD=y
+ CONFIG_MAGIC_SYSRQ=y
+ CONFIG_MD=y
+@@ -207,12 +210,6 @@ CONFIG_NO_HZ=y
+ CONFIG_PACKET=y
+ CONFIG_PM_WAKELOCKS=y
+ CONFIG_POSIX_TIMERS=y
+-CONFIG_PPP=y
+-CONFIG_PPPOL2TP=y
+-CONFIG_PPP_BSDCOMP=y
+-CONFIG_PPP_DEFLATE=y
+-CONFIG_PPP_MPPE=y
+-CONFIG_PPTP=y
+ CONFIG_PREEMPT=y
+ CONFIG_PROC_FS=y
+ CONFIG_PROFILING=y
+-- 
+2.39.2
+
