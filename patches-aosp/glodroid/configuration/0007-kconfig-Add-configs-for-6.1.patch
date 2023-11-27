@@ -1,0 +1,29 @@
+From 0a7aa761510811e154e42fa23d2c50f6f5fc594d Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Mon, 27 Nov 2023 10:23:37 +0200
+Subject: [PATCH 7/8] kconfig: Add configs for 6.1
+
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ platform/kernel/android-extra.config | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/platform/kernel/android-extra.config b/platform/kernel/android-extra.config
+index c952aa5..0456463 100644
+--- a/platform/kernel/android-extra.config
++++ b/platform/kernel/android-extra.config
+@@ -75,3 +75,11 @@ CONFIG_MODULE_COMPRESS_NONE=y
+ 
+ #  Required for compressed virtual AB OTA
+ CONFIG_DM_USER=y
++
++#  FCMv8 requires CONFIG_HID_PLAYSTATION which depends on CONFIG_LEDS_CLASS_MULTICOLOR
++CONFIG_LEDS_CLASS_MULTICOLOR=y
++
++#  FCMv8
++CONFIG_INIT_STACK_ALL_ZERO=y
++CONFIG_NFT_FWD_NETDEV=y
++CONFIG_NET_ACT_MIRRED=y
+-- 
+2.39.2
+

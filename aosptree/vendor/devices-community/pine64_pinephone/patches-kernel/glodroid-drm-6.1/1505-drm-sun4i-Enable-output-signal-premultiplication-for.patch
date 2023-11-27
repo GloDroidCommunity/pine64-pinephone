@@ -1,0 +1,50 @@
+From 35b4b49d305ce2aed16b226fe2dd5ebe738552e2 Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Thu, 2 Jun 2022 09:57:58 +0000
+Subject: [PATCH] drm/sun4i: Enable output signal premultiplication for DE2/DE3
+
+Otherwise alpha value is discarded, resulting incorrect pixel
+apperance on the display.
+
+This also fixes missing transparency for the most bottom layer.
+
+Test applications and videos w/ w/o this patch are available at [1].
+
+[1]: https://github.com/GloDroid/glodroid_tests/issues/1
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_mixer.c | 5 +++--
+ drivers/gpu/drm/sun4i/sun8i_mixer.h | 1 +
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+index bafee05f6b24..f76a5665b6b5 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+@@ -319,8 +319,9 @@ static void sun8i_mixer_mode_set(struct sunxi_engine *engine,
+ 	else
+ 		val = 0;
+ 
+-	regmap_update_bits(engine->regs, SUN8I_MIXER_BLEND_OUTCTL(bld_base),
+-			   SUN8I_MIXER_BLEND_OUTCTL_INTERLACED, val);
++	val |= SUN8I_MIXER_BLEND_OUTCTL_PREMULTIPLY;
++
++	regmap_write(engine->regs, SUN8I_MIXER_BLEND_OUTCTL(bld_base), val);
+ 
+ 	DRM_DEBUG_DRIVER("Switching display mixer interlaced mode %s\n",
+ 			 interlaced ? "on" : "off");
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+index e2f4b28c916f..42a6a6daea0e 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+@@ -67,6 +67,7 @@
+ 
+ #define SUN8I_MIXER_BLEND_PREMULTIPLY_EN(pipe)	BIT(pipe)
+ 
++#define SUN8I_MIXER_BLEND_OUTCTL_PREMULTIPLY	BIT(0)
+ #define SUN8I_MIXER_BLEND_OUTCTL_INTERLACED	BIT(1)
+ 
+ #define SUN50I_MIXER_BLEND_CSC_CTL_EN(ch)	BIT(ch)
+-- 
+2.39.2
+

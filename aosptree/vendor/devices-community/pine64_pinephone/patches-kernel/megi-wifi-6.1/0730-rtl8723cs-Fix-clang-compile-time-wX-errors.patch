@@ -1,0 +1,182 @@
+From 3856d6a4c1e8845c554d1647b7d7e64812642264 Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Mon, 27 Nov 2023 05:11:38 +0200
+Subject: [PATCH] rtl8723cs: Fix clang compile-time -wX errors
+
+Change-Id: I9a5436e8cedfe819f3e21c13201d0ca3ef59a8c9
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ drivers/staging/rtl8723cs/core/rtw_debug.c       | 4 ++--
+ drivers/staging/rtl8723cs/core/rtw_mlme_ext.c    | 6 +++---
+ drivers/staging/rtl8723cs/core/rtw_odm.c         | 2 ++
+ drivers/staging/rtl8723cs/core/rtw_tdls.c        | 1 +
+ drivers/staging/rtl8723cs/core/rtw_wlan_util.c   | 4 ++--
+ drivers/staging/rtl8723cs/hal/phydm/phydm.c      | 1 +
+ drivers/staging/rtl8723cs/hal/phydm/phydm_api.c  | 4 ++--
+ drivers/staging/rtl8723cs/include/rtw_mlme_ext.h | 2 +-
+ drivers/staging/rtl8723cs/include/rtw_recv.h     | 2 +-
+ 9 files changed, 15 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/staging/rtl8723cs/core/rtw_debug.c b/drivers/staging/rtl8723cs/core/rtw_debug.c
+index d1a41e1908dd..1fb6df2321d2 100644
+--- a/drivers/staging/rtl8723cs/core/rtw_debug.c
++++ b/drivers/staging/rtl8723cs/core/rtw_debug.c
+@@ -6910,7 +6910,7 @@ ssize_t proc_set_tx_sa_query(struct file *file, const char __user *buffer, size_
+ 	_irqL	 irqL;
+ 	char tmp[16];
+ 	u8	mac_addr[NUM_STA][ETH_ALEN];
+-	u32 key_type;
++	u32 key_type = 0;
+ 	u8 index;
+ 
+ 	if (count > 2) {
+@@ -6990,7 +6990,7 @@ ssize_t proc_set_tx_deauth(struct file *file, const char __user *buffer, size_t
+ 	char tmp[16];
+ 	u8	mac_addr[NUM_STA][ETH_ALEN];
+ 	u8 bc_addr[ETH_ALEN] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+-	u32 key_type;
++	u32 key_type = 0;
+ 	u8 index;
+ 
+ 
+diff --git a/drivers/staging/rtl8723cs/core/rtw_mlme_ext.c b/drivers/staging/rtl8723cs/core/rtw_mlme_ext.c
+index 11da273bee38..d60c668e4b11 100644
+--- a/drivers/staging/rtl8723cs/core/rtw_mlme_ext.c
++++ b/drivers/staging/rtl8723cs/core/rtw_mlme_ext.c
+@@ -10249,7 +10249,7 @@ static int issue_action_ba(_adapter *padapter, unsigned char *raddr, unsigned ch
+ 	u16	start_seq;
+ 	u16	BA_para_set;
+ 	u16	BA_timeout_value;
+-	u16	BA_starting_seqctrl;
++	u16	BA_starting_seqctrl = 0;
+ 	struct xmit_frame		*pmgntframe;
+ 	struct pkt_attrib		*pattrib;
+ 	u8					*pframe;
+@@ -12654,7 +12654,7 @@ void linked_status_chk_tdls(_adapter *padapter)
+ 	_rtw_memset(checkalive, 0x00, sizeof(checkalive));
+ 	_rtw_memset(teardown, 0x00, sizeof(teardown));
+ 
+-	if ((padapter->tdlsinfo.link_established == _TRUE)) {
++	if (padapter->tdlsinfo.link_established == _TRUE) {
+ 		_enter_critical_bh(&pstapriv->sta_hash_lock, &irqL);
+ 		for (i = 0; i < NUM_STA; i++) {
+ 			phead = &(pstapriv->sta_hash[i]);
+@@ -14875,7 +14875,7 @@ u8 sitesurvey_cmd_hdl(_adapter *padapter, u8 *pbuf)
+ 
+ #ifdef CONFIG_SCAN_BACKOP
+ 	case SCAN_BACKING_OP: {
+-		u8 back_ch, back_bw, back_ch_offset;
++		u8 back_ch = 0, back_bw = 0, back_ch_offset = 0;
+ 		u8 need_ch_setting_union = _TRUE;
+ 
+ #ifdef CONFIG_MCC_MODE
+diff --git a/drivers/staging/rtl8723cs/core/rtw_odm.c b/drivers/staging/rtl8723cs/core/rtw_odm.c
+index 9651d4fdd045..dd4fc576e05b 100644
+--- a/drivers/staging/rtl8723cs/core/rtw_odm.c
++++ b/drivers/staging/rtl8723cs/core/rtw_odm.c
+@@ -160,6 +160,7 @@ void rtw_odm_acquirespinlock(_adapter *adapter,	enum rt_spinlock_type type)
+ 	switch (type) {
+ 	case RT_IQK_SPINLOCK:
+ 		_enter_critical_bh(&pHalData->IQKSpinLock, &irqL);
++		break;
+ 	default:
+ 		break;
+ 	}
+@@ -173,6 +174,7 @@ void rtw_odm_releasespinlock(_adapter *adapter,	enum rt_spinlock_type type)
+ 	switch (type) {
+ 	case RT_IQK_SPINLOCK:
+ 		_exit_critical_bh(&pHalData->IQKSpinLock, &irqL);
++		break;
+ 	default:
+ 		break;
+ 	}
+diff --git a/drivers/staging/rtl8723cs/core/rtw_tdls.c b/drivers/staging/rtl8723cs/core/rtw_tdls.c
+index f05e4fbc59d4..a6d067205d02 100644
+--- a/drivers/staging/rtl8723cs/core/rtw_tdls.c
++++ b/drivers/staging/rtl8723cs/core/rtw_tdls.c
+@@ -2119,6 +2119,7 @@ int On_TDLS_Setup_Rsp(_adapter *padapter, union recv_frame *precv_frame, struct
+ 				if (_rtw_memcmp(ppairwise_cipher + 4 * k, RSN_CIPHER_SUITE_CCMP, 4) == _TRUE)
+ 					verify_ccmp = 1;
+ 			}
++			break;
+ 		case _EXT_CAP_IE_:
+ 			break;
+ 		case _VENDOR_SPECIFIC_IE_:
+diff --git a/drivers/staging/rtl8723cs/core/rtw_wlan_util.c b/drivers/staging/rtl8723cs/core/rtw_wlan_util.c
+index 59e9c8680460..fc169b29b6b1 100644
+--- a/drivers/staging/rtl8723cs/core/rtw_wlan_util.c
++++ b/drivers/staging/rtl8723cs/core/rtw_wlan_util.c
+@@ -2953,7 +2953,7 @@ unsigned int is_ap_in_tkip(_adapter *padapter)
+ 			case _RSN_IE_2_:
+ 				if (_rtw_memcmp((pIE->data + 8), RSN_TKIP_CIPHER, 4))
+ 					return _TRUE;
+-
++				break;
+ 			default:
+ 				break;
+ 			}
+@@ -2990,7 +2990,7 @@ unsigned int should_forbid_n_rate(_adapter *padapter)
+ 				if ((_rtw_memcmp((pIE->data + 8), RSN_CIPHER_SUITE_CCMP, 4))  ||
+ 				    (_rtw_memcmp((pIE->data + 12), RSN_CIPHER_SUITE_CCMP, 4)))
+ 					return _FALSE;
+-
++				break;
+ 			default:
+ 				break;
+ 			}
+diff --git a/drivers/staging/rtl8723cs/hal/phydm/phydm.c b/drivers/staging/rtl8723cs/hal/phydm/phydm.c
+index 0f7e7aa9291e..2603facecc19 100644
+--- a/drivers/staging/rtl8723cs/hal/phydm/phydm.c
++++ b/drivers/staging/rtl8723cs/hal/phydm/phydm.c
+@@ -2881,6 +2881,7 @@ void odm_cmn_info_hook(struct dm_struct *dm, enum odm_cmninfo cmn_info,
+ 		break;
+ 	case ODM_CMNINFO_EN_DYM_BW_INDICATION:
+ 		dm->dis_dym_bw_indication = (u8 *)value;
++		break;
+ 	default:
+ 		/*do nothing*/
+ 		break;
+diff --git a/drivers/staging/rtl8723cs/hal/phydm/phydm_api.c b/drivers/staging/rtl8723cs/hal/phydm/phydm_api.c
+index a5e736db1e67..5918dbf694dc 100644
+--- a/drivers/staging/rtl8723cs/hal/phydm/phydm_api.c
++++ b/drivers/staging/rtl8723cs/hal/phydm/phydm_api.c
+@@ -3124,8 +3124,8 @@ u8 config_phydm_read_txagc_n(void *dm_void, enum rf_path path, u8 hw_rate)
+ {
+ 	struct dm_struct *dm = (struct dm_struct *)dm_void;
+ 	u8 read_back_data = INVALID_TXAGC_DATA;
+-	u32 reg_txagc;
+-	u32 reg_mask;
++	u32 reg_txagc = 0;
++	u32 reg_mask = 0;
+ 	/* This function is for 92E/88E etc... */
+ 	/* @Input need to be HW rate index, not driver rate index!!!! */
+ 
+diff --git a/drivers/staging/rtl8723cs/include/rtw_mlme_ext.h b/drivers/staging/rtl8723cs/include/rtw_mlme_ext.h
+index af05277c64c7..9d9a6eaa344e 100644
+--- a/drivers/staging/rtl8723cs/include/rtw_mlme_ext.h
++++ b/drivers/staging/rtl8723cs/include/rtw_mlme_ext.h
+@@ -274,7 +274,7 @@ enum TDLS_option {
+ #if defined(CONFIG_ATMEL_RC_PATCH)
+ 	#define RTW_SCAN_NUM_OF_CH 2
+ 	#define RTW_BACK_OP_CH_MS 200
+-#elseif defined(CONFIG_CUSTOMER_EZVIZ_CHIME2)
++#elif defined(CONFIG_CUSTOMER_EZVIZ_CHIME2)
+ 	#define RTW_SCAN_NUM_OF_CH 1
+ 	#define RTW_BACK_OP_CH_MS 200
+ #else
+diff --git a/drivers/staging/rtl8723cs/include/rtw_recv.h b/drivers/staging/rtl8723cs/include/rtw_recv.h
+index a2574f755434..23506907fd9e 100644
+--- a/drivers/staging/rtl8723cs/include/rtw_recv.h
++++ b/drivers/staging/rtl8723cs/include/rtw_recv.h
+@@ -812,7 +812,7 @@ __inline static union recv_frame *rxmem_to_recvframe(u8 *rxmem)
+ __inline static union recv_frame *pkt_to_recvframe(_pkt *pkt)
+ {
+ 
+-	u8 *buf_star;
++	u8 *buf_star = NULL;
+ 	union recv_frame *precv_frame;
+ 	precv_frame = rxmem_to_recvframe((unsigned char *)buf_star);
+ 
+-- 
+2.39.2
+

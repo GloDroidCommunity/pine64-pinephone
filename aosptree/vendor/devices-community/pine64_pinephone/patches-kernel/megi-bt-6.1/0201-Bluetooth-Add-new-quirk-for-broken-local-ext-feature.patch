@@ -1,0 +1,60 @@
+From 9e7f2a9f09bb611cd4d2af09f243093ff83e1dcc Mon Sep 17 00:00:00 2001
+From: Vasily Khoruzhick <anarsoul@gmail.com>
+Date: Wed, 31 Oct 2018 19:40:18 -0700
+Subject: [PATCH] Bluetooth: Add new quirk for broken local ext features
+ max_page
+
+Some adapters (e.g. RTL8723CS) advertise that they have more than
+2 pages for local ext features, but they don't support any features
+declared in these pages. RTL8723CS reports max_page = 2 and declares
+support for sync train and secure connection, but it responds with
+either garbage or with error in status on corresponding commands.
+
+Signed-off-by: Vasily Khoruzhick <anarsoul@gmail.com>
+---
+ include/net/bluetooth/hci.h | 4 +++-
+ net/bluetooth/hci_event.c   | 5 +++++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
+index a674221d151d..d59df5aab341 100644
+--- a/include/net/bluetooth/hci.h
++++ b/include/net/bluetooth/hci.h
+@@ -293,8 +293,8 @@ enum {
+ 	 * This quirk can be set before hci_register_dev is called or
+ 	 * during the hdev->setup vendor callback.
+ 	 */
+-	HCI_QUIRK_BROKEN_MWS_TRANSPORT_CONFIG,
+ 
++	HCI_QUIRK_BROKEN_MWS_TRANSPORT_CONFIG,
+ 	/* When this quirk is set, max_page for local extended features
+ 	 * is set to 1, even if controller reports higher number. Some
+ 	 * controllers (e.g. RTL8723CS) report more pages, but they
+@@ -309,6 +309,8 @@ enum {
+ 	 * to support it.
+ 	 */
+ 	HCI_QUIRK_BROKEN_SET_RPA_TIMEOUT,
++
++	HCI_QUIRK_BROKEN_LOCAL_EXT_FTR_MAX_PAGE,
+ };
+ 
+ /* HCI device flags */
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 83eaf25ece46..d5ac684e074c 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -889,6 +889,11 @@ static u8 hci_cc_read_local_ext_features(struct hci_dev *hdev, void *data,
+ 			hdev->max_page = rp->max_page;
+ 	}
+ 
++	if (!test_bit(HCI_QUIRK_BROKEN_LOCAL_EXT_FTR_MAX_PAGE,
++		      &hdev->quirks) &&
++	    hdev->max_page < rp->max_page)
++		hdev->max_page = rp->max_page;
++
+ 	if (rp->page < HCI_MAX_PAGES)
+ 		memcpy(hdev->features[rp->page], rp->features, 8);
+ 
+-- 
+2.39.2
+

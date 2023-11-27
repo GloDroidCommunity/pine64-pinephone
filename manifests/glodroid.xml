@@ -56,7 +56,7 @@
   <project path="glodroid/bootloader/crust-firmware" remote="github" name="crust-firmware/crust.git"         groups="glodroid" revision="refs/tags/v0.6" />
 
   <!-- kernel/firmware components (platform) -->
-  <project path="glodroid/kernel/common-android13-5.15-lts" remote="aosp" name="kernel/common"  groups="glodroid" revision="refs/tags/android13-5.15-2023-07_r1" clone-depth="1" />
+  <project path="glodroid/kernel/common-android14-6.1-lts" remote="aosp" name="kernel/common"  groups="glodroid" revision="refs/tags/android14-6.1-2023-11_r1" clone-depth="1" />
   <project path="glodroid/kernel-firmware/megous"   remote="megous"   name="linux-firmware"     groups="glodroid" revision="6e8e591e17e207644dfe747e51026967bb1edab5" clone-depth="1" />
 
   <!-- compilers for platform components -->
