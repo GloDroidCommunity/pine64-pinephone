@@ -1,0 +1,26 @@
+From f48d6089b5f23b3d613a96b9470aaf942fd81b4f Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Wed, 29 Nov 2023 19:21:33 +0200
+Subject: [PATCH 19/19] HACK: Force NV12
+
+Change-Id: I33f7c136dde36ba85e8021a87e8a587bde13f87e
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ gbm_mesa_driver/gbm_mesa_internals.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/gbm_mesa_driver/gbm_mesa_internals.cpp b/gbm_mesa_driver/gbm_mesa_internals.cpp
+index f26f533..b9553fe 100644
+--- a/gbm_mesa_driver/gbm_mesa_internals.cpp
++++ b/gbm_mesa_driver/gbm_mesa_internals.cpp
+@@ -74,6 +74,7 @@ void gbm_mesa_resolve_format_and_use_flags(struct driver *drv, uint32_t format,
+ 			/*HACK: See b/28671744 */
+ 			*out_format = DRM_FORMAT_XBGR8888;
+ 		}
++		*out_format = DRM_FORMAT_NV12;
+ 		break;
+ 	case DRM_FORMAT_FLEX_YCbCr_420_888:
+ 		*out_format = DRM_FORMAT_NV12;
+-- 
+2.39.2
+
