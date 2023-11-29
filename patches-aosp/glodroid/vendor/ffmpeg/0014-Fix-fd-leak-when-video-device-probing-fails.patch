@@ -1,0 +1,34 @@
+From 05b91b942e41262700b069bc4202f95934e10a48 Mon Sep 17 00:00:00 2001
+From: Cameron Gutman <aicommander@gmail.com>
+Date: Wed, 6 Sep 2023 19:57:30 +0200
+Subject: [PATCH 14/16] Fix fd leak when video device probing fails
+
+---
+ libavcodec/v4l2_request.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/libavcodec/v4l2_request.c b/libavcodec/v4l2_request.c
+index 19c41f2b3f..7733a1a752 100644
+--- a/libavcodec/v4l2_request.c
++++ b/libavcodec/v4l2_request.c
+@@ -732,12 +732,13 @@ static int v4l2_request_probe_media_device(struct udev_device *device, AVCodecCo
+         ret = v4l2_request_probe_video_device(video_device, avctx, pixelformat, buffersize, control, count);
+         udev_device_unref(video_device);
+ 
+-        if (!ret)
+-            break;
++        if (!ret) {
++            av_freep(&interfaces);
++            return 0;
++        }
+     }
+ 
+-    av_freep(&interfaces);
+-    return ret;
++    av_log(avctx, AV_LOG_INFO, "%s: no matching V4L2 interfaces found\n", __func__);
+ 
+ fail:
+     av_freep(&interfaces);
+-- 
+2.39.2
+

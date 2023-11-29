@@ -1,0 +1,299 @@
+From 093cb39c4d3946a128bf9e2f525b3938b5dde406 Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Wed, 29 Nov 2023 19:03:59 +0200
+Subject: [PATCH] GLODROID/SUNXI: Implement selection between HW and SW codecs
+ and formats
+
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ C2FFMPEGAudioDecodeComponent.cpp |  2 +-
+ C2FFMPEGAudioDecodeComponent.h   |  4 ++--
+ C2FFMPEGAudioDecodeInterface.cpp |  2 +-
+ C2FFMPEGAudioDecodeInterface.h   |  2 +-
+ C2FFMPEGCommon.h                 |  9 ++++++++-
+ C2FFMPEGVideoDecodeComponent.cpp | 25 +++++++++++++++++--------
+ C2FFMPEGVideoDecodeComponent.h   |  4 ++--
+ C2FFMPEGVideoDecodeInterface.cpp |  9 ++++++---
+ C2FFMPEGVideoDecodeInterface.h   |  2 +-
+ ffmpeg_utils/ffmpeg_hwaccel.c    |  3 ---
+ service.cpp                      | 20 ++++++++++----------
+ 11 files changed, 49 insertions(+), 33 deletions(-)
+
+diff --git a/C2FFMPEGAudioDecodeComponent.cpp b/C2FFMPEGAudioDecodeComponent.cpp
+index 0400170de44a1..13a0a8182457a 100644
+--- a/C2FFMPEGAudioDecodeComponent.cpp
++++ b/C2FFMPEGAudioDecodeComponent.cpp
+@@ -200,7 +200,7 @@ CodecHelper* createCodecHelper(enum AVCodecID codec_id) {
+ }
+ 
+ C2FFMPEGAudioDecodeComponent::C2FFMPEGAudioDecodeComponent(
+-        const C2FFMPEGComponentInfo* componentInfo,
++        const C2FFMPEGAudioComponentInfo* componentInfo,
+         const std::shared_ptr<C2FFMPEGAudioDecodeInterface>& intf)
+     : SimpleC2Component(std::make_shared<SimpleInterface<C2FFMPEGAudioDecodeInterface>>(componentInfo->name, 0, intf)),
+       mInfo(componentInfo),
+diff --git a/C2FFMPEGAudioDecodeComponent.h b/C2FFMPEGAudioDecodeComponent.h
+index e02817693cc93..92168b148d96a 100644
+--- a/C2FFMPEGAudioDecodeComponent.h
++++ b/C2FFMPEGAudioDecodeComponent.h
+@@ -32,7 +32,7 @@ struct CodecHelper;
+ class C2FFMPEGAudioDecodeComponent : public SimpleC2Component {
+ public:
+     explicit C2FFMPEGAudioDecodeComponent(
+-        const C2FFMPEGComponentInfo* componentInfo,
++        const C2FFMPEGAudioComponentInfo* componentInfo,
+         const std::shared_ptr<C2FFMPEGAudioDecodeInterface>& intf);
+     virtual ~C2FFMPEGAudioDecodeComponent();
+ 
+@@ -60,7 +60,7 @@ private:
+     void updateAudioParameters();
+ 
+ private:
+-    const C2FFMPEGComponentInfo* mInfo;
++    const C2FFMPEGAudioComponentInfo* mInfo;
+     std::shared_ptr<C2FFMPEGAudioDecodeInterface> mIntf;
+     enum AVCodecID mCodecID;
+     AVCodecContext* mCtx;
+diff --git a/C2FFMPEGAudioDecodeInterface.cpp b/C2FFMPEGAudioDecodeInterface.cpp
+index 1dc3bd271328f..8c90ee4c87b79 100644
+--- a/C2FFMPEGAudioDecodeInterface.cpp
++++ b/C2FFMPEGAudioDecodeInterface.cpp
+@@ -28,7 +28,7 @@ constexpr size_t kDefaultOutputPortDelay = 2;
+ constexpr size_t kMaxOutputPortDelay = 16;
+ 
+ C2FFMPEGAudioDecodeInterface::C2FFMPEGAudioDecodeInterface(
+-        const C2FFMPEGComponentInfo* componentInfo,
++        const C2FFMPEGAudioComponentInfo* componentInfo,
+         const std::shared_ptr<C2ReflectorHelper>& helper)
+     : SimpleInterface<void>::BaseParams(
+         helper,
+diff --git a/C2FFMPEGAudioDecodeInterface.h b/C2FFMPEGAudioDecodeInterface.h
+index 988e92ceeb28a..ab7c42091df16 100644
+--- a/C2FFMPEGAudioDecodeInterface.h
++++ b/C2FFMPEGAudioDecodeInterface.h
+@@ -25,7 +25,7 @@ namespace android {
+ class C2FFMPEGAudioDecodeInterface : public SimpleInterface<void>::BaseParams {
+ public:
+     explicit C2FFMPEGAudioDecodeInterface(
+-        const C2FFMPEGComponentInfo* componentInfo,
++        const C2FFMPEGAudioComponentInfo* componentInfo,
+         const std::shared_ptr<C2ReflectorHelper>& helper);
+ 
+     uint32_t getSampleRate() const { return mSampleRate->value; }
+diff --git a/C2FFMPEGCommon.h b/C2FFMPEGCommon.h
+index f1a85b89b1407..375518fc577ee 100644
+--- a/C2FFMPEGCommon.h
++++ b/C2FFMPEGCommon.h
+@@ -26,7 +26,14 @@ typedef struct {
+     const char* name;
+     const char* mediaType;
+     enum AVCodecID codecID;
+-} C2FFMPEGComponentInfo;
++    enum AVPixelFormat format;
++} C2FFMPEGVideoComponentInfo;
++
++typedef struct {
++    const char* name;
++    const char* mediaType;
++    enum AVCodecID codecID;
++} C2FFMPEGAudioComponentInfo;
+ 
+ } // namespace android
+ 
+diff --git a/C2FFMPEGVideoDecodeComponent.cpp b/C2FFMPEGVideoDecodeComponent.cpp
+index a983b9b052e3a..10b2ac6a4399f 100644
+--- a/C2FFMPEGVideoDecodeComponent.cpp
++++ b/C2FFMPEGVideoDecodeComponent.cpp
+@@ -34,7 +34,7 @@ extern "C" {
+ namespace android {
+ 
+ C2FFMPEGVideoDecodeComponent::C2FFMPEGVideoDecodeComponent(
+-        const C2FFMPEGComponentInfo* componentInfo,
++        const C2FFMPEGVideoComponentInfo* componentInfo,
+         const std::shared_ptr<C2FFMPEGVideoDecodeInterface>& intf)
+     : SimpleC2Component(std::make_shared<SimpleInterface<C2FFMPEGVideoDecodeInterface>>(componentInfo->name, 0, intf)),
+       mInfo(componentInfo),
+@@ -127,7 +127,8 @@ c2_status_t C2FFMPEGVideoDecodeComponent::openDecoder() {
+         mCtx->flags2 |= AV_CODEC_FLAG2_FAST;
+     }
+ 
+-    ffmpeg_hwaccel_init(mCtx);
++    if (mInfo->format == AV_PIX_FMT_NV12)
++        ffmpeg_hwaccel_init(mCtx);
+ 
+     ALOGD("openDecoder: opening ffmpeg decoder(%s): threads = %d, hw = %s",
+           avcodec_get_name(mCtx->codec_id), mCtx->thread_count, mCtx->hw_device_ctx ? "yes" : "no");
+@@ -277,19 +278,24 @@ c2_status_t C2FFMPEGVideoDecodeComponent::getOutputBuffer(C2GraphicView* outBuff
+ 
+     mImgConvertCtx = sws_getCachedContext(currentImgConvertCtx,
+            mFrame->width, mFrame->height, (AVPixelFormat)mFrame->format,
+-           mFrame->width, mFrame->height, AV_PIX_FMT_YUV420P,
++           mFrame->width, mFrame->height, mInfo->format,
+            SWS_BICUBIC, NULL, NULL, NULL);
+     if (mImgConvertCtx && mImgConvertCtx != currentImgConvertCtx) {
+         ALOGD("getOutputBuffer: created video converter - %s => %s",
+-              av_get_pix_fmt_name((AVPixelFormat)mFrame->format), av_get_pix_fmt_name(AV_PIX_FMT_YUV420P));
++              av_get_pix_fmt_name((AVPixelFormat)mFrame->format), av_get_pix_fmt_name(mInfo->format));
+ 
+     } else if (! mImgConvertCtx) {
+         ALOGE("getOutputBuffer: cannot initialize the conversion context");
+         return C2_NO_MEMORY;
+     }
+ 
+-    sws_scale(mImgConvertCtx, mFrame->data, mFrame->linesize,
+-              0, mFrame->height, data, linesize);
++    if (mInfo->format != AV_PIX_FMT_YUV420P) {
++        memcpy(data[0], mFrame->data[0], mFrame->linesize[0] * mFrame->height);
++        memcpy(data[1], mFrame->data[1], mFrame->linesize[1] * mFrame->height / 2);
++    } else {
++        sws_scale(mImgConvertCtx, mFrame->data, mFrame->linesize,
++                  0, mFrame->height, data, linesize);
++    }
+ 
+     return C2_OK;
+ }
+@@ -469,12 +475,15 @@ c2_status_t C2FFMPEGVideoDecodeComponent::outputFrame(
+ 
+     std::shared_ptr<C2GraphicBlock> block;
+ 
+-    err = pool->fetchGraphicBlock(mFrame->width, mFrame->height, HAL_PIXEL_FORMAT_YV12,
++    int hal_format = (mInfo->format == AV_PIX_FMT_YUV420P) ?
++        HAL_PIXEL_FORMAT_YV12 : HAL_PIXEL_FORMAT_IMPLEMENTATION_DEFINED;
++
++    err = pool->fetchGraphicBlock(mFrame->width, mFrame->height, hal_format,
+                                   { C2MemoryUsage::CPU_READ, C2MemoryUsage::CPU_WRITE }, &block);
+ 
+     if (err != C2_OK) {
+         ALOGE("outputFrame: failed to fetch graphic block %d x %d (%x) err = %d",
+-              mFrame->width, mFrame->height, HAL_PIXEL_FORMAT_YV12, err);
++              mFrame->width, mFrame->height, hal_format, err);
+         return C2_CORRUPTED;
+     }
+ 
+diff --git a/C2FFMPEGVideoDecodeComponent.h b/C2FFMPEGVideoDecodeComponent.h
+index 241ddcfdba409..674537d3563f2 100644
+--- a/C2FFMPEGVideoDecodeComponent.h
++++ b/C2FFMPEGVideoDecodeComponent.h
+@@ -30,7 +30,7 @@ typedef std::pair<uint64_t, uint64_t> PendingWork;
+ class C2FFMPEGVideoDecodeComponent : public SimpleC2Component {
+ public:
+     explicit C2FFMPEGVideoDecodeComponent(
+-        const C2FFMPEGComponentInfo* componentInfo,
++        const C2FFMPEGVideoComponentInfo* componentInfo,
+         const std::shared_ptr<C2FFMPEGVideoDecodeInterface>& intf);
+     virtual ~C2FFMPEGVideoDecodeComponent();
+ 
+@@ -64,7 +64,7 @@ private:
+     void prunePendingWorksUntil(const std::unique_ptr<C2Work>& work);
+ 
+ private:
+-    const C2FFMPEGComponentInfo* mInfo;
++    const C2FFMPEGVideoComponentInfo* mInfo;
+     std::shared_ptr<C2FFMPEGVideoDecodeInterface> mIntf;
+     enum AVCodecID mCodecID;
+     AVCodecContext* mCtx;
+diff --git a/C2FFMPEGVideoDecodeInterface.cpp b/C2FFMPEGVideoDecodeInterface.cpp
+index 08092613f8f73..7578bdf609b17 100644
+--- a/C2FFMPEGVideoDecodeInterface.cpp
++++ b/C2FFMPEGVideoDecodeInterface.cpp
+@@ -27,7 +27,7 @@ namespace android {
+ constexpr size_t kMaxDimension = 4080;
+ 
+ C2FFMPEGVideoDecodeInterface::C2FFMPEGVideoDecodeInterface(
+-        const C2FFMPEGComponentInfo* componentInfo,
++        const C2FFMPEGVideoComponentInfo* componentInfo,
+         const std::shared_ptr<C2ReflectorHelper>& helper)
+     : SimpleInterface<void>::BaseParams(
+         helper,
+@@ -42,6 +42,9 @@ C2FFMPEGVideoDecodeInterface::C2FFMPEGVideoDecodeInterface(
+     noTimeStretch();
+     setDerivedInstance(this);
+ 
++    int hal_format = (componentInfo->format == AV_PIX_FMT_YUV420P) ? HAL_PIXEL_FORMAT_YV12
++                                                                   : HAL_PIXEL_FORMAT_IMPLEMENTATION_DEFINED;
++
+     addParameter(
+             DefineParam(mAttrib, C2_PARAMKEY_COMPONENT_ATTRIBUTES)
+             .withConstValue(new C2ComponentAttributesSetting(C2Component::ATTRIB_IS_TEMPORAL))
+@@ -235,13 +238,13 @@ C2FFMPEGVideoDecodeInterface::C2FFMPEGVideoDecodeInterface(
+     addParameter(
+             DefineParam(mPixelFormat, C2_PARAMKEY_PIXEL_FORMAT)
+             .withConstValue(new C2StreamPixelFormatInfo::output(
+-                                 0u, HAL_PIXEL_FORMAT_YV12))
++                                 0u, hal_format))
+             .build());
+ 
+     addParameter(
+             DefineParam(mConsumerUsage, C2_PARAMKEY_OUTPUT_STREAM_USAGE)
+             .withDefault(new C2StreamUsageTuning::output(
+-                                0u, GRALLOC_USAGE_HW_TEXTURE | GRALLOC_USAGE_HW_COMPOSER))
++                                0u, 1ULL << 22 /* VIDEO_DECODER */))
+             .withFields({C2F(mConsumerUsage, value).any()})
+             .withSetter(Setter<decltype(*mConsumerUsage)>::StrictValueWithNoDeps)
+             .build());
+diff --git a/C2FFMPEGVideoDecodeInterface.h b/C2FFMPEGVideoDecodeInterface.h
+index e1dd2be72abaa..9b154dea39059 100644
+--- a/C2FFMPEGVideoDecodeInterface.h
++++ b/C2FFMPEGVideoDecodeInterface.h
+@@ -25,7 +25,7 @@ namespace android {
+ class C2FFMPEGVideoDecodeInterface : public SimpleInterface<void>::BaseParams {
+ public:
+     explicit C2FFMPEGVideoDecodeInterface(
+-        const C2FFMPEGComponentInfo* componentInfo,
++        const C2FFMPEGVideoComponentInfo* componentInfo,
+         const std::shared_ptr<C2ReflectorHelper>& helper);
+ 
+     uint32_t getWidth() const { return mSize->width; }
+diff --git a/ffmpeg_utils/ffmpeg_hwaccel.c b/ffmpeg_utils/ffmpeg_hwaccel.c
+index 06f364704dbf0..135792c2ba50b 100644
+--- a/ffmpeg_utils/ffmpeg_hwaccel.c
++++ b/ffmpeg_utils/ffmpeg_hwaccel.c
+@@ -7,9 +7,6 @@
+ #include "libavutil/opt.h"
+ 
+ int ffmpeg_hwaccel_init(AVCodecContext *avctx) {
+-    if (avctx->codec_id != AV_CODEC_ID_HEVC || !property_get_bool("persist.ffmpeg_codec2.v4l2.h265", 0))
+-        return 0;
+-
+     // Find codec information. At this point, AVCodecContext.codec may not be
+     // set yet, so retrieve our own version using AVCodecContext.codec_id.
+     const AVCodec* codec = avcodec_find_decoder(avctx->codec_id);
+diff --git a/service.cpp b/service.cpp
+index 6a2c6e2d80b41..450f28fc3a542 100644
+--- a/service.cpp
++++ b/service.cpp
+@@ -36,21 +36,21 @@
+ 
+ namespace android {
+ 
+-static const C2FFMPEGComponentInfo kFFMPEGVideoComponents[] = {
+-    { "c2.ffmpeg.av1.decoder"   , MEDIA_MIMETYPE_VIDEO_AV1   , AV_CODEC_ID_AV1        },
+-    { "c2.ffmpeg.h263.decoder"  , MEDIA_MIMETYPE_VIDEO_H263  , AV_CODEC_ID_H263       },
+-    { "c2.ffmpeg.h264.decoder"  , MEDIA_MIMETYPE_VIDEO_AVC   , AV_CODEC_ID_H264       },
+-    { "c2.ffmpeg.hevc.decoder"  , MEDIA_MIMETYPE_VIDEO_HEVC  , AV_CODEC_ID_HEVC       },
+-    { "c2.ffmpeg.mpeg2.decoder" , MEDIA_MIMETYPE_VIDEO_MPEG2 , AV_CODEC_ID_MPEG2VIDEO },
+-    { "c2.ffmpeg.mpeg4.decoder" , MEDIA_MIMETYPE_VIDEO_MPEG4 , AV_CODEC_ID_MPEG4      },
+-    { "c2.ffmpeg.vp8.decoder"   , MEDIA_MIMETYPE_VIDEO_VP8   , AV_CODEC_ID_VP8        },
+-    { "c2.ffmpeg.vp9.decoder"   , MEDIA_MIMETYPE_VIDEO_VP9   , AV_CODEC_ID_VP9        },
++static const C2FFMPEGVideoComponentInfo kFFMPEGVideoComponents[] = {
++    { "c2.ffmpeg.av1.decoder"   , MEDIA_MIMETYPE_VIDEO_AV1   , AV_CODEC_ID_AV1        , AV_PIX_FMT_YUV420P },
++    { "c2.ffmpeg.h263.decoder"  , MEDIA_MIMETYPE_VIDEO_H263  , AV_CODEC_ID_H263       , AV_PIX_FMT_YUV420P },
++    { "c2.ffmpeg.h264.decoder"  , MEDIA_MIMETYPE_VIDEO_AVC   , AV_CODEC_ID_H264       , AV_PIX_FMT_NV12 },
++    { "c2.ffmpeg.hevc.decoder"  , MEDIA_MIMETYPE_VIDEO_HEVC  , AV_CODEC_ID_HEVC       , AV_PIX_FMT_NV12 },
++    { "c2.ffmpeg.mpeg2.decoder" , MEDIA_MIMETYPE_VIDEO_MPEG2 , AV_CODEC_ID_MPEG2VIDEO , AV_PIX_FMT_NV12 },
++    { "c2.ffmpeg.mpeg4.decoder" , MEDIA_MIMETYPE_VIDEO_MPEG4 , AV_CODEC_ID_MPEG4      , AV_PIX_FMT_NV12 },
++    { "c2.ffmpeg.vp8.decoder"   , MEDIA_MIMETYPE_VIDEO_VP8   , AV_CODEC_ID_VP8        , AV_PIX_FMT_NV12 },
++    { "c2.ffmpeg.vp9.decoder"   , MEDIA_MIMETYPE_VIDEO_VP9   , AV_CODEC_ID_VP9        , AV_PIX_FMT_YUV420P },
+ };
+ 
+ static const size_t kNumVideoComponents =
+     (sizeof(kFFMPEGVideoComponents) / sizeof(kFFMPEGVideoComponents[0]));
+ 
+-static const C2FFMPEGComponentInfo kFFMPEGAudioComponents[] = {
++static const C2FFMPEGAudioComponentInfo kFFMPEGAudioComponents[] = {
+     { "c2.ffmpeg.aac.decoder"   , MEDIA_MIMETYPE_AUDIO_AAC          , AV_CODEC_ID_AAC    },
+     { "c2.ffmpeg.ac3.decoder"   , MEDIA_MIMETYPE_AUDIO_AC3          , AV_CODEC_ID_AC3    },
+     { "c2.ffmpeg.alac.decoder"  , MEDIA_MIMETYPE_AUDIO_ALAC         , AV_CODEC_ID_ALAC   },
+-- 
+2.39.2
+

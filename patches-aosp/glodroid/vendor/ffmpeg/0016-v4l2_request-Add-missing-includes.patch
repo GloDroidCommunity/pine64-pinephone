@@ -1,0 +1,32 @@
+From 76e6bbddeeb70c0dec9fda47a72b6e7c2187af4b Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Tue, 8 Nov 2022 13:01:37 +0200
+Subject: [PATCH 16/16] v4l2_request: Add missing includes
+
+... to fix implicit declaration of functions 'close' and 'ioctl' errors
+
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ libavcodec/v4l2_request.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/libavcodec/v4l2_request.c b/libavcodec/v4l2_request.c
+index 8777834c53..5233f9bb29 100644
+--- a/libavcodec/v4l2_request.c
++++ b/libavcodec/v4l2_request.c
+@@ -18,10 +18,12 @@
+ 
+ #include <drm_fourcc.h>
+ #include <linux/media.h>
++#include <sys/ioctl.h>
+ #include <sys/mman.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #include <fcntl.h>
++#include <unistd.h>
+ 
+ #include <sys/sysmacros.h>
+ #include <libudev.h>
+-- 
+2.39.2
+

@@ -1,0 +1,38 @@
+From 28e490b972e644113237d6a3f48b0c7fd6cb011e Mon Sep 17 00:00:00 2001
+From: Alex Bee <knaerzche@gmail.com>
+Date: Sat, 22 Oct 2022 22:23:22 +0200
+Subject: [PATCH 12/16] HACK: Revert "lavc/pthread_frame: always transfer
+ stashed hwaccel state"
+
+This reverts commit 96c78e50a66a3b443eb2f237e2554ab84b8a12ce.
+---
+ libavcodec/pthread_frame.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/libavcodec/pthread_frame.c b/libavcodec/pthread_frame.c
+index d9d5afaa82..800f7a2377 100644
+--- a/libavcodec/pthread_frame.c
++++ b/libavcodec/pthread_frame.c
+@@ -430,13 +430,13 @@ static int submit_packet(PerThreadContext *p, AVCodecContext *user_avctx,
+             pthread_mutex_unlock(&p->mutex);
+             return err;
+         }
+-    }
+ 
+-    /* transfer the stashed hwaccel state, if any */
+-    av_assert0(!p->avctx->hwaccel);
+-    FFSWAP(const AVHWAccel*, p->avctx->hwaccel,                     fctx->stash_hwaccel);
+-    FFSWAP(void*,            p->avctx->hwaccel_context,             fctx->stash_hwaccel_context);
+-    FFSWAP(void*,            p->avctx->internal->hwaccel_priv_data, fctx->stash_hwaccel_priv);
++        /* transfer hwaccel state stashed from previous thread, if any */
++        av_assert0(!p->avctx->hwaccel);
++        FFSWAP(const AVHWAccel*, p->avctx->hwaccel,                     fctx->stash_hwaccel);
++        FFSWAP(void*,            p->avctx->hwaccel_context,             fctx->stash_hwaccel_context);
++        FFSWAP(void*,            p->avctx->internal->hwaccel_priv_data, fctx->stash_hwaccel_priv);
++    }
+ 
+     av_packet_unref(p->avpkt);
+     ret = av_packet_ref(p->avpkt, avpkt);
+-- 
+2.39.2
+

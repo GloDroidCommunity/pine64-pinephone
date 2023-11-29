@@ -33,3 +33,5 @@ BOARD_KERNEL_PATCHES_DIRS := \
 GD_BOOTSCRIPT_OVERLAY_DEVICE := $(BC_PATH)/boot/bootscript_device_overlay.h
 
 BOARD_DRMHWCOMPOSER_PATCHES_DIRS += glodroid/configuration/common/graphics/patches-drm_hwcomposer-experimental
+
+BOARD_FFMPEG_ENABLE_REQUEST_API := true
