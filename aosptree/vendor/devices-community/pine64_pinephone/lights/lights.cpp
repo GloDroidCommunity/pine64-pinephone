@@ -167,8 +167,18 @@ class Lights : public BnLights {
                 writeLed(BLUE_LED_FILE, color ? 1 : 0);
                 break;
             case LightType::BACKLIGHT:
-                writeLed(LCD_FILE, convertBrightness(state.color));
+                {
+                    int brightness = convertBrightness(state.color);
+
+                    if (brightness == 0)
+                        brightness = 1;
+
+                    writeLed(LCD_FILE, brightness);
+                }
                 break;
+            default:
+                LOG(WARNING) << "Light type " << (int32_t)light.type << " not supported.";
+                ret = -ENOSYS;
         }
 
         if (ret == 0) {
