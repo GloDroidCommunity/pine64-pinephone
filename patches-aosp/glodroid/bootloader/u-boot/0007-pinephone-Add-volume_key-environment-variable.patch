@@ -1,7 +1,7 @@
-From a97cd083d6b8b0adc2d1c47a924b2675675bbda6 Mon Sep 17 00:00:00 2001
+From ef2e6b8e2b553657a9a9b4f044d50bf9faf2a1bd Mon Sep 17 00:00:00 2001
 From: Ondrej Jirman <megous@megous.com>
 Date: Tue, 11 Feb 2020 14:10:05 +0100
-Subject: [PATCH 09/11] pinephone: Add volume_key environment variable
+Subject: [PATCH 7/8] pinephone: Add volume_key environment variable
 
 When the user has a volume key pressed volume_key variable will
 contain either value 'down' or 'up', otherwise it will be empty.
@@ -10,9 +10,9 @@ Signed-off-by: Ondrej Jirman <megous@megous.com>
 ---
  board/sunxi/Makefile |  1 +
  board/sunxi/board.c  | 59 ++++++++++++++++++++++++++++++++
- board/sunxi/lradc.c  | 81 ++++++++++++++++++++++++++++++++++++++++++++
+ board/sunxi/lradc.c  | 80 ++++++++++++++++++++++++++++++++++++++++++++
  board/sunxi/lradc.h  | 11 ++++++
- 4 files changed, 152 insertions(+)
+ 4 files changed, 151 insertions(+)
  create mode 100644 board/sunxi/lradc.c
  create mode 100644 board/sunxi/lradc.h
 
@@ -26,10 +26,10 @@ index d96b7897b6..a096a5c771 100644
  obj-$(CONFIG_CHIP_DIP_SCAN)	+= chip.o
 +obj-$(CONFIG_MACH_SUN50I)	+= lradc.o
 diff --git a/board/sunxi/board.c b/board/sunxi/board.c
-index f321cd58a6..b191816431 100644
+index ed86f1df5d..128844d0a4 100644
 --- a/board/sunxi/board.c
 +++ b/board/sunxi/board.c
-@@ -49,6 +49,48 @@
+@@ -50,6 +50,48 @@
  #include <sy8106a.h>
  #include <asm/setup.h>
  #include <status_led.h>
@@ -78,7 +78,7 @@ index f321cd58a6..b191816431 100644
  
  DECLARE_GLOBAL_DATA_PTR;
  
-@@ -578,6 +620,12 @@ void sunxi_board_init(void)
+@@ -555,6 +597,12 @@ void sunxi_board_init(void)
  		status_led_init();
  #endif
  
@@ -91,7 +91,7 @@ index f321cd58a6..b191816431 100644
  #ifdef CONFIG_SY8106A_POWER
  	power_failed = sy8106a_set_vout1(CONFIG_SY8106A_VOUT1_VOLT);
  #endif
-@@ -856,6 +904,17 @@ int misc_init_r(void)
+@@ -830,6 +878,17 @@ int misc_init_r(void)
  		env_set("fdtfile", str);
  	}
  
@@ -111,11 +111,10 @@ index f321cd58a6..b191816431 100644
  	return 0;
 diff --git a/board/sunxi/lradc.c b/board/sunxi/lradc.c
 new file mode 100644
-index 0000000000..693b198e25
+index 0000000000..4d2502fc5d
 --- /dev/null
 +++ b/board/sunxi/lradc.c
-@@ -0,0 +1,81 @@
-+#include <common.h>
+@@ -0,0 +1,80 @@
 +#include <asm/io.h>
 +#include "lradc.h"
 +
@@ -214,5 +213,5 @@ index 0000000000..c908401b5b
 +void lradc_enable(void);
 +void lradc_disable(void);
 -- 
-2.39.2
+2.43.0
 
