@@ -1,0 +1,32 @@
+From 76fa684cba1943ac1e19cd3f156d03030867e724 Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Fri, 18 Oct 2024 17:31:03 +0300
+Subject: [PATCH] Change file that confuses Kati build system with a semicolon
+
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ data/dispatcher-modem-setup/{0000:0000 => 0000_0000} | 0
+ data/dispatcher-modem-setup/meson.build              | 2 +-
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+ rename data/dispatcher-modem-setup/{0000:0000 => 0000_0000} (100%)
+
+diff --git a/data/dispatcher-modem-setup/0000:0000 b/data/dispatcher-modem-setup/0000_0000
+similarity index 100%
+rename from data/dispatcher-modem-setup/0000:0000
+rename to data/dispatcher-modem-setup/0000_0000
+diff --git a/data/dispatcher-modem-setup/meson.build b/data/dispatcher-modem-setup/meson.build
+index 812152a3..9ee5908f 100644
+--- a/data/dispatcher-modem-setup/meson.build
++++ b/data/dispatcher-modem-setup/meson.build
+@@ -12,7 +12,7 @@ mm_modemsetupdirpackage = mm_pkglibdir / 'modem-setup.d'
+ 
+ # This is a test file
+ examples = files(
+-  '0000:0000'
++  '0000_0000'
+ )
+ 
+ install_data(
+-- 
+2.43.0
+
