@@ -1,7 +1,7 @@
-From 4d22fae101f31721df5721970df693bf484a101f Mon Sep 17 00:00:00 2001
+From 31f412a235a5643704acec6f28f2549aa82cd16f Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Wed, 23 Jun 2021 17:12:00 +0300
-Subject: [PATCH 06/19] minigbm: Add const to the backend::name
+Subject: [PATCH 06/18] minigbm: Add const to the backend::name
 
 ... to avoid compile-time error on C++:
 
@@ -10,9 +10,6 @@ Subject: [PATCH 06/19] minigbm: Add const to the backend::name
 
 Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
 Change-Id: I176eb657f72e92d6b5c7c3b25c78c56f776c20ab
-
-For reviews, comments, suggestions and questions visit:
-https://github.com/GloDroid/glodroid_forks/pull/10
 ---
  drv_priv.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

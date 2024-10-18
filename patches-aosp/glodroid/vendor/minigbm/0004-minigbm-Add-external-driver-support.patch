@@ -1,16 +1,13 @@
-From d3c3c2e1094c6fef604dd2991ff996260694a108 Mon Sep 17 00:00:00 2001
+From d2f4abb47e6efdddb76acf2f0f8e9eea493d5515 Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Wed, 23 Jun 2021 17:10:34 +0300
-Subject: [PATCH 04/19] minigbm: Add external driver support
+Subject: [PATCH 04/18] minigbm: Add external driver support
 
 Allow backends with custom DRM probing logic or
 backends that does not rely on DRM (dma-heap, ION).
 
 Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
 Change-Id: I7bcaf10205ca051eb109d6e220b8a2af38267442
-
-For reviews, comments, suggestions and questions visit:
-https://github.com/GloDroid/glodroid_forks/pull/10
 ---
  cros_gralloc/cros_gralloc_driver.cc | 13 ++++++++++++-
  drv.c                               | 10 ++++++++++

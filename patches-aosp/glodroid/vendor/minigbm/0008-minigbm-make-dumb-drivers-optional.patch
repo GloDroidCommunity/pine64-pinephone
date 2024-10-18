@@ -1,13 +1,10 @@
-From 53df6a09b53372ec55418cf7ada13b89fc66384b Mon Sep 17 00:00:00 2001
+From e13b5b2b371b54f02e869b94f8c1f8d923686621 Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Thu, 22 Dec 2022 21:51:35 +0200
-Subject: [PATCH 08/19] minigbm: make dumb drivers optional
+Subject: [PATCH 08/18] minigbm: make dumb drivers optional
 
 Change-Id: Ie668d4a9d8f18ff1f885979ebe1dcd0a7646fda2
 Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
-
-For reviews, comments, suggestions and questions visit:
-https://github.com/GloDroid/glodroid_forks/pull/10
 ---
  drv.c | 4 ++++
  1 file changed, 4 insertions(+)

@@ -1,17 +1,15 @@
-From 2b151ef6209b2cefcab40d259ebf46a347b5a43a Mon Sep 17 00:00:00 2001
+From d4848fe3727016bb40dfc093e74b3cc031b0a186 Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Thu, 8 Sep 2022 18:41:09 +0300
-Subject: [PATCH 07/19] minigbm: Add drv_bo_get_pixel_stride function
+Subject: [PATCH 07/18] minigbm: Add drv_bo_get_pixel_stride function
 
 Some drivers may copy/convert the buffer during mapping and
 in some cases stride of copied image can be different from
 original. Android uses pixel_stride for CPU access and need
 map_time stride instead of original stride in this cases.
 
+Change-Id: I987da3b353c7067be686f2d4ff2469ad4f40c5c6
 Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
-
-For reviews, comments, suggestions and questions visit:
-https://github.com/GloDroid/glodroid_forks/pull/10
 ---
  cros_gralloc/cros_gralloc_driver.cc |  4 +---
  drv.c                               | 17 +++++++++++++++++

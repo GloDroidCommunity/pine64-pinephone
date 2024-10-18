@@ -1,7 +1,7 @@
-From ad177aa9b0b7f6af739201e25e408a7b838ccc31 Mon Sep 17 00:00:00 2001
+From d4a8f06e1e942dc218ff448135cb6344677a9c04 Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Thu, 22 Dec 2022 13:31:15 +0200
-Subject: [PATCH 09/19] minigbm: Allow using single path for testing and
+Subject: [PATCH 09/18] minigbm: Allow using single path for testing and
  allocation
 
 At this moment minigbm require 2 separate logic to be implemented by the
@@ -30,9 +30,6 @@ implementing of new drivers, e.g.:
 
 Change-Id: I86e5330759a701e309bf7e57f7b3dfd2ddf3cfa0
 Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
-
-For reviews, comments, suggestions and questions visit:
-https://github.com/GloDroid/glodroid_forks/pull/10
 ---
  cros_gralloc/cros_gralloc_driver.cc | 20 ++++++++++++++++----
  drv.c                               | 27 ++++++++++++++++-----------

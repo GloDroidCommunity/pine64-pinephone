@@ -1,26 +1,93 @@
-From 2d5639082e5466c0bc1cac1298c55bb2a2a65d3e Mon Sep 17 00:00:00 2001
+From 3ad6f1e0ff38121946b7d98fd045199d5ffac218 Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Sat, 17 Dec 2022 19:44:49 +0200
-Subject: [PATCH 15/19] Add meson.build
+Subject: [PATCH 15/18] Add meson.build
 
 Change-Id: I5d5cb9948206b15e833ff63a7dccd2b1002c8cf3
 Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
-
-For reviews, comments, suggestions and questions visit:
-https://github.com/GloDroid/glodroid_forks/pull/10
 ---
- cros_gralloc/gralloc0/meson.build | 10 ++++
- cros_gralloc/gralloc4/meson.build | 38 +++++++++++++++
- cros_gralloc/meson.build          | 16 ++++++
- gbm_mesa_driver/meson.build       | 11 +++++
- meson.build                       | 81 +++++++++++++++++++++++++++++++
- 5 files changed, 156 insertions(+)
+ cros_gralloc/aidl/Allocator.cpp               |  2 +-
+ cros_gralloc/aidl/allocator_gd.rc             |  7 ++
+ cros_gralloc/aidl/meson.build                 | 29 +++++++
+ cros_gralloc/gralloc0/meson.build             | 10 +++
+ cros_gralloc/gralloc4/meson.build             | 40 +++++++++
+ .../mapper_stablec/mapper.minigbm_gd.xml      |  9 +++
+ cros_gralloc/mapper_stablec/meson.build       | 20 +++++
+ cros_gralloc/meson.build                      | 18 +++++
+ gbm_mesa_driver/meson.build                   | 11 +++
+ meson.build                                   | 81 +++++++++++++++++++
+ 10 files changed, 226 insertions(+), 1 deletion(-)
+ create mode 100644 cros_gralloc/aidl/allocator_gd.rc
+ create mode 100644 cros_gralloc/aidl/meson.build
  create mode 100644 cros_gralloc/gralloc0/meson.build
  create mode 100644 cros_gralloc/gralloc4/meson.build
+ create mode 100644 cros_gralloc/mapper_stablec/mapper.minigbm_gd.xml
+ create mode 100644 cros_gralloc/mapper_stablec/meson.build
  create mode 100644 cros_gralloc/meson.build
  create mode 100644 gbm_mesa_driver/meson.build
  create mode 100644 meson.build
 
+diff --git a/cros_gralloc/aidl/Allocator.cpp b/cros_gralloc/aidl/Allocator.cpp
+index 2ea5a0d..c78a82b 100644
+--- a/cros_gralloc/aidl/Allocator.cpp
++++ b/cros_gralloc/aidl/Allocator.cpp
+@@ -229,7 +229,7 @@ ndk::ScopedAStatus Allocator::isSupported(const BufferDescriptorInfo& descriptor
+ }
+ 
+ ndk::ScopedAStatus Allocator::getIMapperLibrarySuffix(std::string* outResult) {
+-    *outResult = "minigbm";
++    *outResult = "minigbm_gd";
+     return ndk::ScopedAStatus::ok();
+ }
+ 
+diff --git a/cros_gralloc/aidl/allocator_gd.rc b/cros_gralloc/aidl/allocator_gd.rc
+new file mode 100644
+index 0000000..7e2ca45
+--- /dev/null
++++ b/cros_gralloc/aidl/allocator_gd.rc
+@@ -0,0 +1,7 @@
++service vendor.graphics.allocator /vendor/bin/hw/android.hardware.graphics.allocator-service.minigbm_gd
++    class hal animation
++    user system
++    group graphics drmrpc
++    capabilities SYS_NICE
++    onrestart restart surfaceflinger
++    task_profiles ServiceCapacityLow
+diff --git a/cros_gralloc/aidl/meson.build b/cros_gralloc/aidl/meson.build
+new file mode 100644
+index 0000000..ad35181
+--- /dev/null
++++ b/cros_gralloc/aidl/meson.build
+@@ -0,0 +1,29 @@
++src_allocator_aidl = files(
++    'Allocator.cpp',
++    'Allocator.h',
++    'Main.cpp',
++)
++
++executable(
++    'android.hardware.graphics.allocator-service.minigbm_gd',
++    src_allocator_aidl + src_gralloc4_utils,
++    link_with : libminigbm_gralloc,
++    dependencies : deps,
++    include_directories: inc_include,
++    install : true,
++    install_dir : get_option('bindir') / 'hw',
++)
++
++configure_file(
++    input: 'allocator_gd.rc',
++    output: '@PLAINNAME@',
++    copy: true,
++    install_dir: get_option('sysconfdir') / 'init',
++)
++
++configure_file(
++    input: 'allocator.xml',
++    output: '@PLAINNAME@',
++    copy: true,
++    install_dir: get_option('sysconfdir') / 'vintf' / 'manifest',
++)
 diff --git a/cros_gralloc/gralloc0/meson.build b/cros_gralloc/gralloc0/meson.build
 new file mode 100644
 index 0000000..6c45399
@@ -39,10 +106,12 @@ index 0000000..6c45399
 +)
 diff --git a/cros_gralloc/gralloc4/meson.build b/cros_gralloc/gralloc4/meson.build
 new file mode 100644
-index 0000000..925ec05
+index 0000000..608cd23
 --- /dev/null
 +++ b/cros_gralloc/gralloc4/meson.build
-@@ -0,0 +1,38 @@
+@@ -0,0 +1,40 @@
++src_gralloc4_utils = files('CrosGralloc4Utils.cc')
++
 +src_allocator4 = files(
 +    'CrosGralloc4Allocator.cc',
 +    'CrosGralloc4AllocatorService.cc',
@@ -81,12 +150,53 @@ index 0000000..925ec05
 +    copy: true,
 +    install_dir: get_option('sysconfdir') / 'init',
 +)
+diff --git a/cros_gralloc/mapper_stablec/mapper.minigbm_gd.xml b/cros_gralloc/mapper_stablec/mapper.minigbm_gd.xml
+new file mode 100644
+index 0000000..105167b
+--- /dev/null
++++ b/cros_gralloc/mapper_stablec/mapper.minigbm_gd.xml
+@@ -0,0 +1,9 @@
++<manifest version="1.0" type="device">
++    <hal format="native">
++        <name>mapper</name>
++        <version>5.0</version>
++        <interface>
++            <instance>minigbm_gd</instance>
++        </interface>
++    </hal>
++</manifest>
+diff --git a/cros_gralloc/mapper_stablec/meson.build b/cros_gralloc/mapper_stablec/meson.build
+new file mode 100644
+index 0000000..ba0bd22
+--- /dev/null
++++ b/cros_gralloc/mapper_stablec/meson.build
+@@ -0,0 +1,20 @@
++src_mapper_stablec = files(
++    'Mapper.cpp',
++)
++
++shared_library(
++    'mapper.minigbm_gd',
++    src_mapper_stablec + src_mapper4,
++    link_with : libminigbm_gralloc,
++    name_prefix : '',
++    dependencies : deps,
++    include_directories: inc_include,
++    install : true,
++)
++
++configure_file(
++    input: 'mapper.minigbm_gd.xml',
++    output: '@PLAINNAME@',
++    copy: true,
++    install_dir: get_option('sysconfdir') / 'vintf' / 'manifest',
++)
 diff --git a/cros_gralloc/meson.build b/cros_gralloc/meson.build
 new file mode 100644
-index 0000000..ffd2d4c
+index 0000000..a75163d
 --- /dev/null
 +++ b/cros_gralloc/meson.build
-@@ -0,0 +1,16 @@
+@@ -0,0 +1,18 @@
 +src_minigbm_gralloc = files(
 +    'cros_gralloc_buffer.cc',
 +    'cros_gralloc_driver.cc',
@@ -103,6 +213,8 @@ index 0000000..ffd2d4c
 +
 +subdir('gralloc0')
 +subdir('gralloc4')
++subdir('aidl')
++subdir('mapper_stablec')
 diff --git a/gbm_mesa_driver/meson.build b/gbm_mesa_driver/meson.build
 new file mode 100644
 index 0000000..eb90841
@@ -122,7 +234,7 @@ index 0000000..eb90841
 +)
 diff --git a/meson.build b/meson.build
 new file mode 100644
-index 0000000..351c71a
+index 0000000..aa0d768
 --- /dev/null
 +++ b/meson.build
 @@ -0,0 +1,81 @@
@@ -131,7 +243,7 @@ index 0000000..351c71a
 +    ['c', 'cpp'],
 +    license : 'BSD?',
 +    meson_version : '>= 0.56',
-+    default_options : ['buildtype=debugoptimized', 'b_ndebug=if-release', 'c_std=c11', 'cpp_std=c++17', 'cpp_rtti=false']
++    default_options : ['buildtype=debugoptimized', 'b_ndebug=if-release', 'c_std=c11', 'cpp_std=c++20', 'cpp_rtti=false']
 +)
 +
 +inc_include = [include_directories('.')]

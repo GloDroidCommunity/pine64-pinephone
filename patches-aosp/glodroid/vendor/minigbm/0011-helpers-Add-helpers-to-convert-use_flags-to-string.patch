@@ -1,13 +1,10 @@
-From 49934ce3fc2f5af0243bb3daa0066a8218c55387 Mon Sep 17 00:00:00 2001
+From 712c83d7cadd85d6f69aab0831afbf5c8a6f5d4d Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Sun, 25 Sep 2022 19:22:53 +0300
-Subject: [PATCH 11/19] helpers: Add helpers to convert use_flags to string
+Subject: [PATCH 11/18] helpers: Add helpers to convert use_flags to string
 
 Change-Id: Icce8164cde8da483d683c06a4936ffde05b6f515
 Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
-
-For reviews, comments, suggestions and questions visit:
-https://github.com/GloDroid/glodroid_forks/pull/10
 ---
  drv_helpers.c | 49 +++++++++++++++++++++++++++++++++++++++++++++++++
  drv_helpers.h |  3 +++

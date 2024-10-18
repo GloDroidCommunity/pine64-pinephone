@@ -1,7 +1,7 @@
-From 680125d2371a3b22923a3a0cedf1a4f1feb50546 Mon Sep 17 00:00:00 2001
+From c343610ede9570b138ab15fb4dd052641e3f454e Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Mon, 6 Nov 2023 04:27:26 +0200
-Subject: [PATCH 14/19] cros_gralloc: Use property to select custom backends
+Subject: [PATCH 14/18] cros_gralloc: Use property to select custom backends
 
 property name: vendor.gralloc.minigbm.backend
 possible values:
@@ -11,9 +11,6 @@ possible values:
 
 Change-Id: I5ab2649f98d40d139afb008ea8a804c790b81c31
 Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
-
-For reviews, comments, suggestions and questions visit:
-https://github.com/GloDroid/glodroid_forks/pull/10
 ---
  cros_gralloc/cros_gralloc_driver.cc | 39 ++++++++++++++++++++++-------
  drv.c                               | 32 ++++++++++++++---------

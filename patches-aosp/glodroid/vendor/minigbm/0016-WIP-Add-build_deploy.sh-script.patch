@@ -1,15 +1,12 @@
-From 8de7d9b376bea7d780c718f9631a23ccaa8993b7 Mon Sep 17 00:00:00 2001
+From 05254efbfba40787c5fe6e5f59241718d1a8662d Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Thu, 22 Dec 2022 21:52:47 +0200
-Subject: [PATCH 16/19] WIP: Add build_deploy.sh script
+Subject: [PATCH 16/18] WIP: Add build_deploy.sh script
 
 Works from obj/AOSPEXT/MINIGBM directory
 
 Change-Id: Ibbba57eec7b36d5efd01b48840175b9909d775d1
 Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
-
-For reviews, comments, suggestions and questions visit:
-https://github.com/GloDroid/glodroid_forks/pull/10
 ---
  build_deploy.sh | 16 ++++++++++++++++
  1 file changed, 16 insertions(+)

@@ -1,7 +1,7 @@
-From d89fd49003a29baa0b1d063654a4c5c4c3a734e0 Mon Sep 17 00:00:00 2001
+From b21e33a6d53b523dbf225d22ae081371a28c582f Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Tue, 13 Jul 2021 13:25:31 +0300
-Subject: [PATCH 12/19] minigbm: Add gbm_mesa backend
+Subject: [PATCH 12/18] minigbm: Add gbm_mesa backend
 
 This is adaptation of the Rob Herring's gbm_gralloc HAL [1] to work
 as minigbm backend, optimised to work in modern Android conditions.
@@ -70,9 +70,6 @@ v5:
 
 Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
 Change-Id: If0f3dac42bea74f97a87e5a682380c33f4ff6837
-
-For reviews, comments, suggestions and questions visit:
-https://github.com/GloDroid/glodroid_forks/pull/10
 ---
  gbm_mesa_driver/UniqueFd.h             | 115 +++++
  gbm_mesa_driver/gbm_mesa_driver.cpp    |  42 ++

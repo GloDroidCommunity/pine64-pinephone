@@ -1,13 +1,10 @@
-From 48d94dd94880780fc4914572d4a6054365cc5ee6 Mon Sep 17 00:00:00 2001
+From 5b1c648ca57a6a37b5b20d271ce4288dfe682ad7 Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Sun, 1 Oct 2023 16:17:17 +0300
-Subject: [PATCH 18/19] RPI4: Add HW codecs support and constraints
+Subject: [PATCH 17/18] RPI4: Add HW codecs support and constraints
 
 Change-Id: I8cd8eef9237268ce6945d3153542eedb506614a9
 Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
-
-For reviews, comments, suggestions and questions visit:
-https://github.com/GloDroid/glodroid_forks/pull/10
 ---
  gbm_mesa_driver/gbm_mesa_internals.cpp | 10 ++++++++++
  1 file changed, 10 insertions(+)

@@ -1,7 +1,7 @@
-From 73bbd9a250a95d87f90cced652bede43242cb68b Mon Sep 17 00:00:00 2001
+From 880c0fb51b4c03991cb4d090037890724b2559b1 Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Sun, 2 Oct 2022 17:14:06 +0300
-Subject: [PATCH 03/19] minigbm: Use dmabuf inode as unique buffer id instead
+Subject: [PATCH 03/18] minigbm: Use dmabuf inode as unique buffer id instead
  of handle
 
 Handle has some limits and can't be used as unique buffer ID on systems
@@ -19,9 +19,6 @@ a last several years starting from [this kernel patch][1].
 [1]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ed63bb1d1f8469586006a9ca63c42344401aa2ab
 Change-Id: Ic3a69010d5da2f866a2252fc7e9eb29d67f8e1ed
 Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
-
-For reviews, comments, suggestions and questions visit:
-https://github.com/GloDroid/glodroid_forks/pull/10
 ---
  drv.c           | 29 ++++++++++++++++++-----------
  drv.h           |  3 ++-

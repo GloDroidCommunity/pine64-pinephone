@@ -1,16 +1,13 @@
-From 666f596d369979147b24c3a3395c866d38b47123 Mon Sep 17 00:00:00 2001
+From b8e264d8a7f92f44e5276aeff7dbe2b6ba8480fe Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Wed, 23 Jun 2021 17:11:10 +0300
-Subject: [PATCH 05/19] minigbm: Add bo_get_plane_fd backend hook
+Subject: [PATCH 05/18] minigbm: Add bo_get_plane_fd backend hook
 
 Non-DRM drivers shouldn't rely on handles and DRM API.
 Add hook to allow drivers create custom implementation.
 
 Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
 Change-Id: I458dae38f80697184070019606b125992a9aa01d
-
-For reviews, comments, suggestions and questions visit:
-https://github.com/GloDroid/glodroid_forks/pull/10
 ---
  drv.c      | 5 +++++
  drv_priv.h | 1 +
