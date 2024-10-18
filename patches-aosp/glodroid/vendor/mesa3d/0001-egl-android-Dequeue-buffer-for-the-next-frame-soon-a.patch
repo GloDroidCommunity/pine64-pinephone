@@ -1,7 +1,7 @@
-From 518757e399b662c15daf6de3dfe4f700e2095c50 Mon Sep 17 00:00:00 2001
+From 7658232fd90a4d417034c5aec3fca379f4f512c3 Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <roman.o.stratiienko@globallogic.com>
 Date: Sat, 21 May 2022 13:06:51 +0300
-Subject: [PATCH 1/3] egl: android: Dequeue buffer for the next frame soon
+Subject: [PATCH 1/2] egl: android: Dequeue buffer for the next frame soon
  after enqueuing
 
 Insignificant optimization that helps to reduce input-to-draw latency.
@@ -15,10 +15,10 @@ Signed-off-by: Roman Stratiienko <roman.o.stratiienko@globallogic.com>
  1 file changed, 6 insertions(+)
 
 diff --git a/src/egl/drivers/dri2/platform_android.c b/src/egl/drivers/dri2/platform_android.c
-index 4ffde1da029..21d559d43c5 100644
+index b2d2d3c200e..8a0d14e8a6d 100644
 --- a/src/egl/drivers/dri2/platform_android.c
 +++ b/src/egl/drivers/dri2/platform_android.c
-@@ -1022,6 +1022,12 @@ droid_swap_buffers(_EGLDisplay *disp, _EGLSurface *draw)
+@@ -675,6 +675,12 @@ droid_swap_buffers(_EGLDisplay *disp, _EGLSurface *draw)
        draw->ActiveRenderBuffer = draw->RequestedRenderBuffer;
     }
  
@@ -32,5 +32,5 @@ index 4ffde1da029..21d559d43c5 100644
  }
  
 -- 
-2.39.2
+2.43.0
 
