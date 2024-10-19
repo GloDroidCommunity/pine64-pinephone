@@ -1,4 +1,4 @@
-From c6b915762ccdb75e31381638b7c89e91c284b44e Mon Sep 17 00:00:00 2001
+From 197bcfaad4887ca5f62efe012ff2b330cf79425b Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Wed, 25 Nov 2020 14:22:24 +0100
 Subject: [PATCH] 8723cs: Enable monitor mode
@@ -9,7 +9,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/staging/rtl8723cs/Makefile b/drivers/staging/rtl8723cs/Makefile
-index b66d4e63c888..9630ff30d313 100644
+index b66d4e63c8881..9630ff30d313d 100644
 --- a/drivers/staging/rtl8723cs/Makefile
 +++ b/drivers/staging/rtl8723cs/Makefile
 @@ -78,7 +78,7 @@ CONFIG_80211W = y
@@ -22,5 +22,5 @@ index b66d4e63c888..9630ff30d313 100644
  CONFIG_APPEND_VENDOR_IE_ENABLE = n
  CONFIG_RTW_NAPI = y
 -- 
-2.39.2
+2.43.0
 

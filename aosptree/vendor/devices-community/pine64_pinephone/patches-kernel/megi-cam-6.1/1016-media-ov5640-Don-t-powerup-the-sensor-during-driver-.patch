@@ -1,4 +1,4 @@
-From 676bbf48759e46c39df5bf122a9b405d8640c718 Mon Sep 17 00:00:00 2001
+From 4a26f26bb04aad80a83ac83f119e80d69ac91621 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Sun, 26 Jan 2020 00:28:10 +0100
 Subject: [PATCH] media: ov5640: Don't powerup the sensor during driver probe
@@ -13,10 +13,10 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 8 insertions(+), 27 deletions(-)
 
 diff --git a/drivers/media/i2c/ov5640.c b/drivers/media/i2c/ov5640.c
-index 1b21a5d934a6..0561e0298b4b 100644
+index a8d512865bad9..d9f663c048b27 100644
 --- a/drivers/media/i2c/ov5640.c
 +++ b/drivers/media/i2c/ov5640.c
-@@ -2497,6 +2497,7 @@ static void ov5640_powerup_sequence(struct ov5640_dev *sensor)
+@@ -2493,6 +2493,7 @@ static void ov5640_powerup_sequence(struct ov5640_dev *sensor)
  static int ov5640_set_power_on(struct ov5640_dev *sensor)
  {
  	struct i2c_client *client = sensor->i2c_client;
@@ -24,7 +24,7 @@ index 1b21a5d934a6..0561e0298b4b 100644
  	int ret;
  
  	ret = clk_prepare_enable(sensor->xclk);
-@@ -2520,6 +2521,13 @@ static int ov5640_set_power_on(struct ov5640_dev *sensor)
+@@ -2516,6 +2517,13 @@ static int ov5640_set_power_on(struct ov5640_dev *sensor)
  	if (ret)
  		goto power_off;
  
@@ -38,7 +38,7 @@ index 1b21a5d934a6..0561e0298b4b 100644
  	return 0;
  
  power_off:
-@@ -3821,28 +3829,6 @@ static int ov5640_get_regulators(struct ov5640_dev *sensor)
+@@ -3813,28 +3821,6 @@ static int ov5640_get_regulators(struct ov5640_dev *sensor)
  				       sensor->supplies);
  }
  
@@ -67,8 +67,8 @@ index 1b21a5d934a6..0561e0298b4b 100644
  static int ov5640_probe(struct i2c_client *client)
  {
  	struct device *dev = &client->dev;
-@@ -3946,14 +3932,9 @@ static int ov5640_probe(struct i2c_client *client)
- 		goto entity_cleanup;
+@@ -3938,14 +3924,9 @@ static int ov5640_probe(struct i2c_client *client)
+ 		goto free_ctrls;
  	}
  
 -	pm_runtime_set_active(dev);
@@ -83,5 +83,5 @@ index 1b21a5d934a6..0561e0298b4b 100644
  	if (ret)
  		goto err_pm_runtime;
 -- 
-2.39.2
+2.43.0
 

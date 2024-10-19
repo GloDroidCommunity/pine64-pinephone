@@ -1,4 +1,4 @@
-From d065b2a0447fbffc64d962b8a491a0daa5612343 Mon Sep 17 00:00:00 2001
+From 4b435a2dc39e04fb0c6fb4f468f07c0561f63cb6 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Tue, 18 Feb 2020 23:57:20 +0100
 Subject: [PATCH] regulator: axp20x: Enable over-temperature protection and 16s
@@ -12,7 +12,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 7 insertions(+)
 
 diff --git a/drivers/regulator/axp20x-regulator.c b/drivers/regulator/axp20x-regulator.c
-index 21752e4bfd38..645edd9de36d 100644
+index 21752e4bfd389..645edd9de36d0 100644
 --- a/drivers/regulator/axp20x-regulator.c
 +++ b/drivers/regulator/axp20x-regulator.c
 @@ -93,6 +93,8 @@
@@ -37,5 +37,5 @@ index 21752e4bfd38..645edd9de36d 100644
  }
  
 -- 
-2.39.2
+2.43.0
 

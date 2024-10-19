@@ -1,4 +1,4 @@
-From 872b9c043da938f93d32db3809058ae93fa438e6 Mon Sep 17 00:00:00 2001
+From 06c2d5a4f202044b519f19ee4f84a72e15c27852 Mon Sep 17 00:00:00 2001
 From: Icenowy Zheng <icenowy@aosc.io>
 Date: Wed, 17 Jun 2020 08:42:52 +0800
 Subject: [PATCH] clk: sunxi-ng: a64: try to keep TCON0 clock in CCU
@@ -22,7 +22,7 @@ Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
  1 file changed, 25 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/clk/sunxi-ng/ccu-sun50i-a64.c b/drivers/clk/sunxi-ng/ccu-sun50i-a64.c
-index 5d92cf8e2eab..bc874290e895 100644
+index 5d92cf8e2eab6..bc874290e8951 100644
 --- a/drivers/clk/sunxi-ng/ccu-sun50i-a64.c
 +++ b/drivers/clk/sunxi-ng/ccu-sun50i-a64.c
 @@ -548,8 +548,18 @@ static SUNXI_CCU_M_WITH_MUX_GATE(de_clk, "de", de_parents,
@@ -81,5 +81,5 @@ index 5d92cf8e2eab..bc874290e895 100644
  }
  
 -- 
-2.39.2
+2.43.0
 

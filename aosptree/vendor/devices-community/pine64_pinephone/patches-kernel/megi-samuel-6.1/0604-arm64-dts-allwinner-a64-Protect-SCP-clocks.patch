@@ -1,4 +1,4 @@
-From e820450104ddf8248281282bd69f37a64098f5d1 Mon Sep 17 00:00:00 2001
+From 872b5d0f7cdd1f4e5bfb53ed4074626eff7372eb Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Mon, 30 Dec 2019 15:10:32 -0600
 Subject: [PATCH] arm64: dts: allwinner: a64: Protect SCP clocks
@@ -9,7 +9,7 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  1 file changed, 2 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi
-index 1f7c6e93a83d..f97e8b40e402 100644
+index 1f7c6e93a83db..f97e8b40e4021 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi
 @@ -701,6 +701,7 @@ ccu: clock@1c20000 {
@@ -29,5 +29,5 @@ index 1f7c6e93a83d..f97e8b40e402 100644
  			#reset-cells = <1>;
  		};
 -- 
-2.39.2
+2.43.0
 

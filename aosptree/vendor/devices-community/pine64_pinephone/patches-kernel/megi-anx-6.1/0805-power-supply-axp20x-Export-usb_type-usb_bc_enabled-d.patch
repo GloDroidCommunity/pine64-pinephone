@@ -1,4 +1,4 @@
-From bbf577246f133aa4d0843737fc44eea3d27268d9 Mon Sep 17 00:00:00 2001
+From 093d5be1d76a6041688af6fc0c635910cef4fc7d Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Mon, 22 Jun 2020 02:31:10 +0200
 Subject: [PATCH] power: supply: axp20x: Export usb_type, usb_bc_enabled, dcp
@@ -15,7 +15,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  2 files changed, 144 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
-index 880c41fa7021..82ead3f3433b 100644
+index 880c41fa7021b..82ead3f3433b2 100644
 --- a/drivers/mfd/axp20x.c
 +++ b/drivers/mfd/axp20x.c
 @@ -200,6 +200,8 @@ static const struct resource axp22x_usb_power_supply_resources[] = {
@@ -28,7 +28,7 @@ index 880c41fa7021..82ead3f3433b 100644
  
  static const struct resource axp22x_pek_resources[] = {
 diff --git a/drivers/power/supply/axp20x_usb_power.c b/drivers/power/supply/axp20x_usb_power.c
-index ec3262478081..7b4db148a219 100644
+index ec32624780810..7b4db148a219d 100644
 --- a/drivers/power/supply/axp20x_usb_power.c
 +++ b/drivers/power/supply/axp20x_usb_power.c
 @@ -55,6 +55,11 @@
@@ -267,5 +267,5 @@ index ec3262478081..7b4db148a219 100644
  };
  
 -- 
-2.39.2
+2.43.0
 

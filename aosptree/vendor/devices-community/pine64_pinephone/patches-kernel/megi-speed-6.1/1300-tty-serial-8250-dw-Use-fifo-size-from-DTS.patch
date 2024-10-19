@@ -1,4 +1,4 @@
-From 451b9051b950c5f3e6dc6fda85ceb52a8145909b Mon Sep 17 00:00:00 2001
+From e526d5e0444ff4f96e05da58b51395ec36a6d235 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Sat, 1 Feb 2020 23:40:41 +0100
 Subject: [PATCH] tty: serial: 8250-dw: Use fifo-size from DTS
@@ -12,7 +12,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  2 files changed, 7 insertions(+)
 
 diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index f4cafca1a7da..846df80027fb 100644
+index a1f2259cc9a98..5c600f09488f7 100644
 --- a/drivers/tty/serial/8250/8250_dw.c
 +++ b/drivers/tty/serial/8250/8250_dw.c
 @@ -597,6 +597,10 @@ static int dw8250_probe(struct platform_device *pdev)
@@ -27,10 +27,10 @@ index f4cafca1a7da..846df80027fb 100644
  	data->clk = devm_clk_get_optional(dev, "baudclk");
  	if (data->clk == NULL)
 diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index b8e8a96c3eb6..3ca285843790 100644
+index d4b962676308e..903c21bfb4c98 100644
 --- a/drivers/tty/serial/8250/8250_port.c
 +++ b/drivers/tty/serial/8250/8250_port.c
-@@ -842,6 +842,9 @@ static int size_fifo(struct uart_8250_port *up)
+@@ -850,6 +850,9 @@ static int size_fifo(struct uart_8250_port *up)
  	unsigned short old_dl;
  	int count;
  
@@ -41,5 +41,5 @@ index b8e8a96c3eb6..3ca285843790 100644
  	serial_out(up, UART_LCR, 0);
  	old_fcr = serial_in(up, UART_FCR);
 -- 
-2.39.2
+2.43.0
 

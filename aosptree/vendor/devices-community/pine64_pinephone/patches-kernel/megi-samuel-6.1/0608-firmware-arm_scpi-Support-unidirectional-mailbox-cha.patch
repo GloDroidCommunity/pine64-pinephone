@@ -1,4 +1,4 @@
-From bc3ac28e52281a6e866fa6f67961780459e92da0 Mon Sep 17 00:00:00 2001
+From 46553229ab6542b6adc69ffdbf4bcd24c3eb06d8 Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Tue, 5 Mar 2019 22:02:41 -0600
 Subject: [PATCH] firmware: arm_scpi: Support unidirectional mailbox channels
@@ -18,7 +18,7 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  1 file changed, 46 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/firmware/arm_scpi.c b/drivers/firmware/arm_scpi.c
-index 435d0e2658a4..46346154a344 100644
+index 435d0e2658a42..46346154a3448 100644
 --- a/drivers/firmware/arm_scpi.c
 +++ b/drivers/firmware/arm_scpi.c
 @@ -231,7 +231,8 @@ struct scpi_xfer {
@@ -123,5 +123,5 @@ index 435d0e2658a4..46346154a344 100644
  	}
  
 -- 
-2.39.2
+2.43.0
 

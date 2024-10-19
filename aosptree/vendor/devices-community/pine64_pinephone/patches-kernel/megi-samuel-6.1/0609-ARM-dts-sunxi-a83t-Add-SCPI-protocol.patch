@@ -1,4 +1,4 @@
-From 2c93ad95e9f7458679060d90d2cf61b8e68407cd Mon Sep 17 00:00:00 2001
+From d2751b8a7d580badcaab184965e3a676a190bc44 Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Wed, 1 Jan 2020 16:14:29 -0600
 Subject: [PATCH] ARM: dts: sunxi: a83t: Add SCPI protocol
@@ -9,7 +9,7 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  1 file changed, 21 insertions(+)
 
 diff --git a/arch/arm/boot/dts/sun8i-a83t.dtsi b/arch/arm/boot/dts/sun8i-a83t.dtsi
-index db9eb8b212bf..afe328770bbc 100644
+index db9eb8b212bf1..afe328770bbc8 100644
 --- a/arch/arm/boot/dts/sun8i-a83t.dtsi
 +++ b/arch/arm/boot/dts/sun8i-a83t.dtsi
 @@ -312,6 +312,13 @@ opp-1200000000 {
@@ -48,5 +48,5 @@ index db9eb8b212bf..afe328770bbc 100644
  
  		dma: dma-controller@1c02000 {
 -- 
-2.39.2
+2.43.0
 

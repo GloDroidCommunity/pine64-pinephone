@@ -1,4 +1,4 @@
-From c2a71d248a767e0ba8ba38c82e5cc426873ee26e Mon Sep 17 00:00:00 2001
+From 0c429684b9676a69c4de5011ebc2ea0fcc632c86 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Sat, 30 Sep 2017 21:31:35 +0200
 Subject: [PATCH] MAINTAINERS: Add entry for Himax HM5065
@@ -9,7 +9,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 6 insertions(+)
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index d030ab276a64..5c78c7f42a82 100644
+index 510732e18184c..05b9d9f9e63f1 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
 @@ -9200,6 +9200,12 @@ W:	http://www.highpoint-tech.com
@@ -26,5 +26,5 @@ index d030ab276a64..5c78c7f42a82 100644
  M:	Jes Sorensen <jes@trained-monkey.org>
  L:	linux-hippi@sunsite.dk
 -- 
-2.39.2
+2.43.0
 

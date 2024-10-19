@@ -1,4 +1,4 @@
-From 5f0a7ce3d2936cf3675390aaca211dc11578eddd Mon Sep 17 00:00:00 2001
+From ecb2875f1b5943f4a2ac85f413717b08c92f25ee Mon Sep 17 00:00:00 2001
 From: Ondrej Jirman <megi@xff.cz>
 Date: Thu, 10 Nov 2022 20:11:10 +0100
 Subject: [PATCH] arm64: dts: allwinner: sun50i-a64-pinephone: Add support for
@@ -15,7 +15,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  create mode 100644 arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.2b.dts
 
 diff --git a/arch/arm64/boot/dts/allwinner/Makefile b/arch/arm64/boot/dts/allwinner/Makefile
-index 6a96494a2e0a..cb5c989795aa 100644
+index 6a96494a2e0a3..cb5c989795aa2 100644
 --- a/arch/arm64/boot/dts/allwinner/Makefile
 +++ b/arch/arm64/boot/dts/allwinner/Makefile
 @@ -12,6 +12,7 @@ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-a64-pinebook.dtb
@@ -28,7 +28,7 @@ index 6a96494a2e0a..cb5c989795aa 100644
  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-a64-sopine-baseboard.dtb
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.2b.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.2b.dts
 new file mode 100644
-index 000000000000..bb6e075972d1
+index 0000000000000..bb6e075972d11
 --- /dev/null
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.2b.dts
 @@ -0,0 +1,29 @@
@@ -62,7 +62,7 @@ index 000000000000..bb6e075972d1
 +	};
 +};
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
-index daf981fd102f..53f4c1f6648a 100644
+index daf981fd102f0..53f4c1f6648a9 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
 @@ -617,18 +617,6 @@ &i2c1 {
@@ -85,5 +85,5 @@ index daf981fd102f..53f4c1f6648a 100644
  	lis3mdl: magnetometer@1e {
  		compatible = "st,lis3mdl-magn";
 -- 
-2.39.2
+2.43.0
 

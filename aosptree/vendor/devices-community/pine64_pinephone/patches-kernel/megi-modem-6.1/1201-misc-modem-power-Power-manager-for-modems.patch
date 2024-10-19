@@ -1,4 +1,4 @@
-From 356b06812b1606da6c2a9a8cb3ceb55f39e6fe6d Mon Sep 17 00:00:00 2001
+From 52cd2aa652550dd7884b47aae48941b030c0b1ea Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Sun, 12 Nov 2017 02:10:15 +0100
 Subject: [PATCH] misc: modem-power: Power manager for modems
@@ -21,10 +21,10 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  create mode 100644 drivers/misc/modem-power.c
 
 diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-index 4d2026f4b53d..5efa3b242cc0 100644
+index b3f752fac2015..97e36ff3493ab 100644
 --- a/drivers/misc/Kconfig
 +++ b/drivers/misc/Kconfig
-@@ -511,6 +511,13 @@ config VCPU_STALL_DETECTOR
+@@ -505,6 +505,13 @@ config VCPU_STALL_DETECTOR
  
  	  If you do not intend to run this kernel as a guest, say N.
  
@@ -39,7 +39,7 @@ index 4d2026f4b53d..5efa3b242cc0 100644
  source "drivers/misc/eeprom/Kconfig"
  source "drivers/misc/cb710/Kconfig"
 diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
-index 72b154bd9ebc..6a31b42d470d 100644
+index 72b154bd9ebc8..6a31b42d470df 100644
 --- a/drivers/misc/Makefile
 +++ b/drivers/misc/Makefile
 @@ -63,3 +63,4 @@ obj-$(CONFIG_OPEN_DICE)		+= open-dice.o
@@ -49,7 +49,7 @@ index 72b154bd9ebc..6a31b42d470d 100644
 +obj-$(CONFIG_MODEM_POWER)	+= modem-power.o
 diff --git a/drivers/misc/modem-power.c b/drivers/misc/modem-power.c
 new file mode 100644
-index 000000000000..16c731df6e23
+index 0000000000000..16c731df6e235
 --- /dev/null
 +++ b/drivers/misc/modem-power.c
 @@ -0,0 +1,1992 @@
@@ -2046,5 +2046,5 @@ index 000000000000..16c731df6e23
 +
 +// }}}
 -- 
-2.39.2
+2.43.0
 

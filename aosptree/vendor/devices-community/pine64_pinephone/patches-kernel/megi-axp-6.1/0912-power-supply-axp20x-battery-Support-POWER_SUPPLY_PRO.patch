@@ -1,4 +1,4 @@
-From 00679638bbc784a81b241aac51c4afe6ada987db Mon Sep 17 00:00:00 2001
+From 13a82c47d6a10b877ae470a46ee83a3f101bfe1e Mon Sep 17 00:00:00 2001
 From: Ondrej Jirman <megi@xff.cz>
 Date: Sat, 2 Apr 2022 02:50:14 +0200
 Subject: [PATCH] power: supply: axp20x-battery: Support
@@ -12,7 +12,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 30 insertions(+)
 
 diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
-index e66a4e32ace8..e982f66f5f28 100644
+index e66a4e32ace84..e982f66f5f28e 100644
 --- a/drivers/power/supply/axp20x_battery.c
 +++ b/drivers/power/supply/axp20x_battery.c
 @@ -228,6 +228,19 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
@@ -74,5 +74,5 @@ index e66a4e32ace8..e982f66f5f28 100644
  	       psp == POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN ||
  	       psp == POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT ||
 -- 
-2.39.2
+2.43.0
 

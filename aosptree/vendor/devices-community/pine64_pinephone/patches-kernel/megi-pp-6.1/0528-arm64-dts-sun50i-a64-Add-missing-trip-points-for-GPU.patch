@@ -1,4 +1,4 @@
-From 071fa0687be3050e97961ccb1f436619637b884c Mon Sep 17 00:00:00 2001
+From d1436782383290f46bc1eb3b8142ce3268c78d07 Mon Sep 17 00:00:00 2001
 From: Ondrej Jirman <megi@xff.cz>
 Date: Sun, 16 Oct 2022 23:20:59 +0200
 Subject: [PATCH] arm64: dts: sun50i-a64: Add missing trip points for GPU
@@ -11,7 +11,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 18 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi
-index e000012c129a..1f7c6e93a83d 100644
+index e000012c129a9..1f7c6e93a83db 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi
 @@ -263,6 +263,15 @@ gpu0_thermal: gpu0-thermal {
@@ -47,5 +47,5 @@ index e000012c129a..1f7c6e93a83d 100644
  	};
  
 -- 
-2.39.2
+2.43.0
 

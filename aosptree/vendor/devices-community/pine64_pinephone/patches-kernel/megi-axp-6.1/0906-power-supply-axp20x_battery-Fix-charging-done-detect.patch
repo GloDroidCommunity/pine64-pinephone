@@ -1,4 +1,4 @@
-From 40a2c5404cc9d8614d0cea756a6745aaf3a53326 Mon Sep 17 00:00:00 2001
+From 0ba106fba5b98e66fd73cc25758babd526a8bd88 Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Sat, 29 Feb 2020 00:55:09 -0600
 Subject: [PATCH] power: supply: axp20x_battery: Fix charging done detection
@@ -9,7 +9,7 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
-index 1ca11e93f984..6b51005d8551 100644
+index 1ca11e93f9843..6b51005d8551e 100644
 --- a/drivers/power/supply/axp20x_battery.c
 +++ b/drivers/power/supply/axp20x_battery.c
 @@ -34,6 +34,7 @@
@@ -36,5 +36,5 @@ index 1ca11e93f984..6b51005d8551 100644
  			return 0;
  		}
 -- 
-2.39.2
+2.43.0
 

@@ -1,4 +1,4 @@
-From cef6d28e376c267aec07e33fe1b9bf2bd102e354 Mon Sep 17 00:00:00 2001
+From 2d52d09804ed14a7e072748336d4a01df207bd4d Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Sun, 26 Apr 2020 14:38:15 -0500
 Subject: [PATCH] media: cedrus: Fix failure to clean up hardware on probe
@@ -10,7 +10,7 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/staging/media/sunxi/cedrus/cedrus.c b/drivers/staging/media/sunxi/cedrus/cedrus.c
-index c7f83d6d31a6..704ec3ad9285 100644
+index c7f83d6d31a69..704ec3ad92858 100644
 --- a/drivers/staging/media/sunxi/cedrus/cedrus.c
 +++ b/drivers/staging/media/sunxi/cedrus/cedrus.c
 @@ -474,7 +474,7 @@ static int cedrus_probe(struct platform_device *pdev)
@@ -32,5 +32,5 @@ index c7f83d6d31a6..704ec3ad9285 100644
  	return ret;
  }
 -- 
-2.39.2
+2.43.0
 

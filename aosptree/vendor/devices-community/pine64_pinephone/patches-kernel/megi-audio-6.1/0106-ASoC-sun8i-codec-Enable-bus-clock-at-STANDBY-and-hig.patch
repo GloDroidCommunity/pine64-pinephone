@@ -1,4 +1,4 @@
-From f0f471d546fa9adb96ec66ff33ee4aba6c4b8af8 Mon Sep 17 00:00:00 2001
+From 248b5b874b858beb3b9f5e2e323b3aacdef3def1 Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Sat, 26 Sep 2020 20:56:18 -0500
 Subject: [PATCH] ASoC: sun8i-codec: Enable bus clock at STANDBY and higher
@@ -21,7 +21,7 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  1 file changed, 33 insertions(+), 8 deletions(-)
 
 diff --git a/sound/soc/sunxi/sun8i-codec.c b/sound/soc/sunxi/sun8i-codec.c
-index 9844978d91e6..6c125e3e0976 100644
+index 9844978d91e6e..6c125e3e0976f 100644
 --- a/sound/soc/sunxi/sun8i-codec.c
 +++ b/sound/soc/sunxi/sun8i-codec.c
 @@ -177,12 +177,14 @@ struct sun8i_codec_aif {
@@ -129,5 +129,5 @@ index 9844978d91e6..6c125e3e0976 100644
  
  static const struct of_device_id sun8i_codec_of_match[] = {
 -- 
-2.39.2
+2.43.0
 

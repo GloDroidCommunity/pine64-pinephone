@@ -1,4 +1,4 @@
-From bfb44c42c26d3828fc72d0b3975317093060dec8 Mon Sep 17 00:00:00 2001
+From bb63408fd811ac5974e8d650bf6c6e9b9f619d00 Mon Sep 17 00:00:00 2001
 From: Qiang Yu <yuq825@gmail.com>
 Date: Sat, 22 Feb 2020 10:42:10 +0800
 Subject: [PATCH] drm/lima: add LIMA_BO_FLAG_FORCE_VA
@@ -17,7 +17,7 @@ Signed-off-by: Qiang Yu <yuq825@gmail.com>
  5 files changed, 46 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/gpu/drm/lima/lima_drv.c b/drivers/gpu/drm/lima/lima_drv.c
-index 39cab4a55f57..9c02e0629822 100644
+index 53ac94bdf475a..aa910e762d29b 100644
 --- a/drivers/gpu/drm/lima/lima_drv.c
 +++ b/drivers/gpu/drm/lima/lima_drv.c
 @@ -79,16 +79,27 @@ static int lima_ioctl_gem_create(struct drm_device *dev, void *data, struct drm_
@@ -74,10 +74,10 @@ index 39cab4a55f57..9c02e0629822 100644
  
  	.gem_create_object  = lima_gem_create_object,
 diff --git a/drivers/gpu/drm/lima/lima_gem.c b/drivers/gpu/drm/lima/lima_gem.c
-index 0f1ca0b0db49..0e0349332662 100644
+index d72c5bf4e5ac1..cea7c81528380 100644
 --- a/drivers/gpu/drm/lima/lima_gem.c
 +++ b/drivers/gpu/drm/lima/lima_gem.c
-@@ -101,7 +101,7 @@ int lima_heap_alloc(struct lima_bo *bo, struct lima_vm *vm)
+@@ -106,7 +106,7 @@ int lima_heap_alloc(struct lima_bo *bo, struct lima_vm *vm)
  }
  
  int lima_gem_create_handle(struct drm_device *dev, struct drm_file *file,
@@ -86,7 +86,7 @@ index 0f1ca0b0db49..0e0349332662 100644
  {
  	int err;
  	gfp_t mask;
-@@ -122,8 +122,11 @@ int lima_gem_create_handle(struct drm_device *dev, struct drm_file *file,
+@@ -127,8 +127,11 @@ int lima_gem_create_handle(struct drm_device *dev, struct drm_file *file,
  	mask |= __GFP_DMA32;
  	mapping_set_gfp_mask(obj->filp->f_mapping, mask);
  
@@ -100,7 +100,7 @@ index 0f1ca0b0db49..0e0349332662 100644
  		if (err)
  			goto out;
 diff --git a/drivers/gpu/drm/lima/lima_gem.h b/drivers/gpu/drm/lima/lima_gem.h
-index ccea06142f4b..2a6db0c0be89 100644
+index ccea06142f4b3..2a6db0c0be89b 100644
 --- a/drivers/gpu/drm/lima/lima_gem.h
 +++ b/drivers/gpu/drm/lima/lima_gem.h
 @@ -15,6 +15,8 @@ struct lima_bo {
@@ -122,7 +122,7 @@ index ccea06142f4b..2a6db0c0be89 100644
  int lima_gem_submit(struct drm_file *file, struct lima_submit *submit);
  int lima_gem_wait(struct drm_file *file, u32 handle, u32 op, s64 timeout_ns);
 diff --git a/drivers/gpu/drm/lima/lima_vm.c b/drivers/gpu/drm/lima/lima_vm.c
-index 2b2739adc7f5..5554c2548d9c 100644
+index 2b2739adc7f53..5554c2548d9cf 100644
 --- a/drivers/gpu/drm/lima/lima_vm.c
 +++ b/drivers/gpu/drm/lima/lima_vm.c
 @@ -3,6 +3,7 @@
@@ -160,7 +160,7 @@ index 2b2739adc7f5..5554c2548d9c 100644
  		goto err_out1;
  
 diff --git a/include/uapi/drm/lima_drm.h b/include/uapi/drm/lima_drm.h
-index 1ec58d652a5a..3e699bb78394 100644
+index 1ec58d652a5ad..3e699bb783945 100644
 --- a/include/uapi/drm/lima_drm.h
 +++ b/include/uapi/drm/lima_drm.h
 @@ -37,7 +37,12 @@ struct drm_lima_get_param {
@@ -187,5 +187,5 @@ index 1ec58d652a5a..3e699bb78394 100644
  
  /**
 -- 
-2.39.2
+2.43.0
 

@@ -1,4 +1,4 @@
-From d0b1de29c5165c561e5196016979c0b1b2194299 Mon Sep 17 00:00:00 2001
+From 43f0b0a333647b76605a2774485e4a946cc04c96 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Mon, 8 Jun 2020 00:11:06 +0200
 Subject: [PATCH] phy: allwinner: sun4i-usb: Add support for usb_role_switch
@@ -12,7 +12,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  2 files changed, 51 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/phy/allwinner/Kconfig b/drivers/phy/allwinner/Kconfig
-index fb584518b2d0..e93a53139460 100644
+index fb584518b2d0f..e93a53139460c 100644
 --- a/drivers/phy/allwinner/Kconfig
 +++ b/drivers/phy/allwinner/Kconfig
 @@ -12,6 +12,7 @@ config PHY_SUN4I_USB
@@ -24,7 +24,7 @@ index fb584518b2d0..e93a53139460 100644
  	  Enable this to support the transceiver that is part of Allwinner
  	  sunxi SoCs.
 diff --git a/drivers/phy/allwinner/phy-sun4i-usb.c b/drivers/phy/allwinner/phy-sun4i-usb.c
-index 5472db9e87ef..d1b0e1b787c0 100644
+index 5472db9e87ef8..d1b0e1b787c0e 100644
 --- a/drivers/phy/allwinner/phy-sun4i-usb.c
 +++ b/drivers/phy/allwinner/phy-sun4i-usb.c
 @@ -34,6 +34,7 @@
@@ -142,5 +142,5 @@ index 5472db9e87ef..d1b0e1b787c0 100644
  
  	return 0;
 -- 
-2.39.2
+2.43.0
 

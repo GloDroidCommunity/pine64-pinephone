@@ -1,4 +1,4 @@
-From e7486a64a22978aa487816a9fc41d1c82b46bdfd Mon Sep 17 00:00:00 2001
+From 609a4035b78bb2a8987225e841fdbbd8f76e4201 Mon Sep 17 00:00:00 2001
 From: Ondrej Jirman <megi@xff.cz>
 Date: Thu, 10 Nov 2022 23:01:54 +0100
 Subject: [PATCH] mfd: axp20x: Improve interrupt order for POK handling during
@@ -28,7 +28,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp20x.h
-index 6b01f3e48af4..b64923577fc6 100644
+index 6b01f3e48af4d..b64923577fc64 100644
 --- a/include/linux/mfd/axp20x.h
 +++ b/include/linux/mfd/axp20x.h
 @@ -433,8 +433,8 @@ enum {
@@ -82,5 +82,5 @@ index 6b01f3e48af4..b64923577fc6 100644
  	AXP809_IRQ_PEK_LONG,
  	AXP809_IRQ_PEK_OVER_OFF,
 -- 
-2.39.2
+2.43.0
 

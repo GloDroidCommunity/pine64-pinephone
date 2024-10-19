@@ -1,4 +1,4 @@
-From 5e2376978b477837531db9a8784eb144861e4be2 Mon Sep 17 00:00:00 2001
+From 2c282adef89df0a43e249026e3cffb6d84f4e65e Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Mon, 30 Dec 2019 21:56:59 -0600
 Subject: [PATCH] bus: sunxi-rsb: Always check register address validity
@@ -14,7 +14,7 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  1 file changed, 3 insertions(+)
 
 diff --git a/drivers/bus/sunxi-rsb.c b/drivers/bus/sunxi-rsb.c
-index 226e87b85116..21e7d8a4cc5a 100644
+index 226e87b85116e..21e7d8a4cc5aa 100644
 --- a/drivers/bus/sunxi-rsb.c
 +++ b/drivers/bus/sunxi-rsb.c
 @@ -442,6 +442,9 @@ static int regmap_sunxi_rsb_reg_write(void *context, unsigned int reg,
@@ -28,5 +28,5 @@ index 226e87b85116..21e7d8a4cc5a 100644
  }
  
 -- 
-2.39.2
+2.43.0
 

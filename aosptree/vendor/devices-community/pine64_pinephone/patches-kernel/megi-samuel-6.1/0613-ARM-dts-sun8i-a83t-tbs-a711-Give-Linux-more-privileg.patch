@@ -1,4 +1,4 @@
-From 0c48d5ff47d8f83b02637e99e55ea97f58eaa603 Mon Sep 17 00:00:00 2001
+From 2d4e5459271775a6f0812b236e4ccfcf6f677ba2 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Tue, 23 Jun 2020 19:19:46 +0200
 Subject: [PATCH] ARM: dts: sun8i-a83t-tbs-a711: Give Linux more privileges
@@ -12,7 +12,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/arch/arm/boot/dts/sun8i-a83t.dtsi b/arch/arm/boot/dts/sun8i-a83t.dtsi
-index afe328770bbc..f693b2ec1609 100644
+index afe328770bbc8..f693b2ec1609f 100644
 --- a/arch/arm/boot/dts/sun8i-a83t.dtsi
 +++ b/arch/arm/boot/dts/sun8i-a83t.dtsi
 @@ -314,7 +314,7 @@ opp-1200000000 {
@@ -44,5 +44,5 @@ index afe328770bbc..f693b2ec1609 100644
  			};
  
 -- 
-2.39.2
+2.43.0
 

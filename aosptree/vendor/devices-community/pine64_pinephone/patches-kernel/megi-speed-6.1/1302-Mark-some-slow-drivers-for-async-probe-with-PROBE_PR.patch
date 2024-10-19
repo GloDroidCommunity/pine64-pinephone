@@ -1,4 +1,4 @@
-From 87b0e6cc59927dbe75c27baaaef85cf6dfdfe116 Mon Sep 17 00:00:00 2001
+From 0ab2c1f5dcdfaf1713a9f7adf1f0ced7830f4be2 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Mon, 10 Feb 2020 01:00:12 +0100
 Subject: [PATCH] Mark some slow drivers for async probe with
@@ -13,7 +13,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  2 files changed, 2 insertions(+)
 
 diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-index d03fc3400f94..8078c631b64a 100644
+index d03fc3400f94e..8078c631b64aa 100644
 --- a/drivers/iio/accel/bma180.c
 +++ b/drivers/iio/accel/bma180.c
 @@ -1133,6 +1133,7 @@ static struct i2c_driver bma180_driver = {
@@ -25,7 +25,7 @@ index d03fc3400f94..8078c631b64a 100644
  	.probe		= bma180_probe,
  	.remove		= bma180_remove,
 diff --git a/drivers/nfc/nxp-nci/i2c.c b/drivers/nfc/nxp-nci/i2c.c
-index ec6446511984..edde32981947 100644
+index ec6446511984d..edde329819474 100644
 --- a/drivers/nfc/nxp-nci/i2c.c
 +++ b/drivers/nfc/nxp-nci/i2c.c
 @@ -348,6 +348,7 @@ static struct i2c_driver nxp_nci_i2c_driver = {
@@ -37,5 +37,5 @@ index ec6446511984..edde32981947 100644
  	.probe = nxp_nci_i2c_probe,
  	.id_table = nxp_nci_i2c_id_table,
 -- 
-2.39.2
+2.43.0
 

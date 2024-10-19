@@ -1,4 +1,4 @@
-From 9c36ef9280e002206411c18a112e1a6f9eab8217 Mon Sep 17 00:00:00 2001
+From 54a8d6aed9da7b4c6dd9b86fc539fcc721ff8b81 Mon Sep 17 00:00:00 2001
 From: Ondrej Jirman <megi@xff.cz>
 Date: Thu, 13 Oct 2022 19:29:43 +0200
 Subject: [PATCH] 8723cs: Port to 6.1
@@ -8,7 +8,7 @@ Subject: [PATCH] 8723cs: Port to 6.1
  1 file changed, 9 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/staging/rtl8723cs/os_dep/linux/ioctl_cfg80211.c b/drivers/staging/rtl8723cs/os_dep/linux/ioctl_cfg80211.c
-index 67fc705a16c0..f50a9abaad89 100644
+index 67fc705a16c07..f50a9abaad89f 100644
 --- a/drivers/staging/rtl8723cs/os_dep/linux/ioctl_cfg80211.c
 +++ b/drivers/staging/rtl8723cs/os_dep/linux/ioctl_cfg80211.c
 @@ -452,7 +452,7 @@ u8 rtw_cfg80211_ch_switch_notify(_adapter *adapter, u8 ch, u8 bw, u8 offset,
@@ -71,5 +71,5 @@ index 67fc705a16c0..f50a9abaad89 100644
  #define SET_DEF_KEY_PARAM_FMT " key_index=%d"
  #define SET_DEF_KEY_PARAM_ARG , key_index
 -- 
-2.39.2
+2.43.0
 

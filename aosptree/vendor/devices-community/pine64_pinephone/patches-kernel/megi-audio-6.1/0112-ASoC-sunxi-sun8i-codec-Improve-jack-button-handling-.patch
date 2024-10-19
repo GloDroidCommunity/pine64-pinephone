@@ -1,4 +1,4 @@
-From db85e9aef5c0d667e03f6ae323a9ed66931fd31f Mon Sep 17 00:00:00 2001
+From ea2074958b5b87392e4bef0a8c599e3342bae392 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Wed, 12 May 2021 21:37:03 +0200
 Subject: [PATCH] ASoC: sunxi: sun8i-codec: Improve jack button handling and
@@ -22,7 +22,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  2 files changed, 188 insertions(+), 65 deletions(-)
 
 diff --git a/sound/soc/sunxi/sun50i-codec-analog.c b/sound/soc/sunxi/sun50i-codec-analog.c
-index 7ee72c0537c1..b78af30961f2 100644
+index 7ee72c0537c15..b78af30961f24 100644
 --- a/sound/soc/sunxi/sun50i-codec-analog.c
 +++ b/sound/soc/sunxi/sun50i-codec-analog.c
 @@ -116,6 +116,11 @@
@@ -52,7 +52,7 @@ index 7ee72c0537c1..b78af30961f2 100644
  }
  
 diff --git a/sound/soc/sunxi/sun8i-codec.c b/sound/soc/sunxi/sun8i-codec.c
-index 6a1f941659a9..342b097b5249 100644
+index 6a1f941659a96..342b097b5249e 100644
 --- a/sound/soc/sunxi/sun8i-codec.c
 +++ b/sound/soc/sunxi/sun8i-codec.c
 @@ -15,6 +15,7 @@
@@ -395,5 +395,5 @@ index 6a1f941659a9..342b097b5249 100644
  
  	regcache_cache_only(scodec->regmap, true);
 -- 
-2.39.2
+2.43.0
 

@@ -1,4 +1,4 @@
-From 80a9525c38d1a179c4216ec8fb5b21f87943a8b2 Mon Sep 17 00:00:00 2001
+From d552c54206f4ad10f7f1ce13be09139446af9954 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Fri, 21 Jan 2022 23:28:48 +0100
 Subject: [PATCH] arm64: dts: sun50i-a64-pinephone: Add support for Pinephone
@@ -13,7 +13,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 136 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
-index dd7b27a6597c..c1896206ace7 100644
+index dd7b27a6597cf..c1896206ace74 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
 @@ -178,6 +178,122 @@ bat: battery {
@@ -167,5 +167,5 @@ index dd7b27a6597c..c1896206ace7 100644
  
  &i2s2 {
 -- 
-2.39.2
+2.43.0
 

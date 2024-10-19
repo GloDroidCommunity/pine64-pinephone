@@ -1,4 +1,4 @@
-From d166f20989ea9ec97e981bb3fa50998210758cc8 Mon Sep 17 00:00:00 2001
+From 1876e48293e27479640fd244808fa45924d2ddd2 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Sat, 1 May 2021 01:28:07 +0200
 Subject: [PATCH] input: goodix: Don't disable regulators during suspend
@@ -17,10 +17,10 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 14 deletions(-)
 
 diff --git a/drivers/input/touchscreen/goodix.c b/drivers/input/touchscreen/goodix.c
-index f6e03e400d8e..a8959aab85be 100644
+index 0e33022cd1be0..b23eccb236aa4 100644
 --- a/drivers/input/touchscreen/goodix.c
 +++ b/drivers/input/touchscreen/goodix.c
-@@ -1442,8 +1442,6 @@ static int __maybe_unused goodix_suspend(struct device *dev)
+@@ -1462,8 +1462,6 @@ static int __maybe_unused goodix_suspend(struct device *dev)
  		goodix_free_irq(ts);
  		goodix_irq_direction_output(ts, 0);
  		gpiod_direction_output(ts->gpiod_rst, 0);
@@ -29,7 +29,7 @@ index f6e03e400d8e..a8959aab85be 100644
  		return 0;
  	}
  
-@@ -1493,18 +1491,6 @@ static int __maybe_unused goodix_resume(struct device *dev)
+@@ -1513,18 +1511,6 @@ static int __maybe_unused goodix_resume(struct device *dev)
  	int error;
  
  	if (ts->poweroff_in_suspend) {
@@ -49,5 +49,5 @@ index f6e03e400d8e..a8959aab85be 100644
  		if (error) {
  			dev_err(dev, "Controller reset failed.\n");
 -- 
-2.39.2
+2.43.0
 

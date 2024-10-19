@@ -1,4 +1,4 @@
-From b3b043fc55a817d67e9c5eeff286a3f9a8011a87 Mon Sep 17 00:00:00 2001
+From 5ff0de631cf39551f76321b96b514f0cbaf4a943 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Tue, 14 Nov 2017 02:09:43 +0100
 Subject: [PATCH] power: supply: axp20x-usb-power: Support input current limit
@@ -14,7 +14,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  2 files changed, 104 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/power/supply/axp20x_usb_power.c b/drivers/power/supply/axp20x_usb_power.c
-index a1e6d1d44808..ec3262478081 100644
+index a1e6d1d448086..ec32624780810 100644
 --- a/drivers/power/supply/axp20x_usb_power.c
 +++ b/drivers/power/supply/axp20x_usb_power.c
 @@ -52,6 +52,8 @@
@@ -171,7 +171,7 @@ index a1e6d1d44808..ec3262478081 100644
  
  static const struct power_supply_desc axp20x_usb_power_desc = {
 diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp20x.h
-index 9ab0e2fca7ea..6b01f3e48af4 100644
+index 9ab0e2fca7eac..6b01f3e48af4d 100644
 --- a/include/linux/mfd/axp20x.h
 +++ b/include/linux/mfd/axp20x.h
 @@ -130,6 +130,7 @@ enum axp20x_variants {
@@ -183,5 +183,5 @@ index 9ab0e2fca7ea..6b01f3e48af4 100644
  /* Interrupt */
  #define AXP152_IRQ1_EN			0x40
 -- 
-2.39.2
+2.43.0
 

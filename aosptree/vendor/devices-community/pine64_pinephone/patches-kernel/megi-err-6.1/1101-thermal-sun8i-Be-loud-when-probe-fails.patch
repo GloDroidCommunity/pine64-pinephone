@@ -1,4 +1,4 @@
-From c0f76f20ef76814c0e80a235a61d689eddc2be68 Mon Sep 17 00:00:00 2001
+From 1b787ae78b500835f8a8640901239622f3283780 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Wed, 8 Jul 2020 12:21:14 +0200
 Subject: [PATCH] thermal: sun8i: Be loud when probe fails
@@ -15,7 +15,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 29 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/thermal/sun8i_thermal.c b/drivers/thermal/sun8i_thermal.c
-index 80614b6adfac..6657817571e7 100644
+index 80614b6adfac5..6657817571e7d 100644
 --- a/drivers/thermal/sun8i_thermal.c
 +++ b/drivers/thermal/sun8i_thermal.c
 @@ -288,8 +288,13 @@ static int sun8i_ths_calibrate(struct ths_device *tmdev)
@@ -111,5 +111,5 @@ index 80614b6adfac..6657817571e7 100644
  	return 0;
  }
 -- 
-2.39.2
+2.43.0
 

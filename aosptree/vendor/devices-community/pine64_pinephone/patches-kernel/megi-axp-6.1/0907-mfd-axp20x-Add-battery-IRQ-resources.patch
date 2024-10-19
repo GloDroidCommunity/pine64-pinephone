@@ -1,4 +1,4 @@
-From 51d0c48e8ae98e1c4f3ea57b87d1fb5ed91a1667 Mon Sep 17 00:00:00 2001
+From 5b303fb701f3a3dd88f8c43b668307f3c83582d4 Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Sat, 29 Feb 2020 01:01:58 -0600
 Subject: [PATCH] mfd: axp20x: Add battery IRQ resources
@@ -9,7 +9,7 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  1 file changed, 36 insertions(+)
 
 diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
-index 82ead3f3433b..444fdb473e93 100644
+index 82ead3f3433b2..444fdb473e934 100644
 --- a/drivers/mfd/axp20x.c
 +++ b/drivers/mfd/axp20x.c
 @@ -179,6 +179,15 @@ static const struct resource axp20x_ac_power_supply_resources[] = {
@@ -98,5 +98,5 @@ index 82ead3f3433b..444fdb473e93 100644
  		.name		= "axp20x-ac-power-supply",
  		.of_compatible	= "x-powers,axp813-ac-power-supply",
 -- 
-2.39.2
+2.43.0
 

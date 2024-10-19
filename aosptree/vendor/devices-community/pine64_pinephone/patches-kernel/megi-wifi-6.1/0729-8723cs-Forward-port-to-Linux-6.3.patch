@@ -1,4 +1,4 @@
-From 99290fc0be91e72740e9ebb8ee4f0e44085bc7a5 Mon Sep 17 00:00:00 2001
+From 342c887ca279f56325aac2b70e823f6ef790411f Mon Sep 17 00:00:00 2001
 From: Ondrej Jirman <megi@xff.cz>
 Date: Mon, 6 Mar 2023 03:46:09 +0100
 Subject: [PATCH] 8723cs: Forward port to Linux 6.3
@@ -9,7 +9,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/staging/rtl8723cs/os_dep/linux/ioctl_cfg80211.c b/drivers/staging/rtl8723cs/os_dep/linux/ioctl_cfg80211.c
-index f50a9abaad89..a92ec4d37036 100644
+index f50a9abaad89f..a92ec4d370368 100644
 --- a/drivers/staging/rtl8723cs/os_dep/linux/ioctl_cfg80211.c
 +++ b/drivers/staging/rtl8723cs/os_dep/linux/ioctl_cfg80211.c
 @@ -452,14 +452,14 @@ u8 rtw_cfg80211_ch_switch_notify(_adapter *adapter, u8 ch, u8 bw, u8 offset,
@@ -30,5 +30,5 @@ index f50a9abaad89..a92ec4d37036 100644
  exit:
  	return ret;
 -- 
-2.39.2
+2.43.0
 

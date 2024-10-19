@@ -1,4 +1,4 @@
-From 20834542dacff19b239a0f5ab5ce62a04fa4e9f6 Mon Sep 17 00:00:00 2001
+From 3274ab3b5e610396008784e19dd6e4aada047b7a Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Fri, 28 Feb 2020 19:16:46 +0100
 Subject: [PATCH] power: supply: axp20x_battery: Add support for reporting OCV
@@ -11,7 +11,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 23 insertions(+)
 
 diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
-index 06f74cf2efef..8ff7042ff852 100644
+index 06f74cf2efeff..8ff7042ff8526 100644
 --- a/drivers/power/supply/axp20x_battery.c
 +++ b/drivers/power/supply/axp20x_battery.c
 @@ -181,6 +181,25 @@ static int axp20x_get_constant_charge_current(struct axp20x_batt_ps *axp,
@@ -59,5 +59,5 @@ index 06f74cf2efef..8ff7042ff852 100644
  	POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN,
  	POWER_SUPPLY_PROP_CAPACITY,
 -- 
-2.39.2
+2.43.0
 

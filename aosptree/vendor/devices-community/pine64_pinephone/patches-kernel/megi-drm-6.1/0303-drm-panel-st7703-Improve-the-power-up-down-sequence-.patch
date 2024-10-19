@@ -1,4 +1,4 @@
-From 2ec5ae68f50a88aa9d9441d52dd682b93f2955af Mon Sep 17 00:00:00 2001
+From 89b60104d3e86767e1097f4de26a220b7960c682 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Sun, 5 Jul 2020 15:55:46 +0200
 Subject: [PATCH] drm/panel: st7703: Improve the power up/down sequence of the
@@ -27,11 +27,11 @@ on PinePhone.
 
 Signed-off-by: Ondrej Jirman <megi@xff.cz>
 ---
- drivers/gpu/drm/panel/panel-sitronix-st7703.c | 35 ++++++++++---------
- 1 file changed, 18 insertions(+), 17 deletions(-)
+ drivers/gpu/drm/panel/panel-sitronix-st7703.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/gpu/drm/panel/panel-sitronix-st7703.c b/drivers/gpu/drm/panel/panel-sitronix-st7703.c
-index 86a472b01360..97fdff0cc496 100644
+index b6e514aabe1d3..97fdff0cc4961 100644
 --- a/drivers/gpu/drm/panel/panel-sitronix-st7703.c
 +++ b/drivers/gpu/drm/panel/panel-sitronix-st7703.c
 @@ -290,7 +290,6 @@ static int xbd599_init_sequence(struct st7703 *ctx)
@@ -71,49 +71,6 @@ index 86a472b01360..97fdff0cc496 100644
  	return 0;
  }
  
-@@ -428,29 +428,30 @@ static int st7703_prepare(struct drm_panel *panel)
- 		return 0;
- 
- 	dev_dbg(ctx->dev, "Resetting the panel\n");
--	ret = regulator_enable(ctx->vcc);
-+	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
-+
-+	ret = regulator_enable(ctx->iovcc);
- 	if (ret < 0) {
--		dev_err(ctx->dev, "Failed to enable vcc supply: %d\n", ret);
-+		dev_err(ctx->dev, "Failed to enable iovcc supply: %d\n", ret);
- 		return ret;
- 	}
--	ret = regulator_enable(ctx->iovcc);
-+
-+	ret = regulator_enable(ctx->vcc);
- 	if (ret < 0) {
--		dev_err(ctx->dev, "Failed to enable iovcc supply: %d\n", ret);
--		goto disable_vcc;
-+		dev_err(ctx->dev, "Failed to enable vcc supply: %d\n", ret);
-+		regulator_disable(ctx->iovcc);
-+		return ret;
- 	}
- 
--	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
--	usleep_range(20, 40);
-+	/* Give power supplies time to stabilize before deasserting reset. */
-+	usleep_range(10000, 20000);
-+
- 	gpiod_set_value_cansleep(ctx->reset_gpio, 0);
--	msleep(20);
-+	usleep_range(15000, 20000);
- 
- 	ctx->prepared = true;
- 
- 	return 0;
--
--disable_vcc:
--	regulator_disable(ctx->vcc);
--	return ret;
- }
- 
- static const u32 mantix_bus_formats[] = {
 -- 
-2.39.2
+2.43.0
 

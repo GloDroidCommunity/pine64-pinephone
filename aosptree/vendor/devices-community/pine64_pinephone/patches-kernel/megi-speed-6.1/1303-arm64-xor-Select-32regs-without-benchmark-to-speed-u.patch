@@ -1,4 +1,4 @@
-From 9adba4e8cc79b0f9a7c3a426e7945ba5012a400b Mon Sep 17 00:00:00 2001
+From 7e78020b5772397684972415049044fe051a2798 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Thu, 10 Sep 2020 21:38:28 +0200
 Subject: [PATCH] arm64: xor: Select 32regs without benchmark to speed up boot
@@ -11,7 +11,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 4 insertions(+), 10 deletions(-)
 
 diff --git a/arch/arm64/include/asm/xor.h b/arch/arm64/include/asm/xor.h
-index befcd8a7abc9..e4487ddc76e1 100644
+index befcd8a7abc98..e4487ddc76e1d 100644
 --- a/arch/arm64/include/asm/xor.h
 +++ b/arch/arm64/include/asm/xor.h
 @@ -57,21 +57,15 @@ xor_neon_5(unsigned long bytes, unsigned long * __restrict p1,
@@ -41,5 +41,5 @@ index befcd8a7abc9..e4487ddc76e1 100644
  
  #endif /* ! CONFIG_KERNEL_MODE_NEON */
 -- 
-2.39.2
+2.43.0
 

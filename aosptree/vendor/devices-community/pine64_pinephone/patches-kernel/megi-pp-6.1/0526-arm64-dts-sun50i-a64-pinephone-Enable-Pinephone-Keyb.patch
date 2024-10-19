@@ -1,4 +1,4 @@
-From c110f555d002971f73c11fef49e1899764d7fa02 Mon Sep 17 00:00:00 2001
+From b59800c50310e10c7663191d4d0edeb362b4e9fa Mon Sep 17 00:00:00 2001
 From: Ondrej Jirman <megi@xff.cz>
 Date: Sat, 16 Apr 2022 02:12:06 +0200
 Subject: [PATCH] arm64: dts: sun50i-a64-pinephone: Enable Pinephone Keyboard
@@ -10,7 +10,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 9 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
-index c1896206ace7..daf981fd102f 100644
+index c1896206ace74..daf981fd102f0 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
 @@ -427,6 +427,15 @@ vibrator {
@@ -30,5 +30,5 @@ index c1896206ace7..daf981fd102f 100644
  
  &codec {
 -- 
-2.39.2
+2.43.0
 

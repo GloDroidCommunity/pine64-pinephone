@@ -1,4 +1,4 @@
-From 2fac65f8d031ee99a8b733dc83d6625306cd37ea Mon Sep 17 00:00:00 2001
+From 6dd8597456ca895eaa3629efa1a677a44d521945 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Sat, 28 Nov 2020 05:21:47 +0100
 Subject: [PATCH] 8723cs: Disable CONFIG_CONCURRENT_MODE
@@ -11,7 +11,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 2 deletions(-)
 
 diff --git a/drivers/staging/rtl8723cs/Makefile b/drivers/staging/rtl8723cs/Makefile
-index 39698340c279..5ef5557e58b7 100644
+index 39698340c279a..5ef5557e58b72 100644
 --- a/drivers/staging/rtl8723cs/Makefile
 +++ b/drivers/staging/rtl8723cs/Makefile
 @@ -1332,8 +1332,6 @@ endif
@@ -24,5 +24,5 @@ index 39698340c279..5ef5557e58b7 100644
  
  SUBARCH := $(shell uname -m | sed -e s/i.86/i386/)
 -- 
-2.39.2
+2.43.0
 

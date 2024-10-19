@@ -1,4 +1,4 @@
-From c24f0777a7aa8dfe00f8ff40d68d99afc7a4869b Mon Sep 17 00:00:00 2001
+From 0f6ce72b4251abafbb37b1e9bada71f904d88d17 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Sat, 8 May 2021 19:10:06 +0200
 Subject: [PATCH] 8723cs: Disable use of NAPI
@@ -48,7 +48,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/staging/rtl8723cs/Makefile b/drivers/staging/rtl8723cs/Makefile
-index b428d679e83e..a709256357f9 100644
+index b428d679e83e7..a709256357f98 100644
 --- a/drivers/staging/rtl8723cs/Makefile
 +++ b/drivers/staging/rtl8723cs/Makefile
 @@ -81,8 +81,8 @@ CONFIG_TDLS = y
@@ -63,5 +63,5 @@ index b428d679e83e..a709256357f9 100644
  CONFIG_RTW_IPCAM_APPLICATION = n
  CONFIG_RTW_REPEATER_SON = n
 -- 
-2.39.2
+2.43.0
 

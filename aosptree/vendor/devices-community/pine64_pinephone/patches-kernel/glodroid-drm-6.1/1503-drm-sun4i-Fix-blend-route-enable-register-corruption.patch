@@ -1,4 +1,4 @@
-From 7168d406761dfdd177a48ea94ae080e5e36f52d0 Mon Sep 17 00:00:00 2001
+From 534f2211a5ae144d4e07c4e58486063815d75743 Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <roman.o.stratiienko@globallogic.com>
 Date: Tue, 24 May 2022 11:51:57 +0000
 Subject: [PATCH] drm/sun4i: Fix blend route/enable register corruption for
@@ -42,7 +42,7 @@ Signed-off-by: Roman Stratiienko <roman.o.stratiienko@globallogic.com>
  5 files changed, 47 insertions(+), 77 deletions(-)
 
 diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h b/drivers/gpu/drm/sun4i/sun8i_mixer.h
-index 85c94884fb9a..c4616a17eecb 100644
+index 85c94884fb9a4..c4616a17eecbc 100644
 --- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
 +++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
 @@ -183,6 +183,8 @@ struct sun8i_mixer {
@@ -55,7 +55,7 @@ index 85c94884fb9a..c4616a17eecb 100644
  
  static inline struct sun8i_mixer *
 diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
-index 107c8d33b63a..4bc9eaa662bf 100644
+index 107c8d33b63a9..4bc9eaa662bf0 100644
 --- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
 +++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
 @@ -25,8 +25,7 @@
@@ -163,7 +163,7 @@ index 107c8d33b63a..4bc9eaa662bf 100644
  
  static const struct drm_plane_helper_funcs sun8i_ui_layer_helper_funcs = {
 diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.h b/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
-index e3e32ee1178d..43c48cf7bc51 100644
+index e3e32ee1178d8..43c48cf7bc51f 100644
 --- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
 +++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
 @@ -53,6 +53,8 @@ struct sun8i_ui_layer {
@@ -176,7 +176,7 @@ index e3e32ee1178d..43c48cf7bc51 100644
  
  static inline struct sun8i_ui_layer *
 diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
-index 957b1a7f4416..9103dc0fbaf9 100644
+index 957b1a7f44161..9103dc0fbaf93 100644
 --- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
 +++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
 @@ -19,8 +19,7 @@
@@ -283,7 +283,7 @@ index 957b1a7f4416..9103dc0fbaf9 100644
  
  static const struct drm_plane_helper_funcs sun8i_vi_layer_helper_funcs = {
 diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.h b/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
-index 48c399e1c86d..9939a4cc7a52 100644
+index 48c399e1c86dc..9939a4cc7a526 100644
 --- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
 +++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
 @@ -58,6 +58,8 @@ struct sun8i_vi_layer {
@@ -296,5 +296,5 @@ index 48c399e1c86d..9939a4cc7a52 100644
  
  static inline struct sun8i_vi_layer *
 -- 
-2.39.2
+2.43.0
 

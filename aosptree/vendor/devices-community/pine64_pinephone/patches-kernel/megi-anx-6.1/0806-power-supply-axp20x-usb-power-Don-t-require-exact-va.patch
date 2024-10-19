@@ -1,4 +1,4 @@
-From f32a67f2f41827869de97b541f18b2ee3826ee6e Mon Sep 17 00:00:00 2001
+From 7cb81f5f45b2d37f33e7db3f85266d9cfef4a5a3 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Mon, 30 Nov 2020 05:58:12 +0100
 Subject: [PATCH] power: supply: axp20x-usb-power: Don't require exact values
@@ -13,7 +13,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 17 insertions(+), 30 deletions(-)
 
 diff --git a/drivers/power/supply/axp20x_usb_power.c b/drivers/power/supply/axp20x_usb_power.c
-index 7b4db148a219..7218131a851f 100644
+index 7b4db148a219d..7218131a851fb 100644
 --- a/drivers/power/supply/axp20x_usb_power.c
 +++ b/drivers/power/supply/axp20x_usb_power.c
 @@ -449,43 +449,30 @@ static int axp20x_usb_power_set_voltage_min(struct axp20x_usb_power *power,
@@ -78,5 +78,5 @@ index 7b4db148a219..7218131a851f 100644
  	return regmap_update_bits(power->regmap,
  				  AXP813_CHRG_CTRL3,
 -- 
-2.39.2
+2.43.0
 

@@ -1,4 +1,4 @@
-From cb7511e899bf345b92f624603b67c7a9217d3c61 Mon Sep 17 00:00:00 2001
+From e0459a6601a2908d03aef0f817181875d90a8440 Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Sat, 2 Jan 2021 15:52:27 -0600
 Subject: [PATCH] rtc: sun6i: Allow RTC wakeup after shutdown
@@ -14,7 +14,7 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  1 file changed, 11 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/rtc/rtc-sun6i.c b/drivers/rtc/rtc-sun6i.c
-index 7038f47d77ff..e4db445b744f 100644
+index 7038f47d77ff4..e4db445b744f9 100644
 --- a/drivers/rtc/rtc-sun6i.c
 +++ b/drivers/rtc/rtc-sun6i.c
 @@ -709,6 +709,7 @@ static struct nvmem_config sun6i_rtc_nvmem_cfg = {
@@ -65,5 +65,5 @@ index 7038f47d77ff..e4db445b744f 100644
  		.name		= "sun6i-rtc",
  		.of_match_table = sun6i_rtc_dt_ids,
 -- 
-2.39.2
+2.43.0
 

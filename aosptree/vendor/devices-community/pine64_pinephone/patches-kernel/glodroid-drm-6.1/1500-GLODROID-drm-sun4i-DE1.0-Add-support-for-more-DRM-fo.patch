@@ -1,4 +1,4 @@
-From abb9d07c14eaa51659789d384949a7cf47f1967a Mon Sep 17 00:00:00 2001
+From cd1424a00fbab219aad939feb81f7e7eaa0dbe27 Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Fri, 27 Jan 2023 21:54:37 +0200
 Subject: [PATCH] GLODROID: drm/sun4i: DE1.0: Add support for more DRM formats
@@ -20,7 +20,7 @@ Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
  4 files changed, 32 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/gpu/drm/sun4i/sun4i_backend.c b/drivers/gpu/drm/sun4i/sun4i_backend.c
-index 38070fc261f3..176a98843e42 100644
+index 38070fc261f3a..176a98843e42b 100644
 --- a/drivers/gpu/drm/sun4i/sun4i_backend.c
 +++ b/drivers/gpu/drm/sun4i/sun4i_backend.c
 @@ -95,13 +95,19 @@ void sun4i_backend_layer_enable(struct sun4i_backend *backend,
@@ -125,7 +125,7 @@ index 38070fc261f3..176a98843e42 100644
  }
  
 diff --git a/drivers/gpu/drm/sun4i/sun4i_backend.h b/drivers/gpu/drm/sun4i/sun4i_backend.h
-index b4383777c83b..784c73b891ff 100644
+index b4383777c83bb..784c73b891fff 100644
 --- a/drivers/gpu/drm/sun4i/sun4i_backend.h
 +++ b/drivers/gpu/drm/sun4i/sun4i_backend.h
 @@ -78,6 +78,7 @@
@@ -137,7 +137,7 @@ index b4383777c83b..784c73b891ff 100644
  #define SUN4I_BACKEND_LAY_FBFMT_2BPP				(1 << 8)
  #define SUN4I_BACKEND_LAY_FBFMT_4BPP				(2 << 8)
 diff --git a/drivers/gpu/drm/sun4i/sun4i_frontend.c b/drivers/gpu/drm/sun4i/sun4i_frontend.c
-index 799ab7460ae5..826d781928d3 100644
+index 799ab7460ae54..826d781928d3f 100644
 --- a/drivers/gpu/drm/sun4i/sun4i_frontend.c
 +++ b/drivers/gpu/drm/sun4i/sun4i_frontend.c
 @@ -329,6 +329,7 @@ sun4i_frontend_drm_format_to_input_sequence(const struct drm_format_info *format
@@ -149,7 +149,7 @@ index 799ab7460ae5..826d781928d3 100644
  		return 0;
  
 diff --git a/drivers/gpu/drm/sun4i/sun4i_layer.c b/drivers/gpu/drm/sun4i/sun4i_layer.c
-index 98f3176366c0..79df34b9c9a4 100644
+index 98f3176366c0e..79df34b9c9a47 100644
 --- a/drivers/gpu/drm/sun4i/sun4i_layer.c
 +++ b/drivers/gpu/drm/sun4i/sun4i_layer.c
 @@ -140,6 +140,7 @@ static const struct drm_plane_funcs sun4i_backend_layer_funcs = {
@@ -185,5 +185,5 @@ index 98f3176366c0..79df34b9c9a4 100644
  	DRM_FORMAT_YVYU,
  };
 -- 
-2.39.2
+2.43.0
 

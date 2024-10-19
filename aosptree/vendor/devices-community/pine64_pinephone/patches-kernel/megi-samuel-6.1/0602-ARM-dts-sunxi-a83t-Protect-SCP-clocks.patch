@@ -1,4 +1,4 @@
-From 17c2b94bd0f0aa779014cac911e3acd3c410bb7f Mon Sep 17 00:00:00 2001
+From 356b3fb341a58bafa8660d92a54ab3a3d2172708 Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Wed, 1 Jan 2020 16:03:34 -0600
 Subject: [PATCH] ARM: dts: sunxi: a83t: Protect SCP clocks
@@ -9,7 +9,7 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  1 file changed, 2 insertions(+)
 
 diff --git a/arch/arm/boot/dts/sun8i-a83t.dtsi b/arch/arm/boot/dts/sun8i-a83t.dtsi
-index eead661b903e..db9eb8b212bf 100644
+index eead661b903e0..db9eb8b212bf1 100644
 --- a/arch/arm/boot/dts/sun8i-a83t.dtsi
 +++ b/arch/arm/boot/dts/sun8i-a83t.dtsi
 @@ -708,6 +708,7 @@ ccu: clock@1c20000 {
@@ -29,5 +29,5 @@ index eead661b903e..db9eb8b212bf 100644
  			#reset-cells = <1>;
  		};
 -- 
-2.39.2
+2.43.0
 

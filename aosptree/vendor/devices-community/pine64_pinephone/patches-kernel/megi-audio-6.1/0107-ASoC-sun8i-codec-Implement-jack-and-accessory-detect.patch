@@ -1,4 +1,4 @@
-From e8a6dd82bad91df3af37412bb0e874c8a6e545a7 Mon Sep 17 00:00:00 2001
+From 53201d9d32d0fb901e9a4d2328a74bcf622a1ca0 Mon Sep 17 00:00:00 2001
 From: Arnaud Ferraris <arnaud.ferraris@collabora.com>
 Date: Fri, 25 Sep 2020 20:28:14 -0500
 Subject: [PATCH] ASoC: sun8i-codec: Implement jack and accessory detection
@@ -24,7 +24,7 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  1 file changed, 269 insertions(+)
 
 diff --git a/sound/soc/sunxi/sun8i-codec.c b/sound/soc/sunxi/sun8i-codec.c
-index 6c125e3e0976..4b6b7336da06 100644
+index 6c125e3e0976f..4b6b7336da067 100644
 --- a/sound/soc/sunxi/sun8i-codec.c
 +++ b/sound/soc/sunxi/sun8i-codec.c
 @@ -12,12 +12,15 @@
@@ -399,5 +399,5 @@ index 6c125e3e0976..4b6b7336da06 100644
  
  static const struct of_device_id sun8i_codec_of_match[] = {
 -- 
-2.39.2
+2.43.0
 

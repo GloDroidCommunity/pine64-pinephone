@@ -1,4 +1,4 @@
-From d5787073c36d75eccf98fcb8522a9d7dcde0be7b Mon Sep 17 00:00:00 2001
+From bf6e1a0ab7544669487c488e1a6efbd126f70939 Mon Sep 17 00:00:00 2001
 From: Ondrej Jirman <megi@xff.cz>
 Date: Sat, 16 Jul 2022 12:08:58 +0200
 Subject: [PATCH] 8723cs: Fix some compilation warnings
@@ -11,7 +11,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  3 files changed, 9 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/staging/rtl8723cs/core/rtw_br_ext.c b/drivers/staging/rtl8723cs/core/rtw_br_ext.c
-index 7b5934d38446..c32036a4d32a 100644
+index 7b5934d384467..c32036a4d32a0 100644
 --- a/drivers/staging/rtl8723cs/core/rtw_br_ext.c
 +++ b/drivers/staging/rtl8723cs/core/rtw_br_ext.c
 @@ -110,7 +110,7 @@ static __inline__ int __nat25_add_pppoe_tag(struct sk_buff *skb, struct pppoe_ta
@@ -24,7 +24,7 @@ index 7b5934d38446..c32036a4d32a 100644
  }
  
 diff --git a/drivers/staging/rtl8723cs/core/rtw_sta_mgt.c b/drivers/staging/rtl8723cs/core/rtw_sta_mgt.c
-index 28a76fd9749a..e773b58e0fb5 100644
+index 28a76fd9749ad..e773b58e0fb5b 100644
 --- a/drivers/staging/rtl8723cs/core/rtw_sta_mgt.c
 +++ b/drivers/staging/rtl8723cs/core/rtw_sta_mgt.c
 @@ -388,8 +388,7 @@ void rtw_mfree_stainfo(struct sta_info *psta);
@@ -38,7 +38,7 @@ index 28a76fd9749a..e773b58e0fb5 100644
  	_rtw_free_sta_xmit_priv_lock(&psta->sta_xmitpriv);
  	_rtw_free_sta_recv_priv_lock(&psta->sta_recvpriv);
 diff --git a/drivers/staging/rtl8723cs/core/rtw_tdls.c b/drivers/staging/rtl8723cs/core/rtw_tdls.c
-index d557234109be..f05e4fbc59d4 100644
+index d557234109bec..f05e4fbc59d43 100644
 --- a/drivers/staging/rtl8723cs/core/rtw_tdls.c
 +++ b/drivers/staging/rtl8723cs/core/rtw_tdls.c
 @@ -1075,16 +1075,13 @@ u8 *rtw_tdls_set_wmm_params(_adapter *padapter, u8 *pframe, struct pkt_attrib *p
@@ -66,5 +66,5 @@ index d557234109be..f05e4fbc59d4 100644
  
  #ifdef CONFIG_WFD
 -- 
-2.39.2
+2.43.0
 

@@ -1,4 +1,4 @@
-From 3856d6a4c1e8845c554d1647b7d7e64812642264 Mon Sep 17 00:00:00 2001
+From 473d28acc421e28ca8e651f697bab2af00fd55e6 Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Mon, 27 Nov 2023 05:11:38 +0200
 Subject: [PATCH] rtl8723cs: Fix clang compile-time -wX errors
@@ -18,7 +18,7 @@ Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
  9 files changed, 15 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/staging/rtl8723cs/core/rtw_debug.c b/drivers/staging/rtl8723cs/core/rtw_debug.c
-index d1a41e1908dd..1fb6df2321d2 100644
+index d1a41e1908ddd..1fb6df2321d2c 100644
 --- a/drivers/staging/rtl8723cs/core/rtw_debug.c
 +++ b/drivers/staging/rtl8723cs/core/rtw_debug.c
 @@ -6910,7 +6910,7 @@ ssize_t proc_set_tx_sa_query(struct file *file, const char __user *buffer, size_
@@ -40,7 +40,7 @@ index d1a41e1908dd..1fb6df2321d2 100644
  
  
 diff --git a/drivers/staging/rtl8723cs/core/rtw_mlme_ext.c b/drivers/staging/rtl8723cs/core/rtw_mlme_ext.c
-index 11da273bee38..d60c668e4b11 100644
+index 11da273bee38a..d60c668e4b11d 100644
 --- a/drivers/staging/rtl8723cs/core/rtw_mlme_ext.c
 +++ b/drivers/staging/rtl8723cs/core/rtw_mlme_ext.c
 @@ -10249,7 +10249,7 @@ static int issue_action_ba(_adapter *padapter, unsigned char *raddr, unsigned ch
@@ -71,7 +71,7 @@ index 11da273bee38..d60c668e4b11 100644
  
  #ifdef CONFIG_MCC_MODE
 diff --git a/drivers/staging/rtl8723cs/core/rtw_odm.c b/drivers/staging/rtl8723cs/core/rtw_odm.c
-index 9651d4fdd045..dd4fc576e05b 100644
+index 9651d4fdd0453..dd4fc576e05b9 100644
 --- a/drivers/staging/rtl8723cs/core/rtw_odm.c
 +++ b/drivers/staging/rtl8723cs/core/rtw_odm.c
 @@ -160,6 +160,7 @@ void rtw_odm_acquirespinlock(_adapter *adapter,	enum rt_spinlock_type type)
@@ -91,7 +91,7 @@ index 9651d4fdd045..dd4fc576e05b 100644
  		break;
  	}
 diff --git a/drivers/staging/rtl8723cs/core/rtw_tdls.c b/drivers/staging/rtl8723cs/core/rtw_tdls.c
-index f05e4fbc59d4..a6d067205d02 100644
+index f05e4fbc59d43..a6d067205d025 100644
 --- a/drivers/staging/rtl8723cs/core/rtw_tdls.c
 +++ b/drivers/staging/rtl8723cs/core/rtw_tdls.c
 @@ -2119,6 +2119,7 @@ int On_TDLS_Setup_Rsp(_adapter *padapter, union recv_frame *precv_frame, struct
@@ -103,7 +103,7 @@ index f05e4fbc59d4..a6d067205d02 100644
  			break;
  		case _VENDOR_SPECIFIC_IE_:
 diff --git a/drivers/staging/rtl8723cs/core/rtw_wlan_util.c b/drivers/staging/rtl8723cs/core/rtw_wlan_util.c
-index 59e9c8680460..fc169b29b6b1 100644
+index 59e9c8680460b..fc169b29b6b14 100644
 --- a/drivers/staging/rtl8723cs/core/rtw_wlan_util.c
 +++ b/drivers/staging/rtl8723cs/core/rtw_wlan_util.c
 @@ -2953,7 +2953,7 @@ unsigned int is_ap_in_tkip(_adapter *padapter)
@@ -125,7 +125,7 @@ index 59e9c8680460..fc169b29b6b1 100644
  				break;
  			}
 diff --git a/drivers/staging/rtl8723cs/hal/phydm/phydm.c b/drivers/staging/rtl8723cs/hal/phydm/phydm.c
-index 0f7e7aa9291e..2603facecc19 100644
+index 0f7e7aa9291e6..2603facecc19b 100644
 --- a/drivers/staging/rtl8723cs/hal/phydm/phydm.c
 +++ b/drivers/staging/rtl8723cs/hal/phydm/phydm.c
 @@ -2881,6 +2881,7 @@ void odm_cmn_info_hook(struct dm_struct *dm, enum odm_cmninfo cmn_info,
@@ -137,7 +137,7 @@ index 0f7e7aa9291e..2603facecc19 100644
  		/*do nothing*/
  		break;
 diff --git a/drivers/staging/rtl8723cs/hal/phydm/phydm_api.c b/drivers/staging/rtl8723cs/hal/phydm/phydm_api.c
-index a5e736db1e67..5918dbf694dc 100644
+index a5e736db1e674..5918dbf694dc1 100644
 --- a/drivers/staging/rtl8723cs/hal/phydm/phydm_api.c
 +++ b/drivers/staging/rtl8723cs/hal/phydm/phydm_api.c
 @@ -3124,8 +3124,8 @@ u8 config_phydm_read_txagc_n(void *dm_void, enum rf_path path, u8 hw_rate)
@@ -152,7 +152,7 @@ index a5e736db1e67..5918dbf694dc 100644
  	/* @Input need to be HW rate index, not driver rate index!!!! */
  
 diff --git a/drivers/staging/rtl8723cs/include/rtw_mlme_ext.h b/drivers/staging/rtl8723cs/include/rtw_mlme_ext.h
-index af05277c64c7..9d9a6eaa344e 100644
+index af05277c64c74..9d9a6eaa344eb 100644
 --- a/drivers/staging/rtl8723cs/include/rtw_mlme_ext.h
 +++ b/drivers/staging/rtl8723cs/include/rtw_mlme_ext.h
 @@ -274,7 +274,7 @@ enum TDLS_option {
@@ -165,7 +165,7 @@ index af05277c64c7..9d9a6eaa344e 100644
  	#define RTW_BACK_OP_CH_MS 200
  #else
 diff --git a/drivers/staging/rtl8723cs/include/rtw_recv.h b/drivers/staging/rtl8723cs/include/rtw_recv.h
-index a2574f755434..23506907fd9e 100644
+index a2574f755434c..23506907fd9eb 100644
 --- a/drivers/staging/rtl8723cs/include/rtw_recv.h
 +++ b/drivers/staging/rtl8723cs/include/rtw_recv.h
 @@ -812,7 +812,7 @@ __inline static union recv_frame *rxmem_to_recvframe(u8 *rxmem)
@@ -178,5 +178,5 @@ index a2574f755434..23506907fd9e 100644
  	precv_frame = rxmem_to_recvframe((unsigned char *)buf_star);
  
 -- 
-2.39.2
+2.43.0
 

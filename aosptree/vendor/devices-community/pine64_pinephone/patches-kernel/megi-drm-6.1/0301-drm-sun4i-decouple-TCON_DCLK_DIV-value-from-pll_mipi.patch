@@ -1,4 +1,4 @@
-From f509ce67f1d2496aaa9e7e40b4bbe0f42280be7c Mon Sep 17 00:00:00 2001
+From b3f2d1c218e1875c120b16048c4b9a5db4430af7 Mon Sep 17 00:00:00 2001
 From: Roman Beranek <roman.beranek@prusa3d.com>
 Date: Wed, 25 Nov 2020 13:07:35 +0100
 Subject: [PATCH] drm/sun4i: decouple TCON_DCLK_DIV value from
@@ -21,7 +21,7 @@ that the sun4i_dotclock driver can remain untouched.
  1 file changed, 25 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/gpu/drm/sun4i/sun4i_tcon.c b/drivers/gpu/drm/sun4i/sun4i_tcon.c
-index 0e83bfed2440..7ac83588bada 100644
+index 0e83bfed24408..7ac83588badae 100644
 --- a/drivers/gpu/drm/sun4i/sun4i_tcon.c
 +++ b/drivers/gpu/drm/sun4i/sun4i_tcon.c
 @@ -291,18 +291,6 @@ static int sun4i_tcon_get_clk_delay(const struct drm_display_mode *mode,
@@ -108,5 +108,5 @@ index 0e83bfed2440..7ac83588bada 100644
  	/* Set dithering if needed */
  	sun4i_tcon0_mode_set_dithering(tcon, connector);
 -- 
-2.39.2
+2.43.0
 

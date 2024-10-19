@@ -1,4 +1,4 @@
-From ee88a467631435b17da27b5ddfe500a2648b78e3 Mon Sep 17 00:00:00 2001
+From 6c7cf9ca23c918a7ca6f1510838c216c201a34b2 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Mon, 28 Sep 2020 04:35:13 +0200
 Subject: [PATCH] arm64: dts: sun50i-a64-pinephone: Add detailed OCV to
@@ -14,7 +14,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 151 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
-index bf7bd0be9deb..243d9c793227 100644
+index bf7bd0be9deb9..243d9c7932270 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
 @@ -28,6 +28,156 @@ backlight: backlight {
@@ -183,5 +183,5 @@ index bf7bd0be9deb..243d9c793227 100644
  
  &reg_aldo1 {
 -- 
-2.39.2
+2.43.0
 

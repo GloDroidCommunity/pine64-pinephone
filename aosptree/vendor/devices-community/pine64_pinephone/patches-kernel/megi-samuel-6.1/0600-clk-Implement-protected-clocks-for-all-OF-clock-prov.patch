@@ -1,4 +1,4 @@
-From e27436f2d08495c36950bc2e9180961c45573fc1 Mon Sep 17 00:00:00 2001
+From 3422a0875d29e662990ec859b13fe32f7cedcfa2 Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Sun, 29 Dec 2019 20:23:28 -0600
 Subject: [PATCH] clk: Implement protected-clocks for all OF clock providers
@@ -68,7 +68,7 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  3 files changed, 87 insertions(+)
 
 diff --git a/drivers/clk/clk-conf.c b/drivers/clk/clk-conf.c
-index 1a4e6340f95c..3b8e22d453cc 100644
+index 1a4e6340f95ce..3b8e22d453cca 100644
 --- a/drivers/clk/clk-conf.c
 +++ b/drivers/clk/clk-conf.c
 @@ -11,6 +11,54 @@
@@ -140,10 +140,10 @@ index 1a4e6340f95c..3b8e22d453cc 100644
  	if (rc < 0)
  		return rc;
 diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
-index 3d79cb3c678a..46fe80689330 100644
+index 0a33a369a9d78..5e9b0fce95b0d 100644
 --- a/drivers/clk/clk.c
 +++ b/drivers/clk/clk.c
-@@ -4545,6 +4545,37 @@ struct clk *devm_clk_hw_get_clk(struct device *dev, struct clk_hw *hw,
+@@ -4666,6 +4666,37 @@ struct clk *devm_clk_hw_get_clk(struct device *dev, struct clk_hw *hw,
  }
  EXPORT_SYMBOL_GPL(devm_clk_hw_get_clk);
  
@@ -182,7 +182,7 @@ index 3d79cb3c678a..46fe80689330 100644
   * clkdev helpers
   */
 diff --git a/drivers/clk/clk.h b/drivers/clk/clk.h
-index 2d801900cad5..367a0f036b13 100644
+index 2d801900cad59..367a0f036b13f 100644
 --- a/drivers/clk/clk.h
 +++ b/drivers/clk/clk.h
 @@ -24,6 +24,7 @@ struct clk_hw *clk_find_hw(const char *dev_id, const char *con_id);
@@ -202,5 +202,5 @@ index 2d801900cad5..367a0f036b13 100644
  
  #endif
 -- 
-2.39.2
+2.43.0
 

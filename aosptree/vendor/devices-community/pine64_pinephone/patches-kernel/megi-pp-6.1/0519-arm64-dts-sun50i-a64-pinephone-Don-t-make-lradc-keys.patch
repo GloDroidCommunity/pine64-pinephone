@@ -1,4 +1,4 @@
-From 72c1264a28411f56f4e29b0200092ce229abe5da Mon Sep 17 00:00:00 2001
+From 438a890849f220808b04f43dff564ff7a660c2ff Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Mon, 26 Apr 2021 01:31:27 +0200
 Subject: [PATCH] arm64: dts: sun50i-a64-pinephone: Don't make lradc keys a
@@ -12,7 +12,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
-index 8083a9f0ede6..4cf527b06303 100644
+index 8083a9f0ede60..4cf527b063039 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
 @@ -533,7 +533,7 @@ &i2s2 {
@@ -25,5 +25,5 @@ index 8083a9f0ede6..4cf527b06303 100644
  
  	button-200 {
 -- 
-2.39.2
+2.43.0
 

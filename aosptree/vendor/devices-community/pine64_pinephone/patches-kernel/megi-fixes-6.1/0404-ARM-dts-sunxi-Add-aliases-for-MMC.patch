@@ -1,4 +1,4 @@
-From 17f22a2d5c55694a7f51029efed61743f97f944a Mon Sep 17 00:00:00 2001
+From ccd36cb344a3b264c49afd3c06c52ca230a27deb Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Mon, 25 Jan 2021 01:15:58 +0100
 Subject: [PATCH] ARM: dts: sunxi: Add aliases for MMC
@@ -11,7 +11,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  3 files changed, 18 insertions(+)
 
 diff --git a/arch/arm/boot/dts/sun5i.dtsi b/arch/arm/boot/dts/sun5i.dtsi
-index 250d6b87ab4d..d0f95d82e3e8 100644
+index 250d6b87ab4d9..d0f95d82e3e8d 100644
 --- a/arch/arm/boot/dts/sun5i.dtsi
 +++ b/arch/arm/boot/dts/sun5i.dtsi
 @@ -51,6 +51,12 @@ / {
@@ -28,7 +28,7 @@ index 250d6b87ab4d..d0f95d82e3e8 100644
  		#address-cells = <1>;
  		#size-cells = <0>;
 diff --git a/arch/arm/boot/dts/sun8i-a83t.dtsi b/arch/arm/boot/dts/sun8i-a83t.dtsi
-index 82fdb04122ca..eead661b903e 100644
+index 82fdb04122caa..eead661b903e0 100644
 --- a/arch/arm/boot/dts/sun8i-a83t.dtsi
 +++ b/arch/arm/boot/dts/sun8i-a83t.dtsi
 @@ -57,6 +57,12 @@ / {
@@ -45,7 +45,7 @@ index 82fdb04122ca..eead661b903e 100644
  		#address-cells = <1>;
  		#size-cells = <0>;
 diff --git a/arch/arm/boot/dts/sun8i-h3.dtsi b/arch/arm/boot/dts/sun8i-h3.dtsi
-index eac2349a2380..5b89d444f86e 100644
+index eac2349a23809..5b89d444f86ec 100644
 --- a/arch/arm/boot/dts/sun8i-h3.dtsi
 +++ b/arch/arm/boot/dts/sun8i-h3.dtsi
 @@ -44,6 +44,12 @@
@@ -62,5 +62,5 @@ index eac2349a2380..5b89d444f86e 100644
  		compatible = "operating-points-v2";
  		opp-shared;
 -- 
-2.39.2
+2.43.0
 

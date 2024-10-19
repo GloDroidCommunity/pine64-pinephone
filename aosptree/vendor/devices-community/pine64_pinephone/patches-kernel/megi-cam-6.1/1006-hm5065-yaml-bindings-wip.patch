@@ -1,4 +1,4 @@
-From d1ee82d10efc6715125d363a9cf4cb9f55299d2d Mon Sep 17 00:00:00 2001
+From 8efc86ef13ab21ab837a26c52264dcc0e54adb2e Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Mon, 20 May 2019 17:58:05 +0200
 Subject: [PATCH] hm5065: yaml bindings (wip)
@@ -10,7 +10,7 @@ Subject: [PATCH] hm5065: yaml bindings (wip)
 
 diff --git a/Documentation/devicetree/bindings/media/i2c/hm5065.yaml b/Documentation/devicetree/bindings/media/i2c/hm5065.yaml
 new file mode 100644
-index 000000000000..df7a4f514b3f
+index 0000000000000..df7a4f514b3f9
 --- /dev/null
 +++ b/Documentation/devicetree/bindings/media/i2c/hm5065.yaml
 @@ -0,0 +1,90 @@
@@ -105,5 +105,5 @@ index 000000000000..df7a4f514b3f
 +	};
 +};
 -- 
-2.39.2
+2.43.0
 

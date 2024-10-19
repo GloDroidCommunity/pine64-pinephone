@@ -1,4 +1,4 @@
-From 3165202e088d09c9a1a6df31e8421e3a7ca53e19 Mon Sep 17 00:00:00 2001
+From 1529ec6d73d38fb85cc4b36c5684f29816f514e2 Mon Sep 17 00:00:00 2001
 From: Jernej Skrabec <jernej.skrabec@gmail.com>
 Date: Sun, 9 May 2021 10:39:56 +0200
 Subject: [PATCH] arm64: dts: allwinner: a64: Add hdmi sound card
@@ -11,7 +11,7 @@ Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
  1 file changed, 15 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi
-index 77b5349f6087..e31e4bbeec66 100644
+index 77b5349f60879..e31e4bbeec66a 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi
 @@ -176,6 +176,20 @@ link0_codec: codec {
@@ -44,5 +44,5 @@ index 77b5349f6087..e31e4bbeec66 100644
  				     "allwinner,sun8i-a83t-dw-hdmi";
  			reg = <0x01ee0000 0x10000>;
 -- 
-2.39.2
+2.43.0
 

@@ -1,4 +1,4 @@
-From f4a01ca0e9efa0d9f8f6cd3252d07fffaca5cb07 Mon Sep 17 00:00:00 2001
+From f4a44768c4df4205569c6b3d22f0cad4373b0cd4 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Fri, 24 Jan 2020 18:25:59 +0100
 Subject: [PATCH] media: ov5640: [Experiment] Try to disable
@@ -12,10 +12,10 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 17 insertions(+)
 
 diff --git a/drivers/media/i2c/ov5640.c b/drivers/media/i2c/ov5640.c
-index ea8b410d8b4f..a2a69df10345 100644
+index 0eed4138d33b2..d32689fba0351 100644
 --- a/drivers/media/i2c/ov5640.c
 +++ b/drivers/media/i2c/ov5640.c
-@@ -2324,6 +2324,7 @@ static int ov5640_set_mode(struct ov5640_dev *sensor)
+@@ -2323,6 +2323,7 @@ static int ov5640_set_mode(struct ov5640_dev *sensor)
  	bool auto_gain = sensor->ctrls.auto_gain->val == 1;
  	bool auto_exp =  sensor->ctrls.auto_exp->val == V4L2_EXPOSURE_AUTO;
  	int ret;
@@ -23,7 +23,7 @@ index ea8b410d8b4f..a2a69df10345 100644
  
  	dn_mode = mode->dn_mode;
  	orig_dn_mode = orig_mode->dn_mode;
-@@ -2387,6 +2388,22 @@ static int ov5640_set_mode(struct ov5640_dev *sensor)
+@@ -2386,6 +2387,22 @@ static int ov5640_set_mode(struct ov5640_dev *sensor)
  	if (ret < 0)
  		return ret;
  
@@ -47,5 +47,5 @@ index ea8b410d8b4f..a2a69df10345 100644
  	sensor->last_mode = mode;
  
 -- 
-2.39.2
+2.43.0
 

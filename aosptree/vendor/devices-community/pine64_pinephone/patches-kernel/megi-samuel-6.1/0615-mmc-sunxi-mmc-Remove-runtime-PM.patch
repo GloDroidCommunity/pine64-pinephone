@@ -1,4 +1,4 @@
-From d571d12ba1dbd0f9021ada24c4fee0f0f7649630 Mon Sep 17 00:00:00 2001
+From e521b7a2aa4140cd6c3ded58c8fb1e388fb7ae4f Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Mon, 15 Feb 2021 09:11:16 +0100
 Subject: [PATCH] mmc: sunxi-mmc: Remove runtime-PM
@@ -39,7 +39,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 17 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/mmc/host/sunxi-mmc.c b/drivers/mmc/host/sunxi-mmc.c
-index 69dcb8805e05..d90ec77ef845 100644
+index 69dcb8805e05f..d90ec77ef8451 100644
 --- a/drivers/mmc/host/sunxi-mmc.c
 +++ b/drivers/mmc/host/sunxi-mmc.c
 @@ -949,9 +949,15 @@ static void sunxi_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
@@ -133,5 +133,5 @@ index 69dcb8805e05..d90ec77ef845 100644
  	.probe		= sunxi_mmc_probe,
  	.remove		= sunxi_mmc_remove,
 -- 
-2.39.2
+2.43.0
 

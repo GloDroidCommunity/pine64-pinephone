@@ -1,4 +1,4 @@
-From 2bd82efefe89bf3679e5ab6ef26fd8b5aeeae14a Mon Sep 17 00:00:00 2001
+From 2fcb82dd80b44f5a4c77ee1d6729da0c9d743336 Mon Sep 17 00:00:00 2001
 From: Benjamin Schaaf <ben.schaaf@gmail.com>
 Date: Mon, 22 Nov 2021 23:38:26 +1100
 Subject: [PATCH] media: ov5640: Improve firmware load time
@@ -13,10 +13,10 @@ don't bother trying.
  1 file changed, 71 insertions(+), 26 deletions(-)
 
 diff --git a/drivers/media/i2c/ov5640.c b/drivers/media/i2c/ov5640.c
-index 64c3664fc80c..6957c39d911b 100644
+index d8656a7f808fb..2f4ab659b1a49 100644
 --- a/drivers/media/i2c/ov5640.c
 +++ b/drivers/media/i2c/ov5640.c
-@@ -1230,6 +1230,8 @@ static int ov5640_write_reg(struct ov5640_dev *sensor, u16 reg, u8 val)
+@@ -1229,6 +1229,8 @@ static int ov5640_write_reg(struct ov5640_dev *sensor, u16 reg, u8 val)
  	msg.buf = buf;
  	msg.len = sizeof(buf);
  
@@ -25,7 +25,7 @@ index 64c3664fc80c..6957c39d911b 100644
  	ret = i2c_transfer(client->adapter, &msg, 1);
  	if (ret < 0) {
  		dev_err(&client->dev, "%s: error: reg=%x, val=%x\n",
-@@ -1240,6 +1242,42 @@ static int ov5640_write_reg(struct ov5640_dev *sensor, u16 reg, u8 val)
+@@ -1239,6 +1241,42 @@ static int ov5640_write_reg(struct ov5640_dev *sensor, u16 reg, u8 val)
  	return 0;
  }
  
@@ -68,7 +68,7 @@ index 64c3664fc80c..6957c39d911b 100644
  static int ov5640_read_reg(struct ov5640_dev *sensor, u16 reg, u8 *val)
  {
  	struct i2c_client *client = sensor->i2c_client;
-@@ -2543,6 +2581,7 @@ static int ov5640_copy_fw_to_device(struct ov5640_dev *sensor,
+@@ -2539,6 +2577,7 @@ static int ov5640_copy_fw_to_device(struct ov5640_dev *sensor,
  	u8 fw_status;
  	int i;
  	int ret;
@@ -76,7 +76,7 @@ index 64c3664fc80c..6957c39d911b 100644
  
  	// Putting MCU in reset state
  	ret = ov5640_write_reg(sensor, OV5640_REG_SYS_RESET00, 0x20);
-@@ -2550,10 +2589,24 @@ static int ov5640_copy_fw_to_device(struct ov5640_dev *sensor,
+@@ -2546,10 +2585,24 @@ static int ov5640_copy_fw_to_device(struct ov5640_dev *sensor,
  		return ret;
  
  	// Write firmware
@@ -105,7 +105,7 @@ index 64c3664fc80c..6957c39d911b 100644
  
  	// Reset MCU state
  	ov5640_write_reg(sensor, OV5640_REG_FW_CMD_MAIN, 0x00);
-@@ -2575,31 +2628,17 @@ static int ov5640_copy_fw_to_device(struct ov5640_dev *sensor,
+@@ -2571,31 +2624,17 @@ static int ov5640_copy_fw_to_device(struct ov5640_dev *sensor,
  	// Wait for firmware to be ready
  	for (i = 0; i < 5; i++) {
  		ret = ov5640_read_reg(sensor, OV5640_REG_FW_STATUS, &fw_status);
@@ -142,7 +142,7 @@ index 64c3664fc80c..6957c39d911b 100644
  	dev_err(&client->dev, "uploaded firmware didn't start, got to 0x%x\n", fw_status);
  	return -ETIMEDOUT;
  }
-@@ -2640,10 +2679,9 @@ static int ov5640_af_init(struct ov5640_dev *sensor)
+@@ -2636,10 +2675,9 @@ static int ov5640_af_init(struct ov5640_dev *sensor)
  		return ret;
  
  	// Set lens focus driver on
@@ -154,7 +154,7 @@ index 64c3664fc80c..6957c39d911b 100644
  	return ret;
  }
  
-@@ -3422,9 +3460,16 @@ static int ov5640_set_ctrl_focus(struct ov5640_dev *sensor, int command)
+@@ -3414,9 +3452,16 @@ static int ov5640_set_ctrl_focus(struct ov5640_dev *sensor, int command)
  	struct i2c_client *client = sensor->i2c_client;
  	int ret;
  
@@ -173,5 +173,5 @@ index 64c3664fc80c..6957c39d911b 100644
  		return 0;
  	}
 -- 
-2.39.2
+2.43.0
 

@@ -1,4 +1,4 @@
-From 2d8055bc85b661984f88a5153de2bb0bd44c4606 Mon Sep 17 00:00:00 2001
+From 6f9c8d8a41a4c35799476f6b15a34f7ac9ff6b2c Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Wed, 27 Oct 2021 17:22:51 +0200
 Subject: [PATCH] media: gc2145: Disable debug output
@@ -11,7 +11,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/media/i2c/gc2145.c b/drivers/media/i2c/gc2145.c
-index aecd88a8efc1..e9479bb502e6 100644
+index aecd88a8efc1a..e9479bb502e64 100644
 --- a/drivers/media/i2c/gc2145.c
 +++ b/drivers/media/i2c/gc2145.c
 @@ -8,7 +8,7 @@
@@ -33,5 +33,5 @@ index aecd88a8efc1..e9479bb502e6 100644
  	}
  
 -- 
-2.39.2
+2.43.0
 

@@ -1,4 +1,4 @@
-From dfa653b09b35e8df3113956b8a4e74d785eea8e9 Mon Sep 17 00:00:00 2001
+From 70a1623d089073b33f682bc5d0a273e3f40a70ae Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Sat, 8 May 2021 19:10:26 +0200
 Subject: [PATCH] 8723cs: Fix indentation
@@ -11,7 +11,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 28 insertions(+), 28 deletions(-)
 
 diff --git a/drivers/staging/rtl8723cs/hal/rtl8703b/sdio/rtl8703bs_recv.c b/drivers/staging/rtl8723cs/hal/rtl8703b/sdio/rtl8703bs_recv.c
-index 54ed0cfb1d1e..28f715679844 100644
+index 54ed0cfb1d1e8..28f7156798445 100644
 --- a/drivers/staging/rtl8723cs/hal/rtl8703b/sdio/rtl8703bs_recv.c
 +++ b/drivers/staging/rtl8723cs/hal/rtl8703b/sdio/rtl8703bs_recv.c
 @@ -142,40 +142,40 @@ s32 rtl8703bs_recv_hdl(_adapter *padapter)
@@ -84,5 +84,5 @@ index 54ed0cfb1d1e..28f715679844 100644
  static void rtl8703bs_recv_tasklet(void *priv)
  {
 -- 
-2.39.2
+2.43.0
 

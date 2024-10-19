@@ -1,4 +1,4 @@
-From cee3d08289c08382cb03d0536ac2be0540f3c3c9 Mon Sep 17 00:00:00 2001
+From 6a460315a2af69d6df3e2d9fe2d0936196ddb111 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Tue, 11 Feb 2020 14:33:08 +0100
 Subject: [PATCH] sound: soc: sun8i-codec: Drop debug statements
@@ -11,7 +11,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 1 insertion(+), 8 deletions(-)
 
 diff --git a/sound/soc/sunxi/sun8i-codec.c b/sound/soc/sunxi/sun8i-codec.c
-index f3c2e004fa24..6a1f941659a9 100644
+index f3c2e004fa246..6a1f941659a96 100644
 --- a/sound/soc/sunxi/sun8i-codec.c
 +++ b/sound/soc/sunxi/sun8i-codec.c
 @@ -1593,21 +1593,14 @@ static irqreturn_t sun8i_codec_jack_irq(int irq, void *dev_id)
@@ -38,5 +38,5 @@ index f3c2e004fa24..6a1f941659a9 100644
  }
  
 -- 
-2.39.2
+2.43.0
 

@@ -1,4 +1,4 @@
-From a143f2b5da64f3f181c919d96c5f0d66749ff81a Mon Sep 17 00:00:00 2001
+From b4e41285f7178ac18e098b0d33906c9c6003abde Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Mon, 14 Dec 2020 07:42:08 +0100
 Subject: [PATCH] power: supply: axp20x-usb-power: Change Vbus hold voltage to
@@ -12,7 +12,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 12 insertions(+)
 
 diff --git a/drivers/power/supply/axp20x_usb_power.c b/drivers/power/supply/axp20x_usb_power.c
-index 7218131a851f..5028aaccc781 100644
+index 7218131a851fb..5028aaccc7813 100644
 --- a/drivers/power/supply/axp20x_usb_power.c
 +++ b/drivers/power/supply/axp20x_usb_power.c
 @@ -846,6 +846,18 @@ static int axp20x_usb_power_probe(struct platform_device *pdev)
@@ -35,5 +35,5 @@ index 7218131a851f..5028aaccc781 100644
  	psy_cfg.drv_data = power;
  
 -- 
-2.39.2
+2.43.0
 

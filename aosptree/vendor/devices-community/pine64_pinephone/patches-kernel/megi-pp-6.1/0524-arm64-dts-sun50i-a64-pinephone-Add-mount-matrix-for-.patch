@@ -1,4 +1,4 @@
-From 4e7d8c6aa70d38530a129b8709716571038680b2 Mon Sep 17 00:00:00 2001
+From 453034783f8901c5ad7f089040c4c41636b8a153 Mon Sep 17 00:00:00 2001
 From: Shoji Keita <awaittrot@shjk.jp>
 Date: Wed, 14 Jul 2021 07:17:18 +0900
 Subject: [PATCH] arm64: dts: sun50i-a64-pinephone: Add mount-matrix for
@@ -13,7 +13,7 @@ Signed-off-by: Shoji Keita <awaittrot@shjk.jp>
  1 file changed, 6 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
-index e174c3cfc34f..dd7b27a6597c 100644
+index e174c3cfc34f0..dd7b27a6597cf 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
 @@ -499,6 +499,9 @@ af8133j: magnetometer@1c {
@@ -37,5 +37,5 @@ index e174c3cfc34f..dd7b27a6597c 100644
  
  	/* Light/proximity sensor */
 -- 
-2.39.2
+2.43.0
 

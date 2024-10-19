@@ -1,4 +1,4 @@
-From cda370639ebac5108a4e50f54d46d7e5f68c9978 Mon Sep 17 00:00:00 2001
+From 9ae96a0dce492b30918ef99a9869963bc8477f0b Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Sat, 29 Feb 2020 01:04:17 -0600
 Subject: [PATCH] power: supply: axp20x_battery: Send uevents for status
@@ -10,7 +10,7 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  1 file changed, 53 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
-index 6b51005d8551..3331910f46a6 100644
+index 6b51005d8551e..3331910f46a6c 100644
 --- a/drivers/power/supply/axp20x_battery.c
 +++ b/drivers/power/supply/axp20x_battery.c
 @@ -57,14 +57,22 @@
@@ -135,5 +135,5 @@ index 6b51005d8551..3331910f46a6 100644
  	},
  };
 -- 
-2.39.2
+2.43.0
 

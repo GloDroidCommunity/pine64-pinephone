@@ -1,4 +1,4 @@
-From e29c9790da8412b62c90ea17dd10a67451018521 Mon Sep 17 00:00:00 2001
+From 029d11a07a5c458bf904720811412ddd9de10168 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Wed, 23 Sep 2020 14:59:41 +0200
 Subject: [PATCH] power: supply: axp20x_battery: Setup thermal regulation
@@ -14,7 +14,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 54 insertions(+)
 
 diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
-index 8ff7042ff852..1ca11e93f984 100644
+index 8ff7042ff8526..1ca11e93f9843 100644
 --- a/drivers/power/supply/axp20x_battery.c
 +++ b/drivers/power/supply/axp20x_battery.c
 @@ -590,6 +590,7 @@ static int axp20x_power_probe(struct platform_device *pdev)
@@ -86,5 +86,5 @@ index 8ff7042ff852..1ca11e93f984 100644
  }
  
 -- 
-2.39.2
+2.43.0
 

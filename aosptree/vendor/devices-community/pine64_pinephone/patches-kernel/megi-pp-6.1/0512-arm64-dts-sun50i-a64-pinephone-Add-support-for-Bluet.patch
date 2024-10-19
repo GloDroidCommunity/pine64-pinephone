@@ -1,4 +1,4 @@
-From 867bfc5b735a3630f6c289e302f00e6c0aa9992c Mon Sep 17 00:00:00 2001
+From 8780a4667db61fd0355406c8155a5eb409f6a1a9 Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Thu, 6 Feb 2020 23:49:27 -0600
 Subject: [PATCH] arm64: dts: sun50i-a64-pinephone: Add support for Bluetooth
@@ -18,7 +18,7 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  1 file changed, 1 insertion(+)
 
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
-index 9bf23a57172f..19c712ab85aa 100644
+index 9bf23a57172fa..19c712ab85aac 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
 @@ -181,6 +181,7 @@ bat: battery {
@@ -30,5 +30,5 @@ index 9bf23a57172f..19c712ab85aa 100644
  
  	chosen {
 -- 
-2.39.2
+2.43.0
 

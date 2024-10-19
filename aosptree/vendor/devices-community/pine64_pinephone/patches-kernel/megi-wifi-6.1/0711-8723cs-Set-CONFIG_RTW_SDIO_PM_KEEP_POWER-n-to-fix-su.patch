@@ -1,4 +1,4 @@
-From f28aa8a8bbeba2b8599f8c3fea2171bc40fd6240 Mon Sep 17 00:00:00 2001
+From 3689780b2b8eca712595f9d660f28c3004b4c677 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Wed, 2 Dec 2020 12:45:21 +0100
 Subject: [PATCH] 8723cs: Set CONFIG_RTW_SDIO_PM_KEEP_POWER = n to fix suspend
@@ -12,7 +12,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/staging/rtl8723cs/Makefile b/drivers/staging/rtl8723cs/Makefile
-index 5ef5557e58b7..0fe39a873866 100644
+index 5ef5557e58b72..0fe39a873866b 100644
 --- a/drivers/staging/rtl8723cs/Makefile
 +++ b/drivers/staging/rtl8723cs/Makefile
 @@ -108,7 +108,7 @@ CONFIG_RTW_LOG_LEVEL = 6
@@ -34,5 +34,5 @@ index 5ef5557e58b7..0fe39a873866 100644
  CONFIG_MP_VHT_HW_TX_MODE = n
  ###################### ROAMING #####################################
 -- 
-2.39.2
+2.43.0
 

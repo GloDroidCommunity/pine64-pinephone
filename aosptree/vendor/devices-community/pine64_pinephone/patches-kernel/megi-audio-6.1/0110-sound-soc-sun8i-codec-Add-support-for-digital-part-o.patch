@@ -1,4 +1,4 @@
-From a4991a42a5d8f272accb33f912d40adc7d3d1366 Mon Sep 17 00:00:00 2001
+From 0171df96124e17c80f95f1a1508770ca526929ac Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Sun, 9 Feb 2020 17:58:59 +0100
 Subject: [PATCH] sound: soc: sun8i-codec: Add support for digital part of the
@@ -22,7 +22,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  2 files changed, 218 insertions(+), 8 deletions(-)
 
 diff --git a/sound/soc/sunxi/Kconfig b/sound/soc/sunxi/Kconfig
-index 6a17e49535bd..c61a44bf5198 100644
+index 6a17e49535bdb..c61a44bf5198e 100644
 --- a/sound/soc/sunxi/Kconfig
 +++ b/sound/soc/sunxi/Kconfig
 @@ -16,9 +16,11 @@ config SND_SUN8I_CODEC
@@ -39,7 +39,7 @@ index 6a17e49535bd..c61a44bf5198 100644
  	  Say Y or M if you want to add sun8i digital audio codec support.
  
 diff --git a/sound/soc/sunxi/sun8i-codec.c b/sound/soc/sunxi/sun8i-codec.c
-index 4b6b7336da06..f3c2e004fa24 100644
+index 4b6b7336da067..f3c2e004fa246 100644
 --- a/sound/soc/sunxi/sun8i-codec.c
 +++ b/sound/soc/sunxi/sun8i-codec.c
 @@ -18,7 +18,9 @@
@@ -379,5 +379,5 @@ index 4b6b7336da06..f3c2e004fa24 100644
  };
  MODULE_DEVICE_TABLE(of, sun8i_codec_of_match);
 -- 
-2.39.2
+2.43.0
 

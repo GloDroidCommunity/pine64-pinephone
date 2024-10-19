@@ -1,4 +1,4 @@
-From 3aa4df41124239f150bf9b3c29594cfe30e770b0 Mon Sep 17 00:00:00 2001
+From 9606388b528566e330a1afd0f92e996f93851d1b Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Wed, 1 Jan 2020 16:03:46 -0600
 Subject: [PATCH] ARM: dts: sunxi: h3/h5: Protect SCP clocks
@@ -9,7 +9,7 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  1 file changed, 2 insertions(+)
 
 diff --git a/arch/arm/boot/dts/sunxi-h3-h5.dtsi b/arch/arm/boot/dts/sunxi-h3-h5.dtsi
-index 09aefb4e90f8..66c1de1a8b9b 100644
+index 09aefb4e90f85..66c1de1a8b9b1 100644
 --- a/arch/arm/boot/dts/sunxi-h3-h5.dtsi
 +++ b/arch/arm/boot/dts/sunxi-h3-h5.dtsi
 @@ -389,6 +389,7 @@ ccu: clock@1c20000 {
@@ -29,5 +29,5 @@ index 09aefb4e90f8..66c1de1a8b9b 100644
  			#reset-cells = <1>;
  		};
 -- 
-2.39.2
+2.43.0
 

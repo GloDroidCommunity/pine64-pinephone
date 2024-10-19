@@ -1,4 +1,4 @@
-From 246609050e753ded4cb82b09e09f3ef4e35a9f3a Mon Sep 17 00:00:00 2001
+From ae608cdb11b85f42d55985ccbf9c6aff04eaff8c Mon Sep 17 00:00:00 2001
 From: Vasily Khoruzhick <anarsoul@gmail.com>
 Date: Wed, 31 Oct 2018 20:07:41 -0700
 Subject: [PATCH] Bluetooth: hci_h5: Add support for binding RTL8723CS with
@@ -14,7 +14,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 2 insertions(+)
 
 diff --git a/drivers/bluetooth/hci_h5.c b/drivers/bluetooth/hci_h5.c
-index e90670955df2..904499163c67 100644
+index e90670955df2c..904499163c670 100644
 --- a/drivers/bluetooth/hci_h5.c
 +++ b/drivers/bluetooth/hci_h5.c
 @@ -1106,6 +1106,8 @@ static const struct of_device_id rtl_bluetooth_of_match[] = {
@@ -27,5 +27,5 @@ index e90670955df2..904499163c67 100644
  	{ },
  };
 -- 
-2.39.2
+2.43.0
 

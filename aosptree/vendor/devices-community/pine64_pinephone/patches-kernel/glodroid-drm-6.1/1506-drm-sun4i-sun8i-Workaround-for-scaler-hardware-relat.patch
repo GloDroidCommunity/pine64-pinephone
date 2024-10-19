@@ -1,4 +1,4 @@
-From 583a672672bc39385ff888e5b9710680f5276e97 Mon Sep 17 00:00:00 2001
+From f664dc135d3b24b9c4164fbee0cba710dbbaf68a Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Fri, 10 Jun 2022 19:34:39 +0300
 Subject: [PATCH] drm/sun4i: sun8i: Workaround for scaler hardware-related
@@ -88,7 +88,7 @@ Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
  11 files changed, 329 insertions(+), 59 deletions(-)
 
 diff --git a/drivers/gpu/drm/sun4i/sun4i_tcon.c b/drivers/gpu/drm/sun4i/sun4i_tcon.c
-index cfdbf983df6a..5e821ee4adbd 100644
+index cfdbf983df6a2..5e821ee4adbdb 100644
 --- a/drivers/gpu/drm/sun4i/sun4i_tcon.c
 +++ b/drivers/gpu/drm/sun4i/sun4i_tcon.c
 @@ -797,6 +797,9 @@ static irqreturn_t sun4i_tcon_handler(int irq, void *private)
@@ -112,7 +112,7 @@ index cfdbf983df6a..5e821ee4adbd 100644
  }
  
 diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
-index f76a5665b6b5..06d3d06fa268 100644
+index f76a5665b6b51..06d3d06fa268b 100644
 --- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
 +++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
 @@ -247,12 +247,81 @@ int sun8i_mixer_drm_format_to_hw(u32 format, u32 *hw_format)
@@ -279,7 +279,7 @@ index f76a5665b6b5..06d3d06fa268 100644
  	if (IS_ERR(mixer->bus_clk)) {
  		dev_err(dev, "Couldn't get the mixer bus clock\n");
 diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h b/drivers/gpu/drm/sun4i/sun8i_mixer.h
-index 42a6a6daea0e..0c2c4bc76b54 100644
+index 42a6a6daea0ed..0c2c4bc76b540 100644
 --- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
 +++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
 @@ -21,6 +21,10 @@
@@ -315,7 +315,7 @@ index 42a6a6daea0e..0c2c4bc76b54 100644
  
  static inline struct sun8i_mixer *
 diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
-index b2bca0f25b0b..e0fea80593b5 100644
+index b2bca0f25b0b6..e0fea80593b54 100644
 --- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
 +++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
 @@ -101,11 +101,12 @@ static void sun8i_ui_layer_update_alpha(struct sun8i_mixer *mixer, int channel,
@@ -398,7 +398,7 @@ index b2bca0f25b0b..e0fea80593b5 100644
  				    layer->overlay, plane, zpos, false);
  	sun8i_ui_layer_update_formats(mixer, layer->channel,
 diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.h b/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
-index bd3c30e8058d..2223fb6dd0d1 100644
+index bd3c30e8058d4..2223fb6dd0d1f 100644
 --- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
 +++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
 @@ -14,6 +14,8 @@
@@ -419,7 +419,7 @@ index bd3c30e8058d..2223fb6dd0d1 100644
  
  static inline struct sun8i_ui_layer *
 diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c b/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c
-index ae0806bccac7..9d75a0c23732 100644
+index ae0806bccac7f..9d75a0c23732e 100644
 --- a/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c
 +++ b/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c
 @@ -10,7 +10,9 @@
@@ -545,7 +545,7 @@ index ae0806bccac7..9d75a0c23732 100644
 +	sun8i_ui_scaler_enable(mixer, layer, data->en);
  }
 diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_scaler.h b/drivers/gpu/drm/sun4i/sun8i_ui_scaler.h
-index 1ef4bd6f2718..8b858f6dcbd1 100644
+index 1ef4bd6f27189..8b858f6dcbd1a 100644
 --- a/drivers/gpu/drm/sun4i/sun8i_ui_scaler.h
 +++ b/drivers/gpu/drm/sun4i/sun8i_ui_scaler.h
 @@ -35,9 +35,25 @@
@@ -579,7 +579,7 @@ index 1ef4bd6f2718..8b858f6dcbd1 100644
  
  #endif
 diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
-index ad5c6d86d708..ab87b1229f08 100644
+index ad5c6d86d708f..ab87b1229f08c 100644
 --- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
 +++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
 @@ -104,13 +104,14 @@ static void sun8i_vi_layer_update_alpha(struct sun8i_mixer *mixer, int channel,
@@ -635,7 +635,7 @@ index ad5c6d86d708..ab87b1229f08 100644
  				    layer->overlay, plane, zpos, false);
  	sun8i_vi_layer_update_formats(mixer, layer->channel,
 diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.h b/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
-index ccf91f09f1fe..449516859328 100644
+index ccf91f09f1fed..4495168593287 100644
 --- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
 +++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
 @@ -8,6 +8,8 @@
@@ -657,7 +657,7 @@ index ccf91f09f1fe..449516859328 100644
  
  static inline struct sun8i_vi_layer *
 diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_scaler.c b/drivers/gpu/drm/sun4i/sun8i_vi_scaler.c
-index 7ba75011adf9..46c5d22adb55 100644
+index 7ba75011adf9f..46c5d22adb552 100644
 --- a/drivers/gpu/drm/sun4i/sun8i_vi_scaler.c
 +++ b/drivers/gpu/drm/sun4i/sun8i_vi_scaler.c
 @@ -11,6 +11,8 @@
@@ -745,7 +745,7 @@ index 7ba75011adf9..46c5d22adb55 100644
 +	sun8i_vi_scaler_enable(mixer, layer, data->en);
 +}
 diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_scaler.h b/drivers/gpu/drm/sun4i/sun8i_vi_scaler.h
-index 68f6593b369a..6e6401c9a5ac 100644
+index 68f6593b369ab..6e6401c9a5ac2 100644
 --- a/drivers/gpu/drm/sun4i/sun8i_vi_scaler.h
 +++ b/drivers/gpu/drm/sun4i/sun8i_vi_scaler.h
 @@ -69,10 +69,28 @@
@@ -783,5 +783,5 @@ index 68f6593b369a..6e6401c9a5ac 100644
  
  #endif
 -- 
-2.39.2
+2.43.0
 

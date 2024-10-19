@@ -1,4 +1,4 @@
-From c234fcb53991629825821bfbbf870b897d3704ba Mon Sep 17 00:00:00 2001
+From 84ab8d5869b66aa2dca092b534f1fe787a533f49 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Wed, 8 Jul 2020 00:58:16 +0200
 Subject: [PATCH] arm64: dts: sun50i-a64-pinephone: Add Type-C support for all
@@ -17,7 +17,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  4 files changed, 299 insertions(+), 1 deletion(-)
 
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.0.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.0.dts
-index 219f720b8b7d..498ae493d176 100644
+index 219f720b8b7d9..498ae493d176d 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.0.dts
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.0.dts
 @@ -8,6 +8,92 @@
@@ -114,7 +114,7 @@ index 219f720b8b7d..498ae493d176 100644
  
  &codec_analog {
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.1.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.1.dts
-index 723af64a9cee..73275308f484 100644
+index 723af64a9ceee..73275308f484f 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.1.dts
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.1.dts
 @@ -8,6 +8,20 @@
@@ -219,7 +219,7 @@ index 723af64a9cee..73275308f484 100644
 +	};
 +};
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.2.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.2.dts
-index 4e7e237cb46a..40127186606f 100644
+index 4e7e237cb46aa..40127186606f2 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.2.dts
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.2.dts
 @@ -48,7 +48,67 @@ &mmc1 {
@@ -291,7 +291,7 @@ index 4e7e237cb46a..40127186606f 100644
 +	};
 +};
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
-index 92e77503b591..bf7bd0be9deb 100644
+index 92e77503b5910..bf7bd0be9deb9 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
 @@ -10,6 +10,7 @@
@@ -412,5 +412,5 @@ index 92e77503b591..bf7bd0be9deb 100644
  };
  
 -- 
-2.39.2
+2.43.0
 

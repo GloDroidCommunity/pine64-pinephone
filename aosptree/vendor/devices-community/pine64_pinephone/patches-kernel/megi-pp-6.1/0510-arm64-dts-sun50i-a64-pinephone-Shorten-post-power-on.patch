@@ -1,4 +1,4 @@
-From 7dd5eb9ae1071c01f9e397b42c1a29cfafc1f644 Mon Sep 17 00:00:00 2001
+From 7975cedfc3b711fef5b29175793ecb55f333472f Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Thu, 6 Feb 2020 04:58:32 +0100
 Subject: [PATCH] arm64: dts: sun50i-a64-pinephone: Shorten post-power-on-delay
@@ -12,7 +12,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 3 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
-index 243d9c793227..ff1182be8434 100644
+index 243d9c7932270..ff1182be84348 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
 @@ -543,6 +543,7 @@ &mmc0 {
@@ -40,5 +40,5 @@ index 243d9c793227..ff1182be8434 100644
  };
  
 -- 
-2.39.2
+2.43.0
 

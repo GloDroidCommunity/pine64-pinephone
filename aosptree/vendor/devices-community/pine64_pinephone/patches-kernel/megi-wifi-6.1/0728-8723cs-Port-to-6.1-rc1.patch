@@ -1,4 +1,4 @@
-From 41b9c3368af85d3306e5b9148aaf046b28b853b3 Mon Sep 17 00:00:00 2001
+From 74f819e6be976cfc907be5edc84463b3c02b6c72 Mon Sep 17 00:00:00 2001
 From: Ondrej Jirman <megi@xff.cz>
 Date: Mon, 17 Oct 2022 01:44:10 +0200
 Subject: [PATCH] 8723cs: Port to 6.1-rc1
@@ -9,7 +9,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 1 insertion(+), 9 deletions(-)
 
 diff --git a/drivers/staging/rtl8723cs/os_dep/osdep_service.c b/drivers/staging/rtl8723cs/os_dep/osdep_service.c
-index dd3fb044993c..0658fdd045dd 100644
+index dd3fb044993c3..0658fdd045ddc 100644
 --- a/drivers/staging/rtl8723cs/os_dep/osdep_service.c
 +++ b/drivers/staging/rtl8723cs/os_dep/osdep_service.c
 @@ -2863,15 +2863,7 @@ u64 rtw_division64(u64 x, u64 y)
@@ -30,5 +30,5 @@ index dd3fb044993c..0658fdd045dd 100644
  #error "to be implemented\n"
  #elif defined(PLATFORM_FREEBSD)
 -- 
-2.39.2
+2.43.0
 

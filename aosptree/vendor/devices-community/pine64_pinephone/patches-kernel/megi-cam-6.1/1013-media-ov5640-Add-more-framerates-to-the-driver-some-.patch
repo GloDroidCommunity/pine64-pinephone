@@ -1,4 +1,4 @@
-From 37c74aaed6d06d96898766f0690b46b83fc77d56 Mon Sep 17 00:00:00 2001
+From 3d56cb75502273f24cb9956206bc66ec5058e5a8 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Fri, 24 Jan 2020 18:25:12 +0100
 Subject: [PATCH] media: ov5640: Add more framerates to the driver (some of
@@ -10,7 +10,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 11 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/media/i2c/ov5640.c b/drivers/media/i2c/ov5640.c
-index 267f514023e7..ea8b410d8b4f 100644
+index e0019668a8f86..0eed4138d33b2 100644
 --- a/drivers/media/i2c/ov5640.c
 +++ b/drivers/media/i2c/ov5640.c
 @@ -134,7 +134,11 @@ enum ov5640_mode_id {
@@ -37,7 +37,7 @@ index 267f514023e7..ea8b410d8b4f 100644
  	[OV5640_15_FPS] = 15,
  	[OV5640_30_FPS] = 30,
  	[OV5640_60_FPS] = 60,
-@@ -2742,11 +2750,11 @@ static int ov5640_try_frame_interval(struct ov5640_dev *sensor,
+@@ -2738,11 +2746,11 @@ static int ov5640_try_frame_interval(struct ov5640_dev *sensor,
  				     u32 width, u32 height)
  {
  	const struct ov5640_mode_info *mode;
@@ -52,5 +52,5 @@ index 267f514023e7..ea8b410d8b4f 100644
  
  	if (fi->numerator == 0) {
 -- 
-2.39.2
+2.43.0
 

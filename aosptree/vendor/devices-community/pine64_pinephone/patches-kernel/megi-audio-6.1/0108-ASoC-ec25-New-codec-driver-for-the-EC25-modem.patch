@@ -1,4 +1,4 @@
-From e71a88b2ecfe0f3b32fd00d730e178eb5ab9cd38 Mon Sep 17 00:00:00 2001
+From cfba1fe3e6f99f1c5a18bf6153c4ac7e3baae736 Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Fri, 25 Sep 2020 21:42:52 -0500
 Subject: [PATCH] ASoC: ec25: New codec driver for the EC25 modem
@@ -16,7 +16,7 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  create mode 100644 sound/soc/codecs/ec25.c
 
 diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
-index 965ae55fa160..e9d3617bb068 100644
+index 0904827e2f3db..c5a0571ad1650 100644
 --- a/sound/soc/codecs/Kconfig
 +++ b/sound/soc/codecs/Kconfig
 @@ -919,6 +919,9 @@ config SND_SOC_HDMI_CODEC
@@ -30,7 +30,7 @@ index 965ae55fa160..e9d3617bb068 100644
  	tristate "Everest Semi ES7134 CODEC"
  
 diff --git a/sound/soc/codecs/Makefile b/sound/soc/codecs/Makefile
-index 71d3ce5867e4..e2d463a317e5 100644
+index 71d3ce5867e4f..e2d463a317e5b 100644
 --- a/sound/soc/codecs/Makefile
 +++ b/sound/soc/codecs/Makefile
 @@ -99,6 +99,7 @@ snd-soc-da7219-objs := da7219.o da7219-aad.o
@@ -51,7 +51,7 @@ index 71d3ce5867e4..e2d463a317e5 100644
  obj-$(CONFIG_SND_SOC_ES8316)    += snd-soc-es8316.o
 diff --git a/sound/soc/codecs/ec25.c b/sound/soc/codecs/ec25.c
 new file mode 100644
-index 000000000000..4f9b6b06cce7
+index 0000000000000..4f9b6b06cce71
 --- /dev/null
 +++ b/sound/soc/codecs/ec25.c
 @@ -0,0 +1,94 @@
@@ -150,5 +150,5 @@ index 000000000000..4f9b6b06cce7
 +MODULE_LICENSE("GPL");
 +MODULE_ALIAS("platform:ec25");
 -- 
-2.39.2
+2.43.0
 

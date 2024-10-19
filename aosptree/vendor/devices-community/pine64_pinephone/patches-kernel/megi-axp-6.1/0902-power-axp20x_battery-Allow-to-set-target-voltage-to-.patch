@@ -1,4 +1,4 @@
-From 04d6245c312f4767dc396848cc39de3048c74865 Mon Sep 17 00:00:00 2001
+From 555a8f5ac34f12b81855bbcd572fe068e1229f2f Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Thu, 27 Feb 2020 00:53:17 +0100
 Subject: [PATCH] power: axp20x_battery: Allow to set target voltage to 4.35V
@@ -11,7 +11,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 5 insertions(+)
 
 diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
-index 9106077c0dbb..06f74cf2efef 100644
+index 9106077c0dbb4..06f74cf2efeff 100644
 --- a/drivers/power/supply/axp20x_battery.c
 +++ b/drivers/power/supply/axp20x_battery.c
 @@ -375,6 +375,11 @@ static int axp20x_battery_set_max_voltage(struct axp20x_batt_ps *axp20x_batt,
@@ -27,5 +27,5 @@ index 9106077c0dbb..06f74cf2efef 100644
  		/*
  		 * AXP20x max voltage can be set to 4.36V and AXP22X max voltage
 -- 
-2.39.2
+2.43.0
 

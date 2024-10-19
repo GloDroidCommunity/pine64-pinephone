@@ -1,4 +1,4 @@
-From ed4cec5ef1cb56ac2deab3a89acb6ee0db8b4548 Mon Sep 17 00:00:00 2001
+From b72e4815e2142c1b3a7d9376936a278b85e06cc8 Mon Sep 17 00:00:00 2001
 From: Ondrej Jirman <megi@xff.cz>
 Date: Wed, 27 Apr 2022 07:06:10 +0200
 Subject: [PATCH] usb: musb: sunxi: Avoid enabling host side code on SoCs where
@@ -21,7 +21,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  2 files changed, 32 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/usb/musb/musb_core.c b/drivers/usb/musb/musb_core.c
-index 03027c6fa3ab..57199cbb3950 100644
+index 03027c6fa3aba..57199cbb3950b 100644
 --- a/drivers/usb/musb/musb_core.c
 +++ b/drivers/usb/musb/musb_core.c
 @@ -979,6 +979,16 @@ static void musb_handle_intr_disconnect(struct musb *musb, u8 devctl)
@@ -42,7 +42,7 @@ index 03027c6fa3ab..57199cbb3950 100644
  		WARNING("unhandled DISCONNECT transition (%s)\n",
  			usb_otg_state_string(musb->xceiv->otg->state));
 diff --git a/drivers/usb/musb/sunxi.c b/drivers/usb/musb/sunxi.c
-index 7f9a999cd5ff..fcd3159a92af 100644
+index 7f9a999cd5ff1..fcd3159a92af3 100644
 --- a/drivers/usb/musb/sunxi.c
 +++ b/drivers/usb/musb/sunxi.c
 @@ -345,12 +345,6 @@ static int sunxi_musb_set_mode(struct musb *musb, u8 mode)
@@ -102,5 +102,5 @@ index 7f9a999cd5ff..fcd3159a92af 100644
  	if (IS_ERR(glue->usb_phy)) {
  		dev_err(&pdev->dev, "Error registering usb-phy %ld\n",
 -- 
-2.39.2
+2.43.0
 

@@ -1,4 +1,4 @@
-From 40287bba8be0395debeab5673c5d153849032ae7 Mon Sep 17 00:00:00 2001
+From 6e03e9108a0d42d3698509c4391c29bb19ee168c Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Sun, 25 Apr 2021 03:17:39 +0200
 Subject: [PATCH] arm64: dts: sun50i-a64-pinephone: Power off the touch
@@ -12,7 +12,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 1 insertion(+)
 
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
-index 0fe215ae2211..8083a9f0ede6 100644
+index 0fe215ae22117..8083a9f0ede60 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
 @@ -484,6 +484,7 @@ touchscreen@5d {
@@ -24,5 +24,5 @@ index 0fe215ae2211..8083a9f0ede6 100644
  };
  
 -- 
-2.39.2
+2.43.0
 

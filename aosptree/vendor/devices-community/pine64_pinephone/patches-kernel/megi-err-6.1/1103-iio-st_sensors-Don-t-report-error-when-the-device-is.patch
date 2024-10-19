@@ -1,4 +1,4 @@
-From a07d9310aa99b0be34319f74ac932bf426f03882 Mon Sep 17 00:00:00 2001
+From b3f0bb19fe21d3f3d703fcd59a55b6740958eedc Mon Sep 17 00:00:00 2001
 From: Ondrej Jirman <megi@xff.cz>
 Date: Sat, 29 Oct 2022 23:12:49 +0200
 Subject: [PATCH] iio: st_sensors: Don't report error when the device is not
@@ -13,7 +13,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 9 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index 35720c64fea8..cd0dc9de3d7e 100644
+index 35720c64fea8f..cd0dc9de3d7e6 100644
 --- a/drivers/iio/common/st_sensors/st_sensors_core.c
 +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
 @@ -625,8 +625,16 @@ int st_sensors_verify_id(struct iio_dev *indio_dev)
@@ -35,5 +35,5 @@ index 35720c64fea8..cd0dc9de3d7e 100644
  		}
  
 -- 
-2.39.2
+2.43.0
 

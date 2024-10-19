@@ -1,4 +1,4 @@
-From b30ba13899ce7ab3fadf3fa1068abea158112922 Mon Sep 17 00:00:00 2001
+From 642d9454295e6e658f131162e039569ef664ce5c Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <roman.stratiienko@globallogic.com>
 Date: Thu, 19 Sep 2019 15:23:02 +0300
 Subject: [PATCH] drm/sun4i: Use vi plane as primary
@@ -16,7 +16,7 @@ Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
  2 files changed, 1 insertion(+), 4 deletions(-)
 
 diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
-index ca75ca0835a6..107c8d33b63a 100644
+index ca75ca0835a63..107c8d33b63a9 100644
 --- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
 +++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
 @@ -359,9 +359,6 @@ struct sun8i_ui_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
@@ -30,7 +30,7 @@ index ca75ca0835a6..107c8d33b63a 100644
  	ret = drm_universal_plane_init(drm, &layer->plane, 0,
  				       &sun8i_ui_layer_funcs,
 diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
-index 5345e3cb14ac..957b1a7f4416 100644
+index 5345e3cb14acc..957b1a7f44161 100644
 --- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
 +++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
 @@ -566,7 +566,7 @@ struct sun8i_vi_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
@@ -43,5 +43,5 @@ index 5345e3cb14ac..957b1a7f4416 100644
  
  	/* possible crtcs are set later */
 -- 
-2.39.2
+2.43.0
 

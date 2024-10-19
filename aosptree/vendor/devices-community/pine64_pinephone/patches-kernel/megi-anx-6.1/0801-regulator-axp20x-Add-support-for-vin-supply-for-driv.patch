@@ -1,4 +1,4 @@
-From ef13b4a1459a95c5a9570a436118fe047f39ec27 Mon Sep 17 00:00:00 2001
+From 9ea3e6b64576d7c6d296aa9fba15e5f11b3595c5 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Mon, 8 Jun 2020 00:15:04 +0200
 Subject: [PATCH] regulator: axp20x: Add support for vin-supply for drivevbus
@@ -13,7 +13,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 27 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/regulator/axp20x-regulator.c b/drivers/regulator/axp20x-regulator.c
-index d260c442b788..7017eee0c2a4 100644
+index d260c442b788d..7017eee0c2a45 100644
 --- a/drivers/regulator/axp20x-regulator.c
 +++ b/drivers/regulator/axp20x-regulator.c
 @@ -1345,12 +1345,36 @@ static int axp20x_regulator_probe(struct platform_device *pdev)
@@ -57,5 +57,5 @@ index d260c442b788..7017eee0c2a4 100644
  			dev_err(&pdev->dev, "Failed to register drivevbus\n");
  			return PTR_ERR(rdev);
 -- 
-2.39.2
+2.43.0
 

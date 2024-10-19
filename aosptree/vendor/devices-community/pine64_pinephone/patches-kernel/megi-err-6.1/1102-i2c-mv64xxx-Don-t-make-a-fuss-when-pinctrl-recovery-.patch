@@ -1,4 +1,4 @@
-From 39d92110df98f1ecd6f927c468909e3dfc60ecb9 Mon Sep 17 00:00:00 2001
+From 78f3ae354043f13060c72b4d258c948b970a0a99 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Sun, 17 Jan 2021 23:19:52 +0100
 Subject: [PATCH] i2c: mv64xxx: Don't make a fuss when pinctrl recovery state
@@ -12,7 +12,7 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  1 file changed, 8 insertions(+)
 
 diff --git a/drivers/i2c/busses/i2c-mv64xxx.c b/drivers/i2c/busses/i2c-mv64xxx.c
-index 878c076ebdc6..f18e2d9c7162 100644
+index 878c076ebdc6b..f18e2d9c7162f 100644
 --- a/drivers/i2c/busses/i2c-mv64xxx.c
 +++ b/drivers/i2c/busses/i2c-mv64xxx.c
 @@ -951,6 +951,14 @@ static int mv64xxx_i2c_init_recovery_info(struct mv64xxx_i2c_data *drv_data,
@@ -31,5 +31,5 @@ index 878c076ebdc6..f18e2d9c7162 100644
  	return 0;
  }
 -- 
-2.39.2
+2.43.0
 

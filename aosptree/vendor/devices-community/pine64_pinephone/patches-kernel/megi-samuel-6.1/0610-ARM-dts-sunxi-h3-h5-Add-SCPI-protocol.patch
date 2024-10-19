@@ -1,4 +1,4 @@
-From 3f0933152a0e311e4afc0b3d329639f2f01dd7c1 Mon Sep 17 00:00:00 2001
+From 22a33d5e99a8f8ed0d9181c57fc3c281b2884eba Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Wed, 1 Jan 2020 16:12:36 -0600
 Subject: [PATCH] ARM: dts: sunxi: h3/h5: Add SCPI protocol
@@ -11,7 +11,7 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  3 files changed, 33 insertions(+)
 
 diff --git a/arch/arm/boot/dts/sun8i-h3.dtsi b/arch/arm/boot/dts/sun8i-h3.dtsi
-index 5b89d444f86e..4bfebc9752c8 100644
+index 5b89d444f86ec..4bfebc9752c89 100644
 --- a/arch/arm/boot/dts/sun8i-h3.dtsi
 +++ b/arch/arm/boot/dts/sun8i-h3.dtsi
 @@ -176,6 +176,19 @@ syscon: system-control@1c00000 {
@@ -35,7 +35,7 @@ index 5b89d444f86e..4bfebc9752c8 100644
  				compatible = "mmio-sram";
  				reg = <0x01d00000 0x80000>;
 diff --git a/arch/arm/boot/dts/sunxi-h3-h5.dtsi b/arch/arm/boot/dts/sunxi-h3-h5.dtsi
-index 66c1de1a8b9b..10a558597856 100644
+index 66c1de1a8b9b1..10a5585978560 100644
 --- a/arch/arm/boot/dts/sunxi-h3-h5.dtsi
 +++ b/arch/arm/boot/dts/sunxi-h3-h5.dtsi
 @@ -106,6 +106,13 @@ de: display-engine {
@@ -53,7 +53,7 @@ index 66c1de1a8b9b..10a558597856 100644
  		compatible = "simple-bus";
  		#address-cells = <1>;
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi
-index 2159fa336d75..62952660b447 100644
+index 2159fa336d754..62952660b4477 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi
 @@ -92,6 +92,19 @@ syscon: system-control@1c00000 {
@@ -77,5 +77,5 @@ index 2159fa336d75..62952660b447 100644
  				compatible = "mmio-sram";
  				reg = <0x00018000 0x1c000>;
 -- 
-2.39.2
+2.43.0
 

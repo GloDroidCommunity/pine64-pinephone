@@ -1,4 +1,4 @@
-From 8f5ccc47ed02e93ee32b05efc61b2fdd385b221d Mon Sep 17 00:00:00 2001
+From 6820ac3ef93b67bf80cd419493fb700121153a3e Mon Sep 17 00:00:00 2001
 From: Ondrej Jirman <megi@xff.cz>
 Date: Fri, 3 Jun 2022 19:22:34 +0200
 Subject: [PATCH] drm/sun4i: tcon: hand over the duty to keep TCON0 clock to
@@ -19,7 +19,7 @@ Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
  2 files changed, 14 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/gpu/drm/sun4i/sun4i_tcon.c b/drivers/gpu/drm/sun4i/sun4i_tcon.c
-index 454e9e2981ca..1d4187815467 100644
+index 454e9e2981ca5..1d4187815467a 100644
 --- a/drivers/gpu/drm/sun4i/sun4i_tcon.c
 +++ b/drivers/gpu/drm/sun4i/sun4i_tcon.c
 @@ -108,9 +108,11 @@ static void sun4i_tcon_channel_set_status(struct sun4i_tcon *tcon, int channel,
@@ -60,7 +60,7 @@ index 454e9e2981ca..1d4187815467 100644
  };
  MODULE_DEVICE_TABLE(of, sun4i_tcon_of_table);
 diff --git a/drivers/gpu/drm/sun4i/sun4i_tcon.h b/drivers/gpu/drm/sun4i/sun4i_tcon.h
-index 97df39db2a31..745e1c473b6d 100644
+index 97df39db2a316..745e1c473b6de 100644
 --- a/drivers/gpu/drm/sun4i/sun4i_tcon.h
 +++ b/drivers/gpu/drm/sun4i/sun4i_tcon.h
 @@ -250,6 +250,7 @@ struct sun4i_tcon_quirks {
@@ -72,5 +72,5 @@ index 97df39db2a31..745e1c473b6d 100644
  
  	/* callback to handle tcon muxing options */
 -- 
-2.39.2
+2.43.0
 

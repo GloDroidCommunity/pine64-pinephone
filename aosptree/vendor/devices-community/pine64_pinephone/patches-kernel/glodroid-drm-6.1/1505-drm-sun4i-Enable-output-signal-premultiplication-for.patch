@@ -1,4 +1,4 @@
-From 35b4b49d305ce2aed16b226fe2dd5ebe738552e2 Mon Sep 17 00:00:00 2001
+From e65dd987588ee1ded179d445176cefa0a38cacba Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Thu, 2 Jun 2022 09:57:58 +0000
 Subject: [PATCH] drm/sun4i: Enable output signal premultiplication for DE2/DE3
@@ -18,7 +18,7 @@ Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
  2 files changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
-index bafee05f6b24..f76a5665b6b5 100644
+index bafee05f6b247..f76a5665b6b51 100644
 --- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
 +++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
 @@ -319,8 +319,9 @@ static void sun8i_mixer_mode_set(struct sunxi_engine *engine,
@@ -34,7 +34,7 @@ index bafee05f6b24..f76a5665b6b5 100644
  	DRM_DEBUG_DRIVER("Switching display mixer interlaced mode %s\n",
  			 interlaced ? "on" : "off");
 diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h b/drivers/gpu/drm/sun4i/sun8i_mixer.h
-index e2f4b28c916f..42a6a6daea0e 100644
+index e2f4b28c916f2..42a6a6daea0ed 100644
 --- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
 +++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
 @@ -67,6 +67,7 @@
@@ -46,5 +46,5 @@ index e2f4b28c916f..42a6a6daea0e 100644
  
  #define SUN50I_MIXER_BLEND_CSC_CTL_EN(ch)	BIT(ch)
 -- 
-2.39.2
+2.43.0
 
