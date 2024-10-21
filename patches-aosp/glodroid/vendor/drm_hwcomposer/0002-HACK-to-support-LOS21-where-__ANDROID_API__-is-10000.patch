@@ -1,0 +1,72 @@
+From 9f47c780a6a3ad400235314e9121a85eeefb050a Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Mon, 21 Oct 2024 01:16:23 +0300
+Subject: [PATCH 2/2] HACK to support LOS21, where __ANDROID_API__ is 10000
+
+Change-Id: I57bfda894de81611fdeb758c415d1ebafa7e440c
+---
+ hwc3/ComposerClient.cpp | 4 ++--
+ hwc3/ComposerClient.h   | 2 +-
+ hwc3/DrmHwcThree.cpp    | 4 ++--
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/hwc3/ComposerClient.cpp b/hwc3/ComposerClient.cpp
+index 848c587..92b1be8 100644
+--- a/hwc3/ComposerClient.cpp
++++ b/hwc3/ComposerClient.cpp
+@@ -190,7 +190,7 @@ std::optional<HWC2::Composition> AidlToCompositionType(
+   }
+ }
+ 
+-#if __ANDROID_API__ < 35
++#if 1
+ 
+ class DisplayConfiguration {
+  public:
+@@ -1201,7 +1201,7 @@ ndk::ScopedAStatus ComposerClient::setRefreshRateChangedCallbackDebugEnabled(
+   return ToBinderStatus(hwc3::Error::kUnsupported);
+ }
+ 
+-#if __ANDROID_API__ >= 35
++#if 0
+ 
+ ndk::ScopedAStatus ComposerClient::getDisplayConfigurations(
+     int64_t display_id, int32_t /*max_frame_interval_ns*/,
+diff --git a/hwc3/ComposerClient.h b/hwc3/ComposerClient.h
+index 91a0be0..3f9266f 100644
+--- a/hwc3/ComposerClient.h
++++ b/hwc3/ComposerClient.h
+@@ -141,7 +141,7 @@ class ComposerClient : public BnComposerClient {
+   ndk::ScopedAStatus setRefreshRateChangedCallbackDebugEnabled(
+       int64_t display, bool enabled) override;
+ 
+-#if __ANDROID_API__ >= 35
++#if 0
+ 
+   ndk::ScopedAStatus getDisplayConfigurations(
+       int64_t display, int32_t max_frame_interval_ns,
+diff --git a/hwc3/DrmHwcThree.cpp b/hwc3/DrmHwcThree.cpp
+index fb14bc9..ebdab6a 100644
+--- a/hwc3/DrmHwcThree.cpp
++++ b/hwc3/DrmHwcThree.cpp
+@@ -22,7 +22,7 @@
+ 
+ #include "Utils.h"
+ #include "aidl/android/hardware/graphics/common/Dataspace.h"
+-#if __ANDROID_API__ >= 35
++#if 0
+ #include "aidl/android/hardware/graphics/common/DisplayHotplugEvent.h"
+ #endif
+ 
+@@ -63,7 +63,7 @@ void DrmHwcThree::SendVsyncEventToClient(uint64_t display_id, int64_t timestamp,
+                               static_cast<int32_t>(vsync_period));
+ }
+ 
+-#if __ANDROID_API__ >= 35
++#if 0
+ 
+ void DrmHwcThree::SendHotplugEventToClient(
+     hwc2_display_t display_id, DrmHwc::DisplayStatus display_status) {
+-- 
+2.43.0
+
