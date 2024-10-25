@@ -1,0 +1,29 @@
+From 6a0b7ac4909036af1ca8c1e61c56faa3c9c85b4f Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Fri, 17 Jun 2022 14:58:39 +0300
+Subject: [PATCH] drm/sun4i: sun8i: Keep VI scaler module always enable
+
+Otherwise screen may occasionally glitch when switching
+the layer from scaled to unscaled mode.
+
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index ab87b1229f08..3f57186c2a4a 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -173,7 +173,7 @@ static int sun8i_vi_layer_update_coord(struct sun8i_mixer *mixer, struct sun8i_v
+ 	 */
+ 	subsampled = format->hsub > 1 || format->vsub > 1;
+ 
+-	if (insize != outsize || subsampled || hphase || vphase) {
++	if (insize != outsize || subsampled || hphase || vphase || true) {
+ 		unsigned int scanline, required;
+ 		struct drm_display_mode *mode;
+ 		u32 hscale, vscale, fps;
+-- 
+2.43.0
+

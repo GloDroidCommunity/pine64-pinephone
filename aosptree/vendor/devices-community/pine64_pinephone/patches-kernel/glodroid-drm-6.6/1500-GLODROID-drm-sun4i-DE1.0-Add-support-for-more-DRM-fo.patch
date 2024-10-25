@@ -1,0 +1,189 @@
+From e08e80af51711673aa0774ee8194ff6ddda1db3d Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Fri, 27 Jan 2023 21:54:37 +0200
+Subject: [PATCH] GLODROID: drm/sun4i: DE1.0: Add support for more DRM formats
+
+By utilizing REG1.BRSWAPEN bit we can swap R ang B colors thus
+add support for more formats.
+
+The following formats were added:
+    DRM_FORMAT_ABGR8888 (Client target layer & regular layers)
+    DRM_FORMAT_XBGR8888 (Wallpaper, require scaling)
+
+Change-Id: Ie050e8e16049ebdc1ded174d44a31989421c07f9
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ drivers/gpu/drm/sun4i/sun4i_backend.c  | 31 +++++++++++++++++++++-----
+ drivers/gpu/drm/sun4i/sun4i_backend.h  |  1 +
+ drivers/gpu/drm/sun4i/sun4i_frontend.c |  1 +
+ drivers/gpu/drm/sun4i/sun4i_layer.c    |  4 ++++
+ 4 files changed, 32 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun4i_backend.c b/drivers/gpu/drm/sun4i/sun4i_backend.c
+index 335fd0edb904..9ccf99af6e6b 100644
+--- a/drivers/gpu/drm/sun4i/sun4i_backend.c
++++ b/drivers/gpu/drm/sun4i/sun4i_backend.c
+@@ -95,13 +95,19 @@ void sun4i_backend_layer_enable(struct sun4i_backend *backend,
+ 			   SUN4I_BACKEND_MODCTL_LAY_EN(layer), val);
+ }
+ 
+-static int sun4i_backend_drm_format_to_layer(u32 format, u32 *mode)
++static int sun4i_backend_drm_format_to_layer(u32 format, u32 *mode, u32 *brswp)
+ {
++	*brswp = 0;
+ 	switch (format) {
+ 	case DRM_FORMAT_ARGB8888:
+ 		*mode = SUN4I_BACKEND_LAY_FBFMT_ARGB8888;
+ 		break;
+ 
++	case DRM_FORMAT_ABGR8888:
++		*mode = SUN4I_BACKEND_LAY_FBFMT_ARGB8888;
++		*brswp = SUN4I_BACKEND_ATTCTL_REG1_LAY_BRSWAPEN;
++		break;
++
+ 	case DRM_FORMAT_ARGB4444:
+ 		*mode = SUN4I_BACKEND_LAY_FBFMT_ARGB4444;
+ 		break;
+@@ -122,6 +128,11 @@ static int sun4i_backend_drm_format_to_layer(u32 format, u32 *mode)
+ 		*mode = SUN4I_BACKEND_LAY_FBFMT_XRGB8888;
+ 		break;
+ 
++	case DRM_FORMAT_XBGR8888:
++		*mode = SUN4I_BACKEND_LAY_FBFMT_XRGB8888;
++		*brswp = SUN4I_BACKEND_ATTCTL_REG1_LAY_BRSWAPEN;
++		break;
++
+ 	case DRM_FORMAT_RGB888:
+ 		*mode = SUN4I_BACKEND_LAY_FBFMT_RGB888;
+ 		break;
+@@ -141,6 +152,7 @@ static const uint32_t sun4i_backend_formats[] = {
+ 	DRM_FORMAT_ARGB1555,
+ 	DRM_FORMAT_ARGB4444,
+ 	DRM_FORMAT_ARGB8888,
++	DRM_FORMAT_ABGR8888,
+ 	DRM_FORMAT_RGB565,
+ 	DRM_FORMAT_RGB888,
+ 	DRM_FORMAT_RGBA4444,
+@@ -148,6 +160,7 @@ static const uint32_t sun4i_backend_formats[] = {
+ 	DRM_FORMAT_UYVY,
+ 	DRM_FORMAT_VYUY,
+ 	DRM_FORMAT_XRGB8888,
++	DRM_FORMAT_XBGR8888,
+ 	DRM_FORMAT_YUYV,
+ 	DRM_FORMAT_YVYU,
+ };
+@@ -252,7 +265,7 @@ int sun4i_backend_update_layer_formats(struct sun4i_backend *backend,
+ {
+ 	struct drm_plane_state *state = plane->state;
+ 	struct drm_framebuffer *fb = state->fb;
+-	u32 val;
++	u32 val, brswp;
+ 	int ret;
+ 
+ 	/* Clear the YUV mode */
+@@ -271,7 +284,7 @@ int sun4i_backend_update_layer_formats(struct sun4i_backend *backend,
+ 	if (fb->format->is_yuv)
+ 		return sun4i_backend_update_yuv_format(backend, layer, plane);
+ 
+-	ret = sun4i_backend_drm_format_to_layer(fb->format->format, &val);
++	ret = sun4i_backend_drm_format_to_layer(fb->format->format, &val, &brswp);
+ 	if (ret) {
+ 		DRM_DEBUG_DRIVER("Invalid format\n");
+ 		return ret;
+@@ -281,16 +294,20 @@ int sun4i_backend_update_layer_formats(struct sun4i_backend *backend,
+ 			   SUN4I_BACKEND_ATTCTL_REG1(layer),
+ 			   SUN4I_BACKEND_ATTCTL_REG1_LAY_FBFMT, val);
+ 
++	regmap_update_bits(backend->engine.regs,
++			   SUN4I_BACKEND_ATTCTL_REG1(layer),
++			   SUN4I_BACKEND_ATTCTL_REG1_LAY_BRSWAPEN, brswp);
++
+ 	return 0;
+ }
+ 
+ int sun4i_backend_update_layer_frontend(struct sun4i_backend *backend,
+ 					int layer, uint32_t fmt)
+ {
+-	u32 val;
++	u32 val, brswp;
+ 	int ret;
+ 
+-	ret = sun4i_backend_drm_format_to_layer(fmt, &val);
++	ret = sun4i_backend_drm_format_to_layer(fmt, &val, &brswp);
+ 	if (ret) {
+ 		DRM_DEBUG_DRIVER("Invalid format\n");
+ 		return ret;
+@@ -305,6 +322,10 @@ int sun4i_backend_update_layer_frontend(struct sun4i_backend *backend,
+ 			   SUN4I_BACKEND_ATTCTL_REG1(layer),
+ 			   SUN4I_BACKEND_ATTCTL_REG1_LAY_FBFMT, val);
+ 
++	regmap_update_bits(backend->engine.regs,
++			   SUN4I_BACKEND_ATTCTL_REG1(layer),
++			   SUN4I_BACKEND_ATTCTL_REG1_LAY_BRSWAPEN, brswp);
++
+ 	return 0;
+ }
+ 
+diff --git a/drivers/gpu/drm/sun4i/sun4i_backend.h b/drivers/gpu/drm/sun4i/sun4i_backend.h
+index b4383777c83b..784c73b891ff 100644
+--- a/drivers/gpu/drm/sun4i/sun4i_backend.h
++++ b/drivers/gpu/drm/sun4i/sun4i_backend.h
+@@ -78,6 +78,7 @@
+ #define SUN4I_BACKEND_ATTCTL_REG1_LAY_HSCAFCT		GENMASK(15, 14)
+ #define SUN4I_BACKEND_ATTCTL_REG1_LAY_WSCAFCT		GENMASK(13, 12)
+ #define SUN4I_BACKEND_ATTCTL_REG1_LAY_FBFMT		GENMASK(11, 8)
++#define SUN4I_BACKEND_ATTCTL_REG1_LAY_BRSWAPEN		BIT(2)
+ #define SUN4I_BACKEND_LAY_FBFMT_1BPP				(0 << 8)
+ #define SUN4I_BACKEND_LAY_FBFMT_2BPP				(1 << 8)
+ #define SUN4I_BACKEND_LAY_FBFMT_4BPP				(2 << 8)
+diff --git a/drivers/gpu/drm/sun4i/sun4i_frontend.c b/drivers/gpu/drm/sun4i/sun4i_frontend.c
+index 280d444dbb66..05cb594036ed 100644
+--- a/drivers/gpu/drm/sun4i/sun4i_frontend.c
++++ b/drivers/gpu/drm/sun4i/sun4i_frontend.c
+@@ -329,6 +329,7 @@ sun4i_frontend_drm_format_to_input_sequence(const struct drm_format_info *format
+ 		return 0;
+ 
+ 	case DRM_FORMAT_XRGB8888:
++	case DRM_FORMAT_XBGR8888: /* Bypass buffer as XRGB, B and G should be swapped by the backend (not tested) */
+ 		*val = SUN4I_FRONTEND_INPUT_FMT_DATA_PS_XRGB;
+ 		return 0;
+ 
+diff --git a/drivers/gpu/drm/sun4i/sun4i_layer.c b/drivers/gpu/drm/sun4i/sun4i_layer.c
+index 98f3176366c0..79df34b9c9a4 100644
+--- a/drivers/gpu/drm/sun4i/sun4i_layer.c
++++ b/drivers/gpu/drm/sun4i/sun4i_layer.c
+@@ -140,6 +140,7 @@ static const struct drm_plane_funcs sun4i_backend_layer_funcs = {
+ 
+ static const uint32_t sun4i_layer_formats[] = {
+ 	DRM_FORMAT_ARGB8888,
++	DRM_FORMAT_ABGR8888,
+ 	DRM_FORMAT_ARGB4444,
+ 	DRM_FORMAT_ARGB1555,
+ 	DRM_FORMAT_BGRX8888,
+@@ -154,6 +155,7 @@ static const uint32_t sun4i_layer_formats[] = {
+ 	DRM_FORMAT_UYVY,
+ 	DRM_FORMAT_VYUY,
+ 	DRM_FORMAT_XRGB8888,
++	DRM_FORMAT_XBGR8888,
+ 	DRM_FORMAT_YUV411,
+ 	DRM_FORMAT_YUV420,
+ 	DRM_FORMAT_YUV422,
+@@ -168,6 +170,7 @@ static const uint32_t sun4i_layer_formats[] = {
+ 
+ static const uint32_t sun4i_backend_layer_formats[] = {
+ 	DRM_FORMAT_ARGB8888,
++	DRM_FORMAT_ABGR8888,
+ 	DRM_FORMAT_ARGB4444,
+ 	DRM_FORMAT_ARGB1555,
+ 	DRM_FORMAT_RGBA5551,
+@@ -177,6 +180,7 @@ static const uint32_t sun4i_backend_layer_formats[] = {
+ 	DRM_FORMAT_UYVY,
+ 	DRM_FORMAT_VYUY,
+ 	DRM_FORMAT_XRGB8888,
++	DRM_FORMAT_XBGR8888,
+ 	DRM_FORMAT_YUYV,
+ 	DRM_FORMAT_YVYU,
+ };
+-- 
+2.43.0
+

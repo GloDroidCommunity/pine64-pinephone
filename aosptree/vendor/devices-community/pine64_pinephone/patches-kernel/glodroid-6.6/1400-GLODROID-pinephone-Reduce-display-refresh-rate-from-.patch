@@ -1,0 +1,38 @@
+From 1d2af477aece56c84f7c972ba89c50c994126cac Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Thu, 9 Jun 2022 17:56:21 +0300
+Subject: [PATCH] GLODROID: pinephone: Reduce display refresh rate from 60 to
+ 55 FPS
+
+sunxi display controller has a bug which requires more time in vblank
+for setting-up hardware scaling registers.
+
+55 FPS won't be too different from a look and feel point of view,
+but will allow us to use the display controller for scale-based
+animations without involving slow mali400 GPU.
+
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ drivers/gpu/drm/panel/panel-sitronix-st7703.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/panel/panel-sitronix-st7703.c b/drivers/gpu/drm/panel/panel-sitronix-st7703.c
+index d43c91f9b1be..722258e1668b 100644
+--- a/drivers/gpu/drm/panel/panel-sitronix-st7703.c
++++ b/drivers/gpu/drm/panel/panel-sitronix-st7703.c
+@@ -323,9 +323,9 @@ static const struct drm_display_mode xbd599_mode = {
+ 	.hsync_end   = 720 + 30 + 28,
+ 	.htotal	     = 720 + 30 + 28 + 30,
+ 	.vdisplay    = 1440,
+-	.vsync_start = 1440 + 18,
+-	.vsync_end   = 1440 + 18 + 10,
+-	.vtotal	     = 1440 + 18 + 10 + 17,
++	.vsync_start = 1440 + 153,
++	.vsync_end   = 1440 + 153 + 10,
++	.vtotal	     = 1440 + 153 + 10 + 17,
+ 	.clock	     = 72000,
+ 	.flags	     = DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,
+ 	.width_mm    = 68,
+-- 
+2.43.0
+

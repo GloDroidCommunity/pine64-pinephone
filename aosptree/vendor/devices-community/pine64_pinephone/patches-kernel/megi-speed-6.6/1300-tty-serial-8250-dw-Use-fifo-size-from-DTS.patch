@@ -1,0 +1,57 @@
+From 710272e3e9e9d5b147187fdd79a45acafcbbdff0 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
+Date: Sat, 1 Feb 2020 23:40:41 +0100
+Subject: [PATCH] tty: serial: 8250-dw: Use fifo-size from DTS
+
+Saves 20ms per port of boot time.
+
+Signed-off-by: Ondrej Jirman <megi@xff.cz>
+---
+ drivers/tty/serial/8250/8250_dw.c   | 9 ++++++++-
+ drivers/tty/serial/8250/8250_port.c | 3 +++
+ 2 files changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 8aed33be2ebf..0cbf3c19a88f 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -531,7 +531,7 @@ static int dw8250_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct dw8250_data *data;
+ 	struct resource *regs;
+-	int err;
++	int err, val;
+ 
+ 	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (!regs)
+@@ -612,6 +612,13 @@ static int dw8250_probe(struct platform_device *pdev)
+ 		data->msr_mask_off |= UART_MSR_TERI;
+ 	}
+ 
++	/* Always ask for fixed clock rate from a property. */
++	device_property_read_u32(dev, "clock-frequency", &p->uartclk);
++
++	val = 0;
++	device_property_read_u32(dev, "fifo-size", &val);
++	p->fifosize = val;
++
+ 	/* If there is separate baudclk, get the rate from it. */
+ 	data->clk = devm_clk_get_optional(dev, "baudclk");
+ 	if (data->clk == NULL)
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index a17803da83f8..0ce155cd40ee 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -796,6 +796,9 @@ static int size_fifo(struct uart_8250_port *up)
+ 	u32 old_dl;
+ 	int count;
+ 
++	if (up->port.fifosize)
++		return up->port.fifosize;
++
+ 	old_lcr = serial_in(up, UART_LCR);
+ 	serial_out(up, UART_LCR, 0);
+ 	old_fcr = serial_in(up, UART_FCR);
+-- 
+2.43.0
+
