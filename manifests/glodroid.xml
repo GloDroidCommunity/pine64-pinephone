@@ -27,7 +27,6 @@
   <project path="glodroid/vendor/libcamera/subprojects/libyaml" remote="github"    name="yaml/libyaml.git"   groups="glodroid" revision="refs/tags/0.2.5" />
 
   <!-- video codecs components (vendor) -->
-  <project path="glodroid/vendor/dav1d"           remote="videolan"    name="dav1d.git"          groups="glodroid" revision="refs/tags/1.1.0" />
   <project path="glodroid/vendor/ffmpeg"          remote="github"      name="FFmpeg/FFmpeg.git"  groups="glodroid" revision="refs/tags/n6.0" clone-depth="1" />
   <project path="glodroid/vendor/ffmpeg_codec2"   remote="glodroid"    name="glodroid_forks.git" groups="glodroid" revision="refs/tags/ffmpeg_codec2-2023w46" />
 
@@ -63,5 +62,6 @@
                                            remote="glodroid" name="linaro_gcc_prebuilts.git" groups="glodroid" revision="refs/tags/gcc-linaro-7.4.1-2019.02-x86_64_aarch64-linux-gnu" />
   <project path="prebuilts/gcc/linux-x86/or1k/gcc-linux-or1k"
                                            remote="glodroid" name="linaro_gcc_prebuilts.git" groups="glodroid" revision="refs/tags/openrisc--musl--stable-2020.08-1" />
+  <project path="prebuilts/rust/linux-x86/1.68.0" remote="glodroid" name="linaro_gcc_prebuilts.git" groups="carnect" revision="refs/tags/rust-v1.68.0-linux-x86" />
 
 </manifest>

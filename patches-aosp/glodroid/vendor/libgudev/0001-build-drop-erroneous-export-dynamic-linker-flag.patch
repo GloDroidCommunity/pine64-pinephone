@@ -1,0 +1,31 @@
+From 97ec1ef2ccb7c5cfab9fdae2ae5370e1d5ed43e3 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Tue, 6 Aug 2024 15:51:58 +1000
+Subject: [PATCH] build: drop erroneous -export-dynamic linker flag
+
+This appears to be a copy/paste from the autotools migration to meson.
+In autotools this was passed to libtool where it is a valid flag, here
+it was passed to the linker as --entry=xport-dynamic.
+
+It hasn't done anything since 2018, let's drop it.
+
+Closes !30
+---
+ gudev/meson.build | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/gudev/meson.build b/gudev/meson.build
+index fd06a11..e381344 100644
+--- a/gudev/meson.build
++++ b/gudev/meson.build
+@@ -33,7 +33,6 @@ libgudev_c_args = [
+ ]
+ 
+ libgudev_link_args = [
+-  '-export-dynamic',
+   '-Wl,--version-script,@0@/libgudev-1.0.sym'.format(top_srcdir),
+ ]
+ 
+-- 
+2.43.0
+
