@@ -1,0 +1,33 @@
+From 29b291db5f0a74781cd2bd93e63591e5c184aa1a Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Wed, 30 Oct 2024 00:29:48 +0200
+Subject: [PATCH 9/9] avb: Fix support for unlocked state
+
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ cmd/avb.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/cmd/avb.c b/cmd/avb.c
+index 8fbd48ee5a..e4ccc87e76 100644
+--- a/cmd/avb.c
++++ b/cmd/avb.c
+@@ -284,10 +284,14 @@ int do_avb_verify_part(struct cmd_tbl *cmdtp, int flag,
+ 		avb_slot_verify(avb_ops,
+ 				requested_partitions,
+ 				slot_suffix,
+-				unlocked,
++				unlocked ? AVB_SLOT_VERIFY_FLAGS_ALLOW_VERIFICATION_ERROR : 0,
+ 				AVB_HASHTREE_ERROR_MODE_RESTART_AND_INVALIDATE,
+ 				&out_data);
+ 
++	if (unlocked && slot_result == AVB_SLOT_VERIFY_RESULT_ERROR_VERIFICATION) {
++		slot_result = AVB_SLOT_VERIFY_RESULT_OK;
++	}
++
+ 	/*
+ 	 * LOCKED devices with custom root of trust setup is not supported (YELLOW)
+ 	 */
+-- 
+2.43.0
+
