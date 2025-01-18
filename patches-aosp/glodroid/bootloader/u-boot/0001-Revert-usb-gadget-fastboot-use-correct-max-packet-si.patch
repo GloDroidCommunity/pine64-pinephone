@@ -1,7 +1,7 @@
-From f889b4269549ab1a6e727d186923cefa2a055f5f Mon Sep 17 00:00:00 2001
+From 3492dd7f68a19a7a9aa6b32c9ba8bdb3799b7618 Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Thu, 22 Apr 2021 17:28:46 +0300
-Subject: [PATCH 5/8] Revert "usb: gadget: fastboot: use correct max packet
+Subject: [PATCH 1/9] Revert "usb: gadget: fastboot: use correct max packet
  size"
 
 Causing fastboot download to stuck.

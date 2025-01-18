@@ -1,7 +1,7 @@
-From ef2e6b8e2b553657a9a9b4f044d50bf9faf2a1bd Mon Sep 17 00:00:00 2001
+From fb65411872fc6b9e20570e86218f04704743cf34 Mon Sep 17 00:00:00 2001
 From: Ondrej Jirman <megous@megous.com>
 Date: Tue, 11 Feb 2020 14:10:05 +0100
-Subject: [PATCH 7/8] pinephone: Add volume_key environment variable
+Subject: [PATCH 3/9] pinephone: Add volume_key environment variable
 
 When the user has a volume key pressed volume_key variable will
 contain either value 'down' or 'up', otherwise it will be empty.
@@ -26,7 +26,7 @@ index d96b7897b6..a096a5c771 100644
  obj-$(CONFIG_CHIP_DIP_SCAN)	+= chip.o
 +obj-$(CONFIG_MACH_SUN50I)	+= lradc.o
 diff --git a/board/sunxi/board.c b/board/sunxi/board.c
-index ed86f1df5d..128844d0a4 100644
+index 824c322a0d..ef31add2bd 100644
 --- a/board/sunxi/board.c
 +++ b/board/sunxi/board.c
 @@ -50,6 +50,48 @@

@@ -10,14 +10,14 @@
   <remote  name="videolan"   fetch="https://code.videolan.org/videolan" />
 
   <project path="glodroid"                        remote="glodroid" name="glodroid_configuration.git" groups="glodroid" revision="refs/tags/basedir-v0.9.0" />
-  <project path="glodroid/configuration"          remote="glodroid" name="glodroid_configuration.git" groups="glodroid" revision="c82b898997a47b699869e9650920eacecc4fd14d" />
+  <project path="glodroid/configuration"          remote="glodroid" name="glodroid_configuration.git" groups="glodroid" revision="741f291e0b0a58bae31950a8a6e3fea5646b2996" />
 
   <project path="glodroid/apks"                   remote="glodroid" name="glodroid_external_apks.git" groups="glodroid" revision="refs/tags/apps-v0.8.2" />
 
   <!-- gpu+display components (vendor) -->
   <project path="glodroid/vendor/minigbm"         remote="aosp" name="platform/external/minigbm"        groups="glodroid" revision="93e16b90294c4634d43c4987f194204ac3b80ac8" />
   <project path="glodroid/vendor/drm_hwcomposer"  remote="aosp" name="platform/external/drm_hwcomposer" groups="glodroid" revision="d36bbb85283880859d3f1f018dd36196d4c497b7" />
-  <project path="glodroid/vendor/mesa3d"          remote="aosp" name="platform/external/mesa3d"         groups="glodroid" revision="refs/tags/upstream-mesa-24.2.5" />
+  <project path="glodroid/vendor/mesa3d"          remote="aosp" name="platform/external/mesa3d"         groups="glodroid" revision="1043187ec6a52ae2202ba4295a0898091f1da103" />
 
   <!-- camera components (vendor) -->
   <project path="glodroid/vendor/libcamera"                     remote="libcamera" name="libcamera.git"      groups="glodroid" revision="3299f84de7dd2c454342d19e0c4d7db662ead536" />
@@ -46,7 +46,7 @@
   <project path="glodroid/vendor/libudev-zero"    remote="glodroid" name="glodroid_forks.git" groups="glodroid" revision="refs/tags/libudev_zero-v0.8.2" />
 
   <!-- bootloader components (platform) -->
-  <project path="glodroid/bootloader/u-boot"        remote="github" name="u-boot/u-boot.git"  groups="glodroid" revision="65fbdab27224ee3943a89496b21862db83c34da2" />
+  <project path="glodroid/bootloader/u-boot"        remote="github" name="u-boot/u-boot.git"  groups="glodroid" revision="a1e7dd7e1426b263cb832952eda4a0971e4803d0" />
   <project path="glodroid/bootloader/atf"           name="platform/external/arm-trusted-firmware" groups="glodroid" revision="a127b99d5a063c798d1c6d2e1d4791a630f78355" />
   <project path="glodroid/bootloader/crust-atf"     remote="github" name="crust-firmware/arm-trusted-firmware.git"    groups="glodroid" revision="refs/tags/crust-20220611" />
   <project path="glodroid/bootloader/crust-firmware" remote="github" name="crust-firmware/crust.git"         groups="glodroid" revision="refs/tags/v0.6" />

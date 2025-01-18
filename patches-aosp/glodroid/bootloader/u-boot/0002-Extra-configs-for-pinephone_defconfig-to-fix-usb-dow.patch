@@ -1,7 +1,7 @@
-From 6ea5d039be1d0fec26c3dbb0f394fd3f79b373c4 Mon Sep 17 00:00:00 2001
+From 703b4a70449ae696f9060e1cfacc0e92f04229ee Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Sat, 1 Aug 2020 22:39:39 +0300
-Subject: [PATCH 6/8] Extra configs for pinephone_defconfig to fix usb download
+Subject: [PATCH 2/9] Extra configs for pinephone_defconfig to fix usb download
  gadget
 
 Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>

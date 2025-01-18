@@ -1,7 +1,7 @@
-From 8cdc6797b6704c08e9499b9f27f2bdcd85197840 Mon Sep 17 00:00:00 2001
+From 75cc65d6d6983de89dcd01ae7fe7f0f0718d59c7 Mon Sep 17 00:00:00 2001
 From: Roman Stratiienko <r.stratiienko@gmail.com>
 Date: Thu, 23 Nov 2023 03:47:48 +0200
-Subject: [PATCH 3/8] avb: Implement get_preloaded_partition callback
+Subject: [PATCH 7/9] avb: Implement get_preloaded_partition callback
 
 AVB can reuse already loaded images instead of loading them
 from the disk.
