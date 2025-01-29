@@ -1,0 +1,28 @@
+From 75d4ebcb2e5d6795b504ef51bdfe8e791c4127a6 Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Wed, 29 Jan 2025 20:51:57 +0200
+Subject: [PATCH] PINEPHONE: Enable Night Light mode
+
+With the new sunxi-drm CTM kernel patch this can be enabled.
+
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ overlays/core/res/values/config.xml | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/overlays/core/res/values/config.xml b/overlays/core/res/values/config.xml
+index 74a42da..f617dc4 100644
+--- a/overlays/core/res/values/config.xml
++++ b/overlays/core/res/values/config.xml
+@@ -46,4 +46,8 @@
+ 
+     <bool name="config_useDevInputEventForAudioJack">true</bool>
+ 
++    <!-- Boolean indicating whether the HWC setColorTransform function can be performed efficiently
++         in hardware. -->
++    <bool name="config_setColorTransformAccelerated">true</bool>
++
+ </resources>
+-- 
+2.43.0
+
