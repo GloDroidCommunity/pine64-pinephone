@@ -137,13 +137,9 @@ class Lights : public BnLights {
         pthread_mutex_init(&g_lock, NULL);
 
         addLight(LightType::BACKLIGHT, 0);
-        addLight(LightType::KEYBOARD, 0);
-        addLight(LightType::BUTTONS, 0);
         addLight(LightType::BATTERY, 0);
         addLight(LightType::NOTIFICATIONS, 0);
         addLight(LightType::ATTENTION, 0);
-        addLight(LightType::BLUETOOTH, 0);
-        addLight(LightType::WIFI, 0);
     }
 
     ScopedAStatus setLightState(int id, const HwLightState& state) override {
