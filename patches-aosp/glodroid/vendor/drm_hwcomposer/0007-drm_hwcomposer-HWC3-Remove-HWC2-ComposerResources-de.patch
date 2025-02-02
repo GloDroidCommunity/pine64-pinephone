@@ -1,0 +1,697 @@
+From 3b268d3e8e93c53f09a143083de8f95f6ff395cd Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Sun, 26 Jan 2025 14:10:31 +0200
+Subject: [PATCH 7/9] drm_hwcomposer: HWC3: Remove HWC2 ComposerResources
+ dependencies
+
+Now that we have our own buffer importer and slots tracker,
+ComposerResourcer is no longer needed.
+
+Change-Id: I9b1e15800695b4c5f1a3f2c942ba669526e8a94c
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ Android.bp                 |   3 -
+ hwc2_device/HwcDisplay.h   |  14 +++
+ hwc3/Composer.cpp          |   4 +-
+ hwc3/ComposerClient.cpp    |  46 +++------
+ hwc3/ComposerClient.h      |   6 +-
+ hwc3/ComposerResources.cpp | 203 -------------------------------------
+ hwc3/ComposerResources.h   |  99 ------------------
+ hwc3/DrmHwcThree.cpp       |  39 ++++---
+ hwc3/DrmHwcThree.h         |  16 +--
+ hwc3/meson.build           |   1 -
+ 10 files changed, 57 insertions(+), 374 deletions(-)
+ delete mode 100644 hwc3/ComposerResources.cpp
+ delete mode 100644 hwc3/ComposerResources.h
+
+diff --git a/Android.bp b/Android.bp
+index e7a77bd..5a4aa0d 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -25,8 +25,6 @@ cc_defaults {
+     name: "hwcomposer.drm_defaults",
+ 
+     shared_libs: [
+-        "android.hardware.graphics.composer@2.1-resources",
+-        "android.hardware.graphics.composer@2.2-resources",
+         "libcutils",
+         "libdrm",
+         "libhardware",
+@@ -110,7 +108,6 @@ filegroup {
+     srcs: [
+         "hwc3/Composer.cpp",
+         "hwc3/ComposerClient.cpp",
+-        "hwc3/ComposerResources.cpp",
+         "hwc3/DrmHwcThree.cpp",
+         "hwc3/Utils.cpp",
+     ],
+diff --git a/hwc2_device/HwcDisplay.h b/hwc2_device/HwcDisplay.h
+index 959193b..9f117a9 100644
+--- a/hwc2_device/HwcDisplay.h
++++ b/hwc2_device/HwcDisplay.h
+@@ -36,6 +36,10 @@ namespace android {
+ class Backend;
+ class DrmHwc;
+ 
++struct FrontendDisplayBase {
++  virtual ~FrontendDisplayBase() = default;
++};
++
+ inline constexpr uint32_t kPrimaryDisplay = 0;
+ 
+ // NOLINTNEXTLINE
+@@ -106,6 +110,14 @@ class HwcDisplay {
+                                 std::vector<ReleaseFence> &out_release_fences)
+       -> bool;
+ 
++  auto GetFrontendPrivateData() -> std::shared_ptr<FrontendDisplayBase> {
++    return frontend_private_data_;
++  }
++
++  auto SetFrontendPrivateData(std::shared_ptr<FrontendDisplayBase> data) {
++    frontend_private_data_ = std::move(data);
++  }
++
+   // HWC2 Hooks - these should not be used outside of the hwc2 device.
+   HWC2::Error AcceptDisplayChanges();
+   HWC2::Error CreateLayer(hwc2_layer_t *layer);
+@@ -298,6 +310,8 @@ class HwcDisplay {
+   HWC2::Error Init();
+ 
+   HWC2::Error SetActiveConfigInternal(uint32_t config, int64_t change_time);
++
++  std::shared_ptr<FrontendDisplayBase> frontend_private_data_;
+ };
+ 
+ }  // namespace android
+diff --git a/hwc3/Composer.cpp b/hwc3/Composer.cpp
+index 124380d..28d096c 100644
+--- a/hwc3/Composer.cpp
++++ b/hwc3/Composer.cpp
+@@ -38,11 +38,13 @@ ndk::ScopedAStatus Composer::createClient(
+   }
+ 
+   auto client = ndk::SharedRefBase::make<ComposerClient>();
+-  if (!client || !client->Init()) {
++  if (!client) {
+     *out_client = nullptr;
+     return ToBinderStatus(hwc3::Error::kNoResources);
+   }
+ 
++  client->Init();
++
+   *out_client = client;
+   client_ = client;
+ 
+diff --git a/hwc3/ComposerClient.cpp b/hwc3/ComposerClient.cpp
+index f923e0d..8879d65 100644
+--- a/hwc3/ComposerClient.cpp
++++ b/hwc3/ComposerClient.cpp
+@@ -440,13 +440,9 @@ ComposerClient::ComposerClient() {
+   DEBUG_FUNC();
+ }
+ 
+-bool ComposerClient::Init() {
++void ComposerClient::Init() {
+   DEBUG_FUNC();
+-  composer_resources_ = ComposerResources::Create();
+-  if (composer_resources_) {
+-    hwc_ = std::make_unique<DrmHwcThree>(composer_resources_.get());
+-  }
+-  return composer_resources_ != nullptr;
++  hwc_ = std::make_unique<DrmHwcThree>();
+ }
+ 
+ ComposerClient::~ComposerClient() {
+@@ -460,7 +456,7 @@ ComposerClient::~ComposerClient() {
+ }
+ 
+ ndk::ScopedAStatus ComposerClient::createLayer(int64_t display_id,
+-                                               int32_t buffer_slot_count,
++                                               int32_t /*buffer_slot_count*/,
+                                                int64_t* layer_id) {
+   DEBUG_FUNC();
+   const std::unique_lock lock(hwc_->GetResMan().GetMainLock());
+@@ -476,21 +472,13 @@ ndk::ScopedAStatus ComposerClient::createLayer(int64_t display_id,
+     return ToBinderStatus(err);
+   }
+ 
+-  const int64_t created_layer_id = Hwc2LayerToHwc3(hwc2_layer_id);
+-  err = composer_resources_->AddLayer(display_id, created_layer_id,
+-                                      buffer_slot_count);
+-  if (err != hwc3::Error::kNone) {
+-    destroyLayer(display_id, created_layer_id);
+-    return ToBinderStatus(err);
+-  }
+-
+-  *layer_id = created_layer_id;
++  *layer_id = Hwc2LayerToHwc3(hwc2_layer_id);
+   return ndk::ScopedAStatus::ok();
+ }
+ 
+ ndk::ScopedAStatus ComposerClient::createVirtualDisplay(
+     int32_t width, int32_t height, AidlPixelFormat format_hint,
+-    int32_t output_buffer_slot_count, VirtualDisplay* out_display) {
++    int32_t /*output_buffer_slot_count*/, VirtualDisplay* out_display) {
+   DEBUG_FUNC();
+   const std::unique_lock lock(hwc_->GetResMan().GetMainLock());
+ 
+@@ -504,15 +492,7 @@ ndk::ScopedAStatus ComposerClient::createVirtualDisplay(
+     return ToBinderStatus(err);
+   }
+ 
+-  const int64_t created_display_id = Hwc2DisplayToHwc3(hwc2_display_id);
+-  err = composer_resources_->AddVirtualDisplay(hwc2_display_id,
+-                                               output_buffer_slot_count);
+-  if (err != hwc3::Error::kNone) {
+-    hwc_->DestroyVirtualDisplay(hwc2_display_id);
+-    return ToBinderStatus(err);
+-  }
+-
+-  out_display->display = created_display_id;
++  out_display->display = Hwc2DisplayToHwc3(hwc2_display_id);
+   out_display->format = format_hint;
+   return ndk::ScopedAStatus::ok();
+ }
+@@ -531,7 +511,6 @@ ndk::ScopedAStatus ComposerClient::destroyLayer(int64_t display_id,
+     return ToBinderStatus(err);
+   }
+ 
+-  err = composer_resources_->RemoveLayer(display_id, layer_id);
+   return ToBinderStatus(err);
+ }
+ 
+@@ -681,7 +660,8 @@ void ComposerClient::ExecuteDisplayCommand(const DisplayCommand& command) {
+                                             composition_type));
+     }
+     cmd_result_writer_->AddChanges(changes);
+-    composer_resources_->SetDisplayMustValidateState(display_id, false);
++    auto hwc3_display = DrmHwcThree::GetHwc3Display(*display);
++    hwc3_display->must_validate = false;
+ 
+     // TODO: DisplayRequests are not implemented.
+ 
+@@ -699,7 +679,8 @@ void ComposerClient::ExecuteDisplayCommand(const DisplayCommand& command) {
+   }
+ 
+   if (command.presentDisplay) {
+-    if (composer_resources_->MustValidateDisplay(display_id)) {
++    auto hwc3_display = DrmHwcThree::GetHwc3Display(*display);
++    if (hwc3_display->must_validate) {
+       cmd_result_writer_->AddError(hwc3::Error::kNotValidated);
+       return;
+     }
+@@ -1241,11 +1222,10 @@ ndk::ScopedAStatus ComposerClient::setAutoLowLatencyMode(int64_t display_id,
+   return ToBinderStatus(error);
+ }
+ 
+-ndk::ScopedAStatus ComposerClient::setClientTargetSlotCount(int64_t display_id,
+-                                                            int32_t count) {
++ndk::ScopedAStatus ComposerClient::setClientTargetSlotCount(
++    int64_t /*display_id*/, int32_t /*count*/) {
+   DEBUG_FUNC();
+-  return ToBinderStatus(
+-      composer_resources_->SetDisplayClientTargetCacheSize(display_id, count));
++  return ToBinderStatus(hwc3::Error::kNone);
+ }
+ 
+ ndk::ScopedAStatus ComposerClient::setColorMode(int64_t display_id,
+diff --git a/hwc3/ComposerClient.h b/hwc3/ComposerClient.h
+index 37cb8ab..25dc0ca 100644
+--- a/hwc3/ComposerClient.h
++++ b/hwc3/ComposerClient.h
+@@ -22,7 +22,6 @@
+ #include "aidl/android/hardware/graphics/composer3/LayerCommand.h"
+ #include "hwc2_device/HwcLayer.h"
+ #include "hwc3/CommandResultWriter.h"
+-#include "hwc3/ComposerResources.h"
+ #include "hwc3/Utils.h"
+ #include "utils/Mutex.h"
+ 
+@@ -42,7 +41,7 @@ class ComposerClient : public BnComposerClient {
+   ComposerClient();
+   ~ComposerClient() override;
+ 
+-  bool Init();
++  void Init();
+   std::string Dump();
+ 
+   // composer3 interface
+@@ -176,9 +175,6 @@ class ComposerClient : public BnComposerClient {
+ 
+   std::unique_ptr<CommandResultWriter> cmd_result_writer_;
+ 
+-  // Manages importing and caching gralloc buffers for displays and layers.
+-  std::unique_ptr<ComposerResources> composer_resources_;
+-
+   std::unique_ptr<DrmHwcThree> hwc_;
+ };
+ 
+diff --git a/hwc3/ComposerResources.cpp b/hwc3/ComposerResources.cpp
+deleted file mode 100644
+index 5e19082..0000000
+--- a/hwc3/ComposerResources.cpp
++++ /dev/null
+@@ -1,203 +0,0 @@
+-
+-/*
+- * Copyright (C) 2024 The Android Open Source Project
+- *
+- * Licensed under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License.
+- * You may obtain a copy of the License at
+- *
+- *      http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+-
+-#define LOG_TAG "drmhwc"
+-#define ATRACE_TAG (ATRACE_TAG_GRAPHICS | ATRACE_TAG_HAL)
+-
+-#include "ComposerResources.h"
+-
+-#include <aidlcommonsupport/NativeHandle.h>
+-
+-#include "hardware/hwcomposer2.h"
+-#include "hwc3/Utils.h"
+-
+-namespace {
+-using Hwc2Display = ::android::hardware::graphics::composer::V2_1::Display;
+-using Hwc2Layer = ::android::hardware::graphics::composer::V2_1::Layer;
+-
+-auto ToHwc2Display(uint64_t display_id) -> Hwc2Display {
+-  return static_cast<Hwc2Display>(display_id);
+-}
+-
+-auto ToHwc2Layer(int64_t layer_id) -> Hwc2Layer {
+-  return static_cast<Hwc2Layer>(layer_id);
+-}
+-}  // namespace
+-
+-namespace aidl::android::hardware::graphics::composer3::impl {
+-
+-std::unique_ptr<ComposerResourceReleaser>
+-ComposerResources::CreateResourceReleaser(bool is_buffer) {
+-  return std::make_unique<ComposerResourceReleaser>(is_buffer);
+-}
+-
+-std::unique_ptr<ComposerResources> ComposerResources::Create() {
+-  auto instance = std::unique_ptr<ComposerResources>(new ComposerResources);
+-  if (instance->resources_ == nullptr) {
+-    ALOGE("%s: Failed to initialise ComposerResources", __func__);
+-    return nullptr;
+-  }
+-
+-  return instance;
+-}
+-
+-hwc3::Error ComposerResources::GetLayerBuffer(
+-    uint64_t display_id, int64_t layer_id, const Buffer& buffer,
+-    buffer_handle_t* out_buffer_handle,
+-    ComposerResourceReleaser* buf_releaser) {
+-  auto display = ToHwc2Display(display_id);
+-  auto layer = ToHwc2Layer(layer_id);
+-
+-  const bool use_cache = !buffer.handle.has_value();
+-  buffer_handle_t buffer_handle = nullptr;
+-  if (buffer.handle.has_value()) {
+-    buffer_handle = ::android::makeFromAidl(*buffer.handle);
+-  }
+-
+-  auto err = resources_->getLayerBuffer(display, layer, buffer.slot, use_cache,
+-                                        buffer_handle, out_buffer_handle,
+-                                        buf_releaser->GetReplacedHandle());
+-
+-  return Hwc2toHwc3Error(static_cast<HWC2::Error>(err));
+-}
+-
+-hwc3::Error ComposerResources::GetLayerSidebandStream(
+-    uint64_t display_id, int64_t layer_id,
+-    const aidl::android::hardware::common::NativeHandle& handle,
+-    buffer_handle_t* out_handle, ComposerResourceReleaser* releaser) {
+-  auto display = ToHwc2Display(display_id);
+-  auto layer = ToHwc2Layer(layer_id);
+-
+-  auto err = resources_->getLayerSidebandStream(display, layer,
+-                                                ::android::makeFromAidl(handle),
+-                                                out_handle,
+-                                                releaser->GetReplacedHandle());
+-
+-  return Hwc2toHwc3Error(static_cast<HWC2::Error>(err));
+-}
+-
+-hwc3::Error ComposerResources::AddLayer(uint64_t display_id, int64_t layer_id,
+-                                        uint32_t buffer_cache_size) {
+-  auto display = ToHwc2Display(display_id);
+-  auto layer = ToHwc2Layer(layer_id);
+-
+-  auto err = resources_->addLayer(display, layer, buffer_cache_size);
+-  return Hwc2toHwc3Error(static_cast<HWC2::Error>(err));
+-}
+-
+-hwc3::Error ComposerResources::RemoveLayer(uint64_t display_id,
+-                                           int64_t layer_id) {
+-  auto display = ToHwc2Display(display_id);
+-  auto layer = ToHwc2Layer(layer_id);
+-
+-  auto err = resources_->removeLayer(display, layer);
+-  return Hwc2toHwc3Error(static_cast<HWC2::Error>(err));
+-}
+-
+-bool ComposerResources::HasDisplay(uint64_t display_id) {
+-  auto display = ToHwc2Display(display_id);
+-  return resources_->hasDisplay(display);
+-}
+-
+-hwc3::Error ComposerResources::AddPhysicalDisplay(uint64_t display_id) {
+-  auto display = ToHwc2Display(display_id);
+-  auto err = resources_->addPhysicalDisplay(display);
+-  return Hwc2toHwc3Error(static_cast<HWC2::Error>(err));
+-}
+-
+-hwc3::Error ComposerResources::AddVirtualDisplay(
+-    uint64_t display, uint32_t output_buffer_cache_size) {
+-  auto err = resources_->addVirtualDisplay(display, output_buffer_cache_size);
+-  return Hwc2toHwc3Error(static_cast<HWC2::Error>(err));
+-}
+-
+-hwc3::Error ComposerResources::RemoveDisplay(uint64_t display_id) {
+-  auto display = ToHwc2Display(display_id);
+-  auto err = resources_->removeDisplay(display);
+-  return Hwc2toHwc3Error(static_cast<HWC2::Error>(err));
+-}
+-
+-void ComposerResources::SetDisplayMustValidateState(uint64_t display_id,
+-                                                    bool must_validate) {
+-  auto display = ToHwc2Display(display_id);
+-  resources_->setDisplayMustValidateState(display, must_validate);
+-}
+-
+-bool ComposerResources::MustValidateDisplay(uint64_t display_id) {
+-  auto display = ToHwc2Display(display_id);
+-  return resources_->mustValidateDisplay(display);
+-}
+-
+-hwc3::Error ComposerResources::GetDisplayClientTarget(
+-    uint64_t display_id, const Buffer& buffer, buffer_handle_t* out_handle,
+-    ComposerResourceReleaser* releaser) {
+-  auto display = ToHwc2Display(display_id);
+-
+-  const bool use_cache = !buffer.handle.has_value();
+-  buffer_handle_t buffer_handle = nullptr;
+-  if (buffer.handle.has_value()) {
+-    buffer_handle = ::android::makeFromAidl(*buffer.handle);
+-  }
+-
+-  auto err = resources_->getDisplayClientTarget(display, buffer.slot, use_cache,
+-                                                buffer_handle, out_handle,
+-                                                releaser->GetReplacedHandle());
+-  return Hwc2toHwc3Error(static_cast<HWC2::Error>(err));
+-}
+-
+-hwc3::Error ComposerResources::SetDisplayClientTargetCacheSize(
+-    uint64_t display_id, uint32_t client_target_cache_size) {
+-  auto display = ToHwc2Display(display_id);
+-  auto err = resources_
+-                 ->setDisplayClientTargetCacheSize(display,
+-                                                   client_target_cache_size);
+-  return Hwc2toHwc3Error(static_cast<HWC2::Error>(err));
+-}
+-
+-hwc3::Error ComposerResources::GetDisplayClientTargetCacheSize(
+-    uint64_t display_id, size_t* out_cache_size) {
+-  auto display = ToHwc2Display(display_id);
+-  auto err = resources_->getDisplayClientTargetCacheSize(display,
+-                                                         out_cache_size);
+-  return Hwc2toHwc3Error(static_cast<HWC2::Error>(err));
+-}
+-
+-hwc3::Error ComposerResources::GetDisplayOutputBufferCacheSize(
+-    uint64_t display_id, size_t* out_cache_size) {
+-  auto display = ToHwc2Display(display_id);
+-  auto err = resources_->getDisplayOutputBufferCacheSize(display,
+-                                                         out_cache_size);
+-  return Hwc2toHwc3Error(static_cast<HWC2::Error>(err));
+-}
+-
+-hwc3::Error ComposerResources::GetDisplayOutputBuffer(
+-    uint64_t display_id, const Buffer& buffer, buffer_handle_t* out_handle,
+-    ComposerResourceReleaser* releaser) {
+-  auto display = ToHwc2Display(display_id);
+-  const bool use_cache = !buffer.handle.has_value();
+-
+-  buffer_handle_t buffer_handle = nullptr;
+-  if (buffer.handle.has_value()) {
+-    buffer_handle = ::android::makeFromAidl(*buffer.handle);
+-  }
+-
+-  auto err = resources_->getDisplayOutputBuffer(display, buffer.slot, use_cache,
+-                                                buffer_handle, out_handle,
+-                                                releaser->GetReplacedHandle());
+-  return Hwc2toHwc3Error(static_cast<HWC2::Error>(err));
+-}
+-}  // namespace aidl::android::hardware::graphics::composer3::impl
+\ No newline at end of file
+diff --git a/hwc3/ComposerResources.h b/hwc3/ComposerResources.h
+deleted file mode 100644
+index 6f4eee7..0000000
+--- a/hwc3/ComposerResources.h
++++ /dev/null
+@@ -1,99 +0,0 @@
+-/*
+- * Copyright (C) 2024 The Android Open Source Project
+- *
+- * Licensed under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License.
+- * You may obtain a copy of the License at
+- *
+- *      http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+-
+-#pragma once
+-
+-#include <memory>
+-
+-#include "aidl/android/hardware/graphics/composer3/IComposerClient.h"
+-#include "composer-resources/2.2/ComposerResources.h"
+-#include "cutils/native_handle.h"
+-#include "hwc3/Utils.h"
+-
+-namespace aidl::android::hardware::graphics::composer3::impl {
+-
+-class ComposerResourceReleaser {
+- public:
+-  explicit ComposerResourceReleaser(bool is_buffer)
+-      : replaced_handle_(is_buffer) {
+-  }
+-  virtual ~ComposerResourceReleaser() = default;
+-
+-  ::android::hardware::graphics::composer::V2_2::hal::ComposerResources::
+-      ReplacedHandle*
+-      GetReplacedHandle() {
+-    return &replaced_handle_;
+-  }
+-
+- private:
+-  ::android::hardware::graphics::composer::V2_2::hal::ComposerResources::
+-      ReplacedHandle replaced_handle_;
+-};
+-
+-class ComposerResources {
+- public:
+-  static std::unique_ptr<ComposerResources> Create();
+-  ~ComposerResources() = default;
+-
+-  hwc3::Error GetLayerBuffer(uint64_t display_id, int64_t layer_id,
+-                             const Buffer& buffer,
+-                             buffer_handle_t* out_buffer_handle,
+-                             ComposerResourceReleaser* releaser);
+-  hwc3::Error GetLayerSidebandStream(
+-      uint64_t display_id, int64_t layer_id,
+-      const aidl::android::hardware::common::NativeHandle& handle,
+-      buffer_handle_t* out_handle, ComposerResourceReleaser* releaser);
+-
+-  hwc3::Error AddLayer(uint64_t display, int64_t layer,
+-                       uint32_t buffer_cache_size);
+-  hwc3::Error RemoveLayer(uint64_t display, int64_t layer);
+-
+-  bool HasDisplay(uint64_t display);
+-  hwc3::Error AddPhysicalDisplay(uint64_t display);
+-  hwc3::Error AddVirtualDisplay(uint64_t display,
+-                                uint32_t output_buffer_cache_size);
+-  hwc3::Error RemoveDisplay(uint64_t display);
+-
+-  void SetDisplayMustValidateState(uint64_t display_id, bool must_validate);
+-  bool MustValidateDisplay(uint64_t display_id);
+-
+-  hwc3::Error GetDisplayClientTarget(uint64_t display_id, const Buffer& buffer,
+-                                     buffer_handle_t* out_handle,
+-                                     ComposerResourceReleaser* releaser);
+-
+-  hwc3::Error SetDisplayClientTargetCacheSize(
+-      uint64_t display_id, uint32_t client_target_cache_size);
+-  hwc3::Error GetDisplayClientTargetCacheSize(uint64_t display_id,
+-                                              size_t* out_cache_size);
+-  hwc3::Error GetDisplayOutputBufferCacheSize(uint64_t display,
+-                                              size_t* out_cache_size);
+-  hwc3::Error GetDisplayOutputBuffer(uint64_t display_id, const Buffer& buffer,
+-                                     buffer_handle_t* out_handle,
+-                                     ComposerResourceReleaser* releaser);
+-
+-  static std::unique_ptr<ComposerResourceReleaser> CreateResourceReleaser(
+-      bool is_buffer);
+-
+- private:
+-  ComposerResources() = default;
+-
+-  std::unique_ptr<
+-      ::android::hardware::graphics::composer::V2_2::hal::ComposerResources>
+-      resources_ = ::android::hardware::graphics::composer::V2_2::hal::
+-          ComposerResources::create();
+-};
+-
+-}  // namespace aidl::android::hardware::graphics::composer3::impl
+\ No newline at end of file
+diff --git a/hwc3/DrmHwcThree.cpp b/hwc3/DrmHwcThree.cpp
+index 9b4ba86..ec295f0 100644
+--- a/hwc3/DrmHwcThree.cpp
++++ b/hwc3/DrmHwcThree.cpp
+@@ -28,6 +28,16 @@
+ 
+ namespace aidl::android::hardware::graphics::composer3::impl {
+ 
++auto DrmHwcThree::GetHwc3Display(::android::HwcDisplay& display)
++    -> std::shared_ptr<Hwc3Display> {
++  auto frontend_private_data = display.GetFrontendPrivateData();
++  if (!frontend_private_data) {
++    frontend_private_data = std::make_shared<Hwc3Display>();
++    display.SetFrontendPrivateData(frontend_private_data);
++  }
++  return std::static_pointer_cast<Hwc3Display>(frontend_private_data);
++}
++
+ DrmHwcThree::~DrmHwcThree() {
+   /* Display deinit routine is handled by resource manager */
+   GetResMan().DeInit();
+@@ -51,7 +61,13 @@ void DrmHwcThree::SendVsyncPeriodTimingChangedEventToClient(
+ }
+ 
+ void DrmHwcThree::SendRefreshEventToClient(uint64_t display_id) {
+-  composer_resources_->SetDisplayMustValidateState(display_id, true);
++  auto* idisplay = GetDisplay(display_id);
++  if (idisplay == nullptr) {
++    ALOGE("Failed to get display %" PRIu64, display_id);
++    return;
++  }
++  auto hwc3_display = GetHwc3Display(*idisplay);
++  hwc3_display->must_validate = true;
+   composer_callback_->onRefresh(static_cast<int64_t>(display_id));
+ }
+ 
+@@ -69,11 +85,9 @@ void DrmHwcThree::SendHotplugEventToClient(
+   switch (display_status) {
+     case DrmHwc::kDisconnected:
+       event = common::DisplayHotplugEvent::DISCONNECTED;
+-      HandleDisplayHotplugEvent(static_cast<uint64_t>(display_id), false);
+       break;
+     case DrmHwc::kConnected:
+       event = common::DisplayHotplugEvent::CONNECTED;
+-      HandleDisplayHotplugEvent(static_cast<uint64_t>(display_id), true);
+       break;
+     case DrmHwc::kLinkTrainingFailed:
+       event = common::DisplayHotplugEvent::ERROR_INCOMPATIBLE_CABLE;
+@@ -87,28 +101,9 @@ void DrmHwcThree::SendHotplugEventToClient(
+ void DrmHwcThree::SendHotplugEventToClient(
+     hwc2_display_t display_id, DrmHwc::DisplayStatus display_status) {
+   bool connected = display_status != DrmHwc::kDisconnected;
+-  HandleDisplayHotplugEvent(static_cast<uint64_t>(display_id), connected);
+   composer_callback_->onHotplug(static_cast<int64_t>(display_id), connected);
+ }
+ 
+ #endif
+ 
+-void DrmHwcThree::HandleDisplayHotplugEvent(uint64_t display_id,
+-                                            bool connected) {
+-  DEBUG_FUNC();
+-  if (!connected) {
+-    composer_resources_->RemoveDisplay(display_id);
+-    return;
+-  }
+-
+-  /* The second or any subsequent hotplug event with connected status enabled is
+-   * a special way to inform the client (SF) that the display has changed its
+-   * dimensions. In this case, the client removes all layers and re-creates
+-   * them. In this case, we keep the display resources.
+-   */
+-  if (!composer_resources_->HasDisplay(display_id)) {
+-    composer_resources_->AddPhysicalDisplay(display_id);
+-  }
+-}
+-
+ }  // namespace aidl::android::hardware::graphics::composer3::impl
+diff --git a/hwc3/DrmHwcThree.h b/hwc3/DrmHwcThree.h
+index 3a9a6db..e5b0714 100644
+--- a/hwc3/DrmHwcThree.h
++++ b/hwc3/DrmHwcThree.h
+@@ -19,15 +19,17 @@
+ #include <aidl/android/hardware/graphics/composer3/IComposerCallback.h>
+ 
+ #include "drm/DrmHwc.h"
+-#include "hwc3/ComposerResources.h"
++#include "hwc2_device/HwcDisplay.h"
+ 
+ namespace aidl::android::hardware::graphics::composer3::impl {
+ 
++struct Hwc3Display : ::android::FrontendDisplayBase {
++  bool must_validate = false;
++};
++
+ class DrmHwcThree : public ::android::DrmHwc {
+  public:
+-  explicit DrmHwcThree(ComposerResources* composer_resources)
+-      : composer_resources_(composer_resources) {
+-  }
++  explicit DrmHwcThree() = default;
+   ~DrmHwcThree() override;
+ 
+   void Init(std::shared_ptr<IComposerCallback> callback);
+@@ -41,10 +43,10 @@ class DrmHwcThree : public ::android::DrmHwc {
+   void SendHotplugEventToClient(hwc2_display_t display_id,
+                                 DrmHwc::DisplayStatus display_status) override;
+ 
+- private:
+-  void HandleDisplayHotplugEvent(uint64_t display_id, bool connected);
++  static auto GetHwc3Display(::android::HwcDisplay& display)
++      -> std::shared_ptr<Hwc3Display>;
+ 
++ private:
+   std::shared_ptr<IComposerCallback> composer_callback_;
+-  ComposerResources* composer_resources_;
+ };
+ }  // namespace aidl::android::hardware::graphics::composer3::impl
+diff --git a/hwc3/meson.build b/hwc3/meson.build
+index 291c71a..c525308 100644
+--- a/hwc3/meson.build
++++ b/hwc3/meson.build
+@@ -4,7 +4,6 @@ src_hwc3 = files(
+     'Composer.cpp',
+     'DrmHwcThree.cpp',
+     'service.cpp',
+-    'ComposerResources.cpp',
+     'Utils.cpp',
+ )
+ 
+-- 
+2.43.0
+

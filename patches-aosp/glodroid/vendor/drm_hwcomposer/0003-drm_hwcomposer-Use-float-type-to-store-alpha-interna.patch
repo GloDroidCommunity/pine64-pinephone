@@ -1,0 +1,66 @@
+From 589f1d7fad122659b31c876066da892035c24cc8 Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Thu, 23 Jan 2025 02:25:12 +0200
+Subject: [PATCH 3/9] drm_hwcomposer: Use float type to store alpha internally
+
+0.0-1.0F range is a natural way to store alpha value internally,
+to be converted later to DRM-specific 0-0xFFFF fixed point type at
+DRM layer.
+
+Change-Id: Iedf2b11e53bf38efd08cd4eda1346647b9ff721f
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ compositor/LayerData.h   | 4 +++-
+ drm/DrmPlane.cpp         | 4 +++-
+ hwc2_device/HwcLayer.cpp | 3 +--
+ 3 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/compositor/LayerData.h b/compositor/LayerData.h
+index 127b3ff..962141f 100644
+--- a/compositor/LayerData.h
++++ b/compositor/LayerData.h
+@@ -60,9 +60,11 @@ struct DstRectInfo {
+   std::optional<IRect> i_rect;
+ };
+ 
++constexpr float kAlphaOpaque = 1.0F;
++
+ struct PresentInfo {
+   LayerTransform transform{};
+-  uint16_t alpha = UINT16_MAX;
++  float alpha = kAlphaOpaque;
+   SrcRectInfo source_crop{};
+   DstRectInfo display_frame{};
+ 
+diff --git a/drm/DrmPlane.cpp b/drm/DrmPlane.cpp
+index 76846d5..36f29b7 100644
+--- a/drm/DrmPlane.cpp
++++ b/drm/DrmPlane.cpp
+@@ -289,7 +289,9 @@ auto DrmPlane::AtomicSetState(drmModeAtomicReq &pset, LayerData &layer,
+     return -EINVAL;
+   }
+ 
+-  if (alpha_property_ && !alpha_property_.AtomicSet(pset, layer.pi.alpha)) {
++  if (alpha_property_ &&
++      !alpha_property_.AtomicSet(pset,
++                                 std::lround(layer.pi.alpha * UINT16_MAX))) {
+     return -EINVAL;
+   }
+ 
+diff --git a/hwc2_device/HwcLayer.cpp b/hwc2_device/HwcLayer.cpp
+index 1d1e118..6940c12 100644
+--- a/hwc2_device/HwcLayer.cpp
++++ b/hwc2_device/HwcLayer.cpp
+@@ -46,8 +46,7 @@ void HwcLayer::SetLayerProperties(const LayerProperties& layer_properties) {
+     layer_data_.pi.display_frame = layer_properties.display_frame.value();
+   }
+   if (layer_properties.alpha) {
+-    layer_data_.pi.alpha = std::lround(layer_properties.alpha.value() *
+-                                       UINT16_MAX);
++    layer_data_.pi.alpha = layer_properties.alpha.value();
+   }
+   if (layer_properties.source_crop) {
+     layer_data_.pi.source_crop = layer_properties.source_crop.value();
+-- 
+2.43.0
+

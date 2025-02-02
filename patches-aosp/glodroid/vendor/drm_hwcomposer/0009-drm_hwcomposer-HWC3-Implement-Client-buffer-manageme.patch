@@ -1,0 +1,48 @@
+From d55cc2245ad309d0ed5950f87bfeb6f398e20d19 Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Sun, 26 Jan 2025 16:21:42 +0200
+Subject: [PATCH 9/9] drm_hwcomposer: HWC3: Implement Client buffer management
+ recommendations
+
+Implement [1].
+
+[1]: https://source.android.com/docs/core/graphics/framebuffer-mgmt
+Change-Id: I635d7cf5f2d4f9a773e300d73487249a29cb90b1
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ hwc3/ComposerClient.cpp | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/hwc3/ComposerClient.cpp b/hwc3/ComposerClient.cpp
+index 982cb6a..4be7cd3 100644
+--- a/hwc3/ComposerClient.cpp
++++ b/hwc3/ComposerClient.cpp
+@@ -441,6 +441,10 @@ struct Hwc3Layer : ::android::FrontendLayerBase {
+     return lp;
+   }
+ 
++  void ClearSlots() {
++    slots_.clear();
++  }
++
+  private:
+   std::map<int32_t /*slot*/, std::shared_ptr<Hwc3BufferHandle>> slots_;
+ };
+@@ -1182,6 +1186,14 @@ ndk::ScopedAStatus ComposerClient::setActiveConfigWithConstraints(
+     return ToBinderStatus(hwc3::Error::kBadDisplay);
+   }
+ 
++  /* Client framebuffer management:
++   * https://source.android.com/docs/core/graphics/framebuffer-mgmt
++   */
++  auto& client_layer = display->GetClientLayer();
++  auto hwc3_layer = GetHwc3Layer(client_layer);
++  hwc3_layer->ClearSlots();
++  client_layer.ClearSlots();
++
+   if (constraints.seamlessRequired) {
+     return ToBinderStatus(hwc3::Error::kSeamlessNotAllowed);
+   }
+-- 
+2.43.0
+

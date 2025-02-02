@@ -1,0 +1,303 @@
+From 8df6c4aa3223184f94eea555ec7d238cd724b3fa Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Thu, 23 Jan 2025 12:11:48 +0200
+Subject: [PATCH 5/9] drm_hwcomposer: Use layer API for SetClientTarget and
+ SetOutputBuffer
+
+This removes SetClientTarget and SetOutputBuffer HWC2 API hooks from
+HwcDisplay, replacing them with SetLayerProperties().
+
+Change-Id: Ie4b1906199e6a1d0e7de9f7907aa9e679f28028c
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ hwc2_device/HwcDisplay.cpp  | 70 +------------------------------------
+ hwc2_device/HwcDisplay.h    |  7 ++--
+ hwc2_device/hwc2_device.cpp | 60 +++++++++++++++++++++++++++----
+ hwc3/ComposerClient.cpp     | 41 ++++++++++++----------
+ 4 files changed, 80 insertions(+), 98 deletions(-)
+
+diff --git a/hwc2_device/HwcDisplay.cpp b/hwc2_device/HwcDisplay.cpp
+index c183069..5a1e4d5 100644
+--- a/hwc2_device/HwcDisplay.cpp
++++ b/hwc2_device/HwcDisplay.cpp
+@@ -138,34 +138,6 @@ auto GetModesetBuffer(uint32_t width, uint32_t height) -> buffer_handle_t {
+ 
+ }  // namespace
+ 
+-static BufferColorSpace Hwc2ToColorSpace(int32_t dataspace) {
+-  switch (dataspace & HAL_DATASPACE_STANDARD_MASK) {
+-    case HAL_DATASPACE_STANDARD_BT709:
+-      return BufferColorSpace::kItuRec709;
+-    case HAL_DATASPACE_STANDARD_BT601_625:
+-    case HAL_DATASPACE_STANDARD_BT601_625_UNADJUSTED:
+-    case HAL_DATASPACE_STANDARD_BT601_525:
+-    case HAL_DATASPACE_STANDARD_BT601_525_UNADJUSTED:
+-      return BufferColorSpace::kItuRec601;
+-    case HAL_DATASPACE_STANDARD_BT2020:
+-    case HAL_DATASPACE_STANDARD_BT2020_CONSTANT_LUMINANCE:
+-      return BufferColorSpace::kItuRec2020;
+-    default:
+-      return BufferColorSpace::kUndefined;
+-  }
+-}
+-
+-static BufferSampleRange Hwc2ToSampleRange(int32_t dataspace) {
+-  switch (dataspace & HAL_DATASPACE_RANGE_MASK) {
+-    case HAL_DATASPACE_RANGE_FULL:
+-      return BufferSampleRange::kFullRange;
+-    case HAL_DATASPACE_RANGE_LIMITED:
+-      return BufferSampleRange::kLimitedRange;
+-    default:
+-      return BufferSampleRange::kUndefined;
+-  }
+-}
+-
+ std::string HwcDisplay::DumpDelta(HwcDisplay::Stats delta) {
+   if (delta.total_pixops_ == 0)
+     return "No stats yet";
+@@ -448,7 +420,7 @@ void HwcDisplay::Deinit() {
+     vsync_worker_ = {};
+   }
+ 
+-  SetClientTarget(nullptr, -1, 0, {});
++  client_layer_.SwChainClearCache();
+ }
+ 
+ HWC2::Error HwcDisplay::Init() {
+@@ -975,37 +947,6 @@ HWC2::Error HwcDisplay::SetActiveConfig(hwc2_config_t config) {
+   return SetActiveConfigInternal(config, ResourceManager::GetTimeMonotonicNs());
+ }
+ 
+-/* Find API details at:
+- * https://cs.android.com/android/platform/superproject/+/android-11.0.0_r3:hardware/libhardware/include/hardware/hwcomposer2.h;l=1861
+- */
+-HWC2::Error HwcDisplay::SetClientTarget(buffer_handle_t target,
+-                                        int32_t acquire_fence,
+-                                        int32_t dataspace,
+-                                        hwc_region_t /*damage*/) {
+-  HwcLayer::LayerProperties lp;
+-  lp.buffer = {.buffer_handle = target,
+-               .acquire_fence = MakeSharedFd(acquire_fence)};
+-  lp.color_space = Hwc2ToColorSpace(dataspace);
+-  lp.sample_range = Hwc2ToSampleRange(dataspace);
+-  client_layer_.SetLayerProperties(lp);
+-
+-  /*
+-   * target can be nullptr, this does mean the Composer Service is calling
+-   * cleanDisplayResources() on after receiving HOTPLUG event. See more at:
+-   * https://cs.android.com/android/platform/superproject/+/master:hardware/interfaces/graphics/composer/2.1/utils/hal/include/composer-hal/2.1/ComposerClient.h;l=350;drc=944b68180b008456ed2eb4d4d329e33b19bd5166
+-   */
+-  if (target == nullptr) {
+-    client_layer_.SwChainClearCache();
+-    return HWC2::Error::None;
+-  }
+-
+-  if (IsInHeadlessMode()) {
+-    return HWC2::Error::None;
+-  }
+-
+-  return HWC2::Error::None;
+-}
+-
+ HWC2::Error HwcDisplay::SetColorMode(int32_t mode) {
+   /* Maps to the Colorspace DRM connector property:
+    * https://elixir.bootlin.com/linux/v6.11/source/include/drm/drm_connector.h#L538
+@@ -1093,15 +1034,6 @@ bool HwcDisplay::CtmByGpu() {
+   return true;
+ }
+ 
+-HWC2::Error HwcDisplay::SetOutputBuffer(buffer_handle_t buffer,
+-                                        int32_t release_fence) {
+-  HwcLayer::LayerProperties lp;
+-  lp.buffer = {.buffer_handle = buffer,
+-               .acquire_fence = MakeSharedFd(release_fence)};
+-  writeback_layer_->SetLayerProperties(lp);
+-  return HWC2::Error::None;
+-}
+-
+ HWC2::Error HwcDisplay::SetPowerMode(int32_t mode_in) {
+   auto mode = static_cast<HWC2::PowerMode>(mode_in);
+ 
+diff --git a/hwc2_device/HwcDisplay.h b/hwc2_device/HwcDisplay.h
+index ad58ae8..959193b 100644
+--- a/hwc2_device/HwcDisplay.h
++++ b/hwc2_device/HwcDisplay.h
+@@ -165,11 +165,8 @@ class HwcDisplay {
+   HWC2::Error PresentDisplay(int32_t *out_present_fence);
+   HWC2::Error SetActiveConfig(hwc2_config_t config);
+   HWC2::Error ChosePreferredConfig();
+-  HWC2::Error SetClientTarget(buffer_handle_t target, int32_t acquire_fence,
+-                              int32_t dataspace, hwc_region_t damage);
+   HWC2::Error SetColorMode(int32_t mode);
+   HWC2::Error SetColorTransform(const float *matrix, int32_t hint);
+-  HWC2::Error SetOutputBuffer(buffer_handle_t buffer, int32_t release_fence);
+   HWC2::Error SetPowerMode(int32_t mode);
+   HWC2::Error SetVsyncEnabled(int32_t enabled);
+   HWC2::Error ValidateDisplay(uint32_t *num_types, uint32_t *num_requests);
+@@ -236,6 +233,10 @@ class HwcDisplay {
+     return flatcon_;
+   }
+ 
++  auto GetClientLayer() -> HwcLayer & {
++    return client_layer_;
++  }
++
+   auto &GetWritebackLayer() {
+     return writeback_layer_;
+   }
+diff --git a/hwc2_device/hwc2_device.cpp b/hwc2_device/hwc2_device.cpp
+index dc55192..ac25cf6 100644
+--- a/hwc2_device/hwc2_device.cpp
++++ b/hwc2_device/hwc2_device.cpp
+@@ -140,6 +140,57 @@ static BufferSampleRange Hwc2ToSampleRange(int32_t dataspace) {
+   }
+ }
+ 
++/* Display functions */
++
++static int32_t SetClientTarget(hwc2_device_t *device, hwc2_display_t display,
++                               buffer_handle_t target, int32_t acquire_fence,
++                               int32_t dataspace, hwc_region_t /*damage*/) {
++  ALOGV("SetClientTarget");
++  LOCK_COMPOSER(device);
++  GET_DISPLAY(display);
++
++  if (target == nullptr) {
++    idisplay->GetClientLayer().SwChainClearCache();
++    return 0;
++  }
++
++  HwcLayer::LayerProperties lp;
++  lp.buffer = {
++      .buffer_handle = target,
++      .acquire_fence = MakeSharedFd(acquire_fence),
++  };
++  lp.color_space = Hwc2ToColorSpace(dataspace);
++  lp.sample_range = Hwc2ToSampleRange(dataspace);
++
++  idisplay->GetClientLayer().SetLayerProperties(lp);
++
++  return 0;
++}
++
++static int32_t SetOutputBuffer(hwc2_device_t *device, hwc2_display_t display,
++                               buffer_handle_t buffer, int32_t release_fence) {
++  ALOGV("SetOutputBuffer");
++  LOCK_COMPOSER(device);
++  GET_DISPLAY(display);
++
++  auto &writeback_layer = idisplay->GetWritebackLayer();
++  if (!writeback_layer) {
++    ALOGE("Writeback layer is not available");
++    return static_cast<int32_t>(HWC2::Error::BadLayer);
++  }
++
++  HwcLayer::LayerProperties lp;
++  lp.buffer = {
++      .buffer_handle = buffer,
++      .acquire_fence = MakeSharedFd(release_fence),
++  };
++  writeback_layer->SetLayerProperties(lp);
++
++  return 0;
++}
++
++/* Layer functions */
++
+ static int32_t SetLayerBlendMode(hwc2_device_t *device, hwc2_display_t display,
+                                  hwc2_layer_t layer,
+                                  int32_t /*hwc2_blend_mode_t*/ mode) {
+@@ -450,10 +501,7 @@ static hwc2_function_pointer_t HookDevGetFunction(struct hwc2_device * /*dev*/,
+           DisplayHook<decltype(&HwcDisplay::SetActiveConfig),
+                       &HwcDisplay::SetActiveConfig, hwc2_config_t>);
+     case HWC2::FunctionDescriptor::SetClientTarget:
+-      return ToHook<HWC2_PFN_SET_CLIENT_TARGET>(
+-          DisplayHook<decltype(&HwcDisplay::SetClientTarget),
+-                      &HwcDisplay::SetClientTarget, buffer_handle_t, int32_t,
+-                      int32_t, hwc_region_t>);
++      return (hwc2_function_pointer_t)SetClientTarget;
+     case HWC2::FunctionDescriptor::SetColorMode:
+       return ToHook<HWC2_PFN_SET_COLOR_MODE>(
+           DisplayHook<decltype(&HwcDisplay::SetColorMode),
+@@ -463,9 +511,7 @@ static hwc2_function_pointer_t HookDevGetFunction(struct hwc2_device * /*dev*/,
+           DisplayHook<decltype(&HwcDisplay::SetColorTransform),
+                       &HwcDisplay::SetColorTransform, const float *, int32_t>);
+     case HWC2::FunctionDescriptor::SetOutputBuffer:
+-      return ToHook<HWC2_PFN_SET_OUTPUT_BUFFER>(
+-          DisplayHook<decltype(&HwcDisplay::SetOutputBuffer),
+-                      &HwcDisplay::SetOutputBuffer, buffer_handle_t, int32_t>);
++      return (hwc2_function_pointer_t)SetOutputBuffer;
+     case HWC2::FunctionDescriptor::SetPowerMode:
+       return ToHook<HWC2_PFN_SET_POWER_MODE>(
+           DisplayHook<decltype(&HwcDisplay::SetPowerMode),
+diff --git a/hwc3/ComposerClient.cpp b/hwc3/ComposerClient.cpp
+index 554c83c..162695f 100644
+--- a/hwc3/ComposerClient.cpp
++++ b/hwc3/ComposerClient.cpp
+@@ -1320,15 +1320,6 @@ void ComposerClient::ExecuteSetDisplayClientTarget(
+     return;
+   }
+ 
+-  hwc_region_t damage_regions;
+-  damage_regions.numRects = command.damage.size();
+-
+-  std::vector<hwc_rect_t> regions(command.damage.size());
+-  for (const auto& region : command.damage) {
+-    regions.push_back({region.left, region.top, region.right, region.bottom});
+-  }
+-  damage_regions.rects = regions.data();
+-
+   buffer_handle_t imported_buffer = nullptr;
+   auto buf_releaser = ComposerResources::CreateResourceReleaser(true);
+ 
+@@ -1344,13 +1335,16 @@ void ComposerClient::ExecuteSetDisplayClientTarget(
+   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+   auto fence = const_cast<::ndk::ScopedFileDescriptor&>(command.buffer.fence)
+                    .release();
+-  error = Hwc2toHwc3Error(
+-      display->SetClientTarget(imported_buffer, fence,
+-                               Hwc3DataspaceToHwc2(command.dataspace),
+-                               damage_regions));
+-  if (error != hwc3::Error::kNone) {
+-    cmd_result_writer_->AddError(error);
+-  }
++  auto& client_layer = display->GetClientLayer();
++  HwcLayer::LayerProperties properties;
++  properties.buffer = {
++      .buffer_handle = imported_buffer,
++      .acquire_fence = ::android::MakeSharedFd(fence),
++  };
++  properties.color_space = AidlToColorSpace(command.dataspace);
++  properties.sample_range = AidlToSampleRange(command.dataspace);
++
++  client_layer.SetLayerProperties(properties);
+ }
+ 
+ void ComposerClient::ExecuteSetDisplayOutputBuffer(uint64_t display_id,
+@@ -1374,11 +1368,20 @@ void ComposerClient::ExecuteSetDisplayOutputBuffer(uint64_t display_id,
+ 
+   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+   auto fence = const_cast<::ndk::ScopedFileDescriptor&>(buffer.fence).release();
+-  error = Hwc2toHwc3Error(display->SetOutputBuffer(imported_buffer, fence));
+-  if (error != hwc3::Error::kNone) {
+-    cmd_result_writer_->AddError(error);
++
++  auto& writeback_layer = display->GetWritebackLayer();
++  if (!writeback_layer) {
++    cmd_result_writer_->AddError(hwc3::Error::kBadLayer);
+     return;
+   }
++
++  HwcLayer::LayerProperties properties;
++  properties.buffer = {
++      .buffer_handle = imported_buffer,
++      .acquire_fence = ::android::MakeSharedFd(fence),
++  };
++
++  writeback_layer->SetLayerProperties(properties);
+ }
+ 
+ }  // namespace aidl::android::hardware::graphics::composer3::impl
+-- 
+2.43.0
+

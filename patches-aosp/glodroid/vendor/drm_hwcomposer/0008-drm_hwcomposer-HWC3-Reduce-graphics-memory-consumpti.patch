@@ -1,0 +1,69 @@
+From 4946f289e83d457b79f130bb361f6ebe638ccd2a Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Sun, 26 Jan 2025 16:11:33 +0200
+Subject: [PATCH 8/9] drm_hwcomposer: HWC3: Reduce graphics memory consumption
+
+Implement [1].
+
+[1]: https://source.android.com/docs/core/graphics/reduce-consumption
+Change-Id: I28436aae3e1ce0be296536366a6961ef91d5f58b
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ hwc3/ComposerClient.cpp | 34 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
+
+diff --git a/hwc3/ComposerClient.cpp b/hwc3/ComposerClient.cpp
+index 8879d65..982cb6a 100644
+--- a/hwc3/ComposerClient.cpp
++++ b/hwc3/ComposerClient.cpp
+@@ -423,6 +423,24 @@ struct Hwc3Layer : ::android::FrontendLayerBase {
+     return lp;
+   }
+ 
++  [[maybe_unused]]
++  auto HandleClearSlot(int32_t slot_id)
++      -> std::optional<HwcLayer::LayerProperties> {
++    if (slots_.count(slot_id) == 0) {
++      return std::nullopt;
++    }
++
++    slots_.erase(slot_id);
++
++    auto lp = HwcLayer::LayerProperties{};
++    lp.slot_buffer = {
++        .slot_id = slot_id,
++        .bi = std::nullopt,
++    };
++
++    return lp;
++  }
++
+  private:
+   std::map<int32_t /*slot*/, std::shared_ptr<Hwc3BufferHandle>> slots_;
+ };
+@@ -553,6 +571,22 @@ void ComposerClient::DispatchLayerCommand(int64_t display_id,
+     return;
+   }
+ 
++#if __ANDROID_API__ >= 34
++  /* https://source.android.com/docs/core/graphics/reduce-consumption */
++  if (command.bufferSlotsToClear) {
++    auto hwc3_layer = GetHwc3Layer(*layer);
++    for (const auto& slot : *command.bufferSlotsToClear) {
++      auto lp = hwc3_layer->HandleClearSlot(slot);
++      if (!lp) {
++        cmd_result_writer_->AddError(hwc3::Error::kBadLayer);
++        return;
++      }
++
++      layer->SetLayerProperties(lp.value());
++    }
++  }
++#endif
++
+   HwcLayer::LayerProperties properties;
+   if (command.buffer) {
+     auto hwc3_layer = GetHwc3Layer(*layer);
+-- 
+2.43.0
+

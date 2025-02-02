@@ -1,0 +1,30 @@
+From 9ac029f77d919256422cbde40dd608c6d052c37b Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Sun, 26 Jan 2025 17:02:00 +0200
+Subject: [PATCH 1/9] drm_hwcomposer: CI: Use git diff to feed the
+ clang-format-diff
+
+When using git show, false positives happen, while git diff works fine.
+
+Change-Id: Idde7c46aa1808493116c21cc155b9806fe4dfe2d
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ .ci/.gitlab-ci-checkcommit.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/.ci/.gitlab-ci-checkcommit.sh b/.ci/.gitlab-ci-checkcommit.sh
+index 1ca2876..5649475 100755
+--- a/.ci/.gitlab-ci-checkcommit.sh
++++ b/.ci/.gitlab-ci-checkcommit.sh
+@@ -61,7 +61,7 @@ git log --pretty='%h' FETCH_HEAD..HEAD | while read h; do
+ 		exit 1
+ 	fi
+ 
+-	git show -U0 "$h" -- | clang-format-diff-19 -p 1 -style=file > /tmp/format-fixup.patch
++	git diff -U0 "$h" -- | clang-format-diff-19 -p 1 -style=file > /tmp/format-fixup.patch
+ 	if [ -s  /tmp/format-fixup.patch ]; then
+ 		cat /tmp/format-fixup.patch >&2
+ 		exit 1
+-- 
+2.43.0
+

@@ -1,0 +1,416 @@
+From af61a49610d43a6c47e3b83a6c6549da4e003c36 Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Thu, 23 Jan 2025 01:55:21 +0200
+Subject: [PATCH 2/9] drm_hwcomposer: Support default values for Rect
+ structures
+
+This commit introduces two improvements:
+1. Introduces frontend-agnostic structures for rects.
+2. Support default values in them so that the backend can handle
+   cases where rects are not specified by the client, like
+   the client layer display frame, etc.
+   This reduces the complexity of the Internal layer, making it
+   feasible to use a single Frontend<->Internal layer API for
+   regular layers, as well as for the Client and Output layers.
+
+Change-Id: Iab5030ad523d36ea4c5af142f6f628952467d6ab
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ backend/Backend.cpp           |  5 +++-
+ compositor/LayerData.h        | 48 +++++++++++++++++++++++++++--------
+ drm/DrmAtomicStateManager.cpp | 13 +++++++---
+ drm/DrmAtomicStateManager.h   |  2 ++
+ drm/DrmPlane.cpp              | 24 +++++++++++++++---
+ drm/DrmPlane.h                |  2 +-
+ hwc2_device/HwcDisplay.cpp    | 46 +++------------------------------
+ hwc2_device/HwcLayer.h        |  4 +--
+ hwc2_device/hwc2_device.cpp   | 12 +++++++--
+ hwc3/ComposerClient.cpp       | 21 ++++++++++++---
+ 10 files changed, 107 insertions(+), 70 deletions(-)
+
+diff --git a/backend/Backend.cpp b/backend/Backend.cpp
+index 91cb84d..bf45c08 100644
+--- a/backend/Backend.cpp
++++ b/backend/Backend.cpp
+@@ -108,7 +108,10 @@ uint32_t Backend::CalcPixOps(const std::vector<HwcLayer *> &layers,
+   for (size_t z_order = 0; z_order < layers.size(); ++z_order) {
+     if (z_order >= first_z && z_order < first_z + size) {
+       auto &df = layers[z_order]->GetLayerData().pi.display_frame;
+-      pixops += (df.right - df.left) * (df.bottom - df.top);
++      if (df.i_rect) {
++        pixops += (df.i_rect->right - df.i_rect->left) *
++                  (df.i_rect->bottom - df.i_rect->top);
++      }
+     }
+   }
+   return pixops;
+diff --git a/compositor/LayerData.h b/compositor/LayerData.h
+index 7eb6cba..127b3ff 100644
+--- a/compositor/LayerData.h
++++ b/compositor/LayerData.h
+@@ -16,9 +16,6 @@
+ 
+ #pragma once
+ 
+-#include <hardware/hardware.h>
+-#include <hardware/hwcomposer.h>
+-
+ #include <cmath>
+ #include <cstdbool>
+ #include <cstdint>
+@@ -41,22 +38,51 @@ struct LayerTransform {
+   bool rotate90;
+ };
+ 
++struct SrcRectInfo {
++  struct FRect {
++    float left;
++    float top;
++    float right;
++    float bottom;
++  };
++  /* nullopt means the whole buffer */
++  std::optional<FRect> f_rect;
++};
++
++struct DstRectInfo {
++  struct IRect {
++    int32_t left;
++    int32_t top;
++    int32_t right;
++    int32_t bottom;
++  };
++  /* nullopt means the whole display */
++  std::optional<IRect> i_rect;
++};
++
+ struct PresentInfo {
+   LayerTransform transform{};
+   uint16_t alpha = UINT16_MAX;
+-  hwc_frect_t source_crop{};
+-  hwc_rect_t display_frame{};
++  SrcRectInfo source_crop{};
++  DstRectInfo display_frame{};
+ 
+   bool RequireScalingOrPhasing() const {
+-    const float src_width = source_crop.right - source_crop.left;
+-    const float src_height = source_crop.bottom - source_crop.top;
++    if (!source_crop.f_rect || !display_frame.i_rect) {
++      return false;
++    }
++
++    const auto &src = *source_crop.f_rect;
++    const auto &dst = *display_frame.i_rect;
++
++    const float src_width = src.right - src.left;
++    const float src_height = src.bottom - src.top;
+ 
+-    auto dest_width = float(display_frame.right - display_frame.left);
+-    auto dest_height = float(display_frame.bottom - display_frame.top);
++    auto dest_width = float(dst.right - dst.left);
++    auto dest_height = float(dst.bottom - dst.top);
+ 
+     auto scaling = src_width != dest_width || src_height != dest_height;
+-    auto phasing = (source_crop.left - std::floor(source_crop.left) != 0) ||
+-                   (source_crop.top - std::floor(source_crop.top) != 0);
++    auto phasing = (src.left - std::floor(src.left) != 0) ||
++                   (src.top - std::floor(src.top) != 0);
+     return scaling || phasing;
+   }
+ };
+diff --git a/drm/DrmAtomicStateManager.cpp b/drm/DrmAtomicStateManager.cpp
+index 9a8769a..d94f1f7 100644
+--- a/drm/DrmAtomicStateManager.cpp
++++ b/drm/DrmAtomicStateManager.cpp
+@@ -120,6 +120,9 @@ auto DrmAtomicStateManager::CommitFrame(AtomicCommitArgs &args) -> int {
+       return -EINVAL;
+     }
+ 
++    auto raw_mode = args.display_mode.value().GetRawMode();
++    whole_display_rect_.i_rect = {0, 0, raw_mode.hdisplay, raw_mode.vdisplay};
++
+     if (!crtc->GetModeProperty().AtomicSet(*pset, *new_frame_state.mode_blob)) {
+       return -EINVAL;
+     }
+@@ -141,12 +144,14 @@ auto DrmAtomicStateManager::CommitFrame(AtomicCommitArgs &args) -> int {
+ 
+   if (args.colorspace && connector->GetColorspaceProperty()) {
+     if (!connector->GetColorspaceProperty()
+-             .AtomicSet(*pset, connector->GetColorspacePropertyValue(*args.colorspace)))
++             .AtomicSet(*pset, connector->GetColorspacePropertyValue(
++                                   *args.colorspace)))
+       return -EINVAL;
+   }
+ 
+   if (args.content_type && connector->GetContentTypeProperty()) {
+-    if (!connector->GetContentTypeProperty().AtomicSet(*pset, *args.content_type))
++    if (!connector->GetContentTypeProperty().AtomicSet(*pset,
++                                                       *args.content_type))
+       return -EINVAL;
+   }
+ 
+@@ -166,8 +171,8 @@ auto DrmAtomicStateManager::CommitFrame(AtomicCommitArgs &args) -> int {
+       auto &v = unused_planes;
+       v.erase(std::remove(v.begin(), v.end(), joining.plane), v.end());
+ 
+-      if (plane->AtomicSetState(*pset, layer, joining.z_pos, crtc->GetId()) !=
+-          0) {
++      if (plane->AtomicSetState(*pset, layer, joining.z_pos, crtc->GetId(),
++                                whole_display_rect_) != 0) {
+         return -EINVAL;
+       }
+     }
+diff --git a/drm/DrmAtomicStateManager.h b/drm/DrmAtomicStateManager.h
+index 8d22b99..0a1d9ff 100644
+--- a/drm/DrmAtomicStateManager.h
++++ b/drm/DrmAtomicStateManager.h
+@@ -108,6 +108,8 @@ class DrmAtomicStateManager {
+   int frames_staged_{};
+   int frames_tracked_{};
+ 
++  DstRectInfo whole_display_rect_{};
++
+   void ThreadFn(const std::shared_ptr<DrmAtomicStateManager> &dasm);
+   std::condition_variable cv_;
+   std::mutex mutex_;
+diff --git a/drm/DrmPlane.cpp b/drm/DrmPlane.cpp
+index 0010742..76846d5 100644
+--- a/drm/DrmPlane.cpp
++++ b/drm/DrmPlane.cpp
+@@ -25,6 +25,7 @@
+ 
+ #include "DrmDevice.h"
+ #include "bufferinfo/BufferInfoGetter.h"
++#include "compositor/LayerData.h"
+ #include "utils/log.h"
+ 
+ namespace android {
+@@ -229,7 +230,8 @@ static int To1616FixPt(float in) {
+ }
+ 
+ auto DrmPlane::AtomicSetState(drmModeAtomicReq &pset, LayerData &layer,
+-                              uint32_t zpos, uint32_t crtc_id) -> int {
++                              uint32_t zpos, uint32_t crtc_id,
++                              DstRectInfo &whole_display_rect) -> int {
+   if (!layer.fb || !layer.bi) {
+     ALOGE("%s: Invalid arguments", __func__);
+     return -EINVAL;
+@@ -251,8 +253,24 @@ auto DrmPlane::AtomicSetState(drmModeAtomicReq &pset, LayerData &layer,
+     return -EINVAL;
+   }
+ 
+-  auto &disp = layer.pi.display_frame;
+-  auto &src = layer.pi.source_crop;
++  auto opt_disp = layer.pi.display_frame.i_rect;
++  if (!layer.pi.display_frame.i_rect) {
++    opt_disp = whole_display_rect.i_rect;
++  }
++
++  auto opt_src = layer.pi.source_crop.f_rect;
++  if (!layer.pi.source_crop.f_rect) {
++    opt_src = {0.0F, 0.0F, float(layer.bi->width), float(layer.bi->height)};
++  }
++
++  if (!opt_disp || !opt_src) {
++    ALOGE("%s: Invalid display frame or source crop", __func__);
++    return -EINVAL;
++  }
++
++  auto disp = opt_disp.value();
++  auto src = opt_src.value();
++
+   if (!crtc_property_.AtomicSet(pset, crtc_id) ||
+       !fb_property_.AtomicSet(pset, layer.fb->GetFbId()) ||
+       !crtc_x_property_.AtomicSet(pset, disp.left) ||
+diff --git a/drm/DrmPlane.h b/drm/DrmPlane.h
+index 24d21c8..10bcfa9 100644
+--- a/drm/DrmPlane.h
++++ b/drm/DrmPlane.h
+@@ -49,7 +49,7 @@ class DrmPlane : public PipelineBindable<DrmPlane> {
+   bool HasNonRgbFormat() const;
+ 
+   auto AtomicSetState(drmModeAtomicReq &pset, LayerData &layer, uint32_t zpos,
+-                      uint32_t crtc_id) -> int;
++                      uint32_t crtc_id, DstRectInfo &whole_display_rect) -> int;
+   auto AtomicDisablePlane(drmModeAtomicReq &pset) -> int;
+   auto &GetZPosProperty() const {
+     return zpos_property_;
+diff --git a/hwc2_device/HwcDisplay.cpp b/hwc2_device/HwcDisplay.cpp
+index a0c200e..3300961 100644
+--- a/hwc2_device/HwcDisplay.cpp
++++ b/hwc2_device/HwcDisplay.cpp
+@@ -136,25 +136,6 @@ auto GetModesetBuffer(uint32_t width, uint32_t height) -> buffer_handle_t {
+   return handle;
+ }
+ 
+-auto GetModesetLayerProperties(buffer_handle_t buffer, uint32_t width,
+-                               uint32_t height) -> HwcLayer::LayerProperties {
+-  HwcLayer::LayerProperties properties;
+-  properties.buffer = {.buffer_handle = buffer, .acquire_fence = {}};
+-  properties.display_frame = {
+-      .left = 0,
+-      .top = 0,
+-      .right = int(width),
+-      .bottom = int(height),
+-  };
+-  properties.source_crop = (hwc_frect_t){
+-      .left = 0.0F,
+-      .top = 0.0F,
+-      .right = static_cast<float>(width),
+-      .bottom = static_cast<float>(height),
+-  };
+-  properties.blend_mode = BufferBlendMode::kNone;
+-  return properties;
+-}
+ }  // namespace
+ 
+ static BufferColorSpace Hwc2ToColorSpace(int32_t dataspace) {
+@@ -306,8 +287,10 @@ HwcDisplay::ConfigError HwcDisplay::SetConfig(hwc2_config_t config) {
+     buffer_handle_t modeset_buffer = GetModesetBuffer(width, height);
+     if (modeset_buffer != nullptr) {
+       auto modeset_layer = std::make_unique<HwcLayer>(this);
+-      modeset_layer->SetLayerProperties(
+-          GetModesetLayerProperties(modeset_buffer, width, height));
++      HwcLayer::LayerProperties properties;
++      properties.buffer = {.buffer_handle = modeset_buffer};
++      properties.blend_mode = BufferBlendMode::kNone;
++      modeset_layer->SetLayerProperties(properties);
+       modeset_layer->PopulateLayerData();
+       modeset_layer_data = modeset_layer->GetLayerData();
+       GraphicBufferAllocator::get().free(modeset_buffer);
+@@ -828,14 +811,6 @@ HWC2::Error HwcDisplay::CreateComposition(AtomicCommitArgs &a_args) {
+     if (staged_config == nullptr) {
+       return HWC2::Error::BadConfig;
+     }
+-    HwcLayer::LayerProperties lp;
+-    lp.display_frame = {
+-        .left = 0,
+-        .top = 0,
+-        .right = int(staged_config->mode.GetRawMode().hdisplay),
+-        .bottom = int(staged_config->mode.GetRawMode().vdisplay),
+-    };
+-    client_layer_.SetLayerProperties(lp);
+ 
+     configs_.active_config_id = staged_mode_config_id_.value();
+     a_args.display_mode = staged_config->mode;
+@@ -1020,19 +995,6 @@ HWC2::Error HwcDisplay::SetClientTarget(buffer_handle_t target,
+     return HWC2::Error::BadLayer;
+   }
+ 
+-  auto &bi = client_layer_.GetLayerData().bi;
+-  if (!bi) {
+-    ALOGE("%s: Invalid state", __func__);
+-    return HWC2::Error::BadLayer;
+-  }
+-
+-  lp = {};
+-  lp.source_crop = {.left = 0.0F,
+-                    .top = 0.0F,
+-                    .right = float(bi->width),
+-                    .bottom = float(bi->height)};
+-  client_layer_.SetLayerProperties(lp);
+-
+   return HWC2::Error::None;
+ }
+ 
+diff --git a/hwc2_device/HwcLayer.h b/hwc2_device/HwcLayer.h
+index 93fd18f..d597977 100644
+--- a/hwc2_device/HwcLayer.h
++++ b/hwc2_device/HwcLayer.h
+@@ -39,9 +39,9 @@ class HwcLayer {
+     std::optional<BufferColorSpace> color_space;
+     std::optional<BufferSampleRange> sample_range;
+     std::optional<HWC2::Composition> composition_type;
+-    std::optional<hwc_rect_t> display_frame;
++    std::optional<DstRectInfo> display_frame;
+     std::optional<float> alpha;
+-    std::optional<hwc_frect_t> source_crop;
++    std::optional<SrcRectInfo> source_crop;
+     std::optional<LayerTransform> transform;
+     std::optional<uint32_t> z_order;
+   };
+diff --git a/hwc2_device/hwc2_device.cpp b/hwc2_device/hwc2_device.cpp
+index 842dd9d..dc55192 100644
+--- a/hwc2_device/hwc2_device.cpp
++++ b/hwc2_device/hwc2_device.cpp
+@@ -244,7 +244,11 @@ static int32_t SetLayerDisplayFrame(hwc2_device_t *device,
+   GET_LAYER(layer);
+ 
+   HwcLayer::LayerProperties layer_properties;
+-  layer_properties.display_frame = frame;
++  layer_properties.display_frame = {
++      .i_rect = DstRectInfo::IRect{.left = frame.left,
++                                   .top = frame.top,
++                                   .right = frame.right,
++                                   .bottom = frame.bottom}};
+   ilayer->SetLayerProperties(layer_properties);
+ 
+   return 0;
+@@ -280,7 +284,11 @@ static int32_t SetLayerSourceCrop(hwc2_device_t *device, hwc2_display_t display,
+   GET_LAYER(layer);
+ 
+   HwcLayer::LayerProperties layer_properties;
+-  layer_properties.source_crop = crop;
++  layer_properties.source_crop = {
++      .f_rect = SrcRectInfo::FRect{.left = crop.left,
++                                   .top = crop.top,
++                                   .right = crop.right,
++                                   .bottom = crop.bottom}};
+   ilayer->SetLayerProperties(layer_properties);
+ 
+   return 0;
+diff --git a/hwc3/ComposerClient.cpp b/hwc3/ComposerClient.cpp
+index 04beb3a..554c83c 100644
+--- a/hwc3/ComposerClient.cpp
++++ b/hwc3/ComposerClient.cpp
+@@ -49,11 +49,13 @@
+ #include "hwc3/DrmHwcThree.h"
+ #include "hwc3/Utils.h"
+ 
++using ::android::DstRectInfo;
+ using ::android::HwcDisplay;
+ using ::android::HwcDisplayConfig;
+ using ::android::HwcDisplayConfigs;
+ using ::android::HwcLayer;
+ using ::android::LayerTransform;
++using ::android::SrcRectInfo;
+ 
+ #include "utils/log.h"
+ 
+@@ -290,18 +292,29 @@ DisplayConfiguration HwcDisplayConfigToAidlConfiguration(
+   return aidl_configuration;
+ }
+ 
+-std::optional<hwc_rect> AidlToRect(const std::optional<common::Rect>& rect) {
++std::optional<DstRectInfo> AidlToRect(const std::optional<common::Rect>& rect) {
+   if (!rect) {
+     return std::nullopt;
+   }
+-  return hwc_rect{rect->left, rect->top, rect->right, rect->bottom};
++  DstRectInfo dst_rec;
++  dst_rec.i_rect = {.left = rect->left,
++                    .top = rect->top,
++                    .right = rect->right,
++                    .bottom = rect->bottom};
++  return dst_rec;
+ }
+ 
+-std::optional<hwc_frect> AidlToFRect(const std::optional<common::FRect>& rect) {
++std::optional<SrcRectInfo> AidlToFRect(
++    const std::optional<common::FRect>& rect) {
+   if (!rect) {
+     return std::nullopt;
+   }
+-  return hwc_frect{rect->left, rect->top, rect->right, rect->bottom};
++  SrcRectInfo src_rect;
++  src_rect.f_rect = {.left = rect->left,
++                     .top = rect->top,
++                     .right = rect->right,
++                     .bottom = rect->bottom};
++  return src_rect;
+ }
+ 
+ std::optional<float> AidlToAlpha(const std::optional<PlaneAlpha>& alpha) {
+-- 
+2.43.0
+

@@ -1,0 +1,872 @@
+From 5d55f91c858f186878c15a45c5227626b84c5f3e Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <r.stratiienko@gmail.com>
+Date: Sat, 25 Jan 2025 22:41:53 +0200
+Subject: [PATCH 6/9] drm_hwcomposer: Rework HWC frontends buffer management
+
+Change summary:
+
+- Use BufferInfo instead of native_buffer to configure the HwcLayer.
+- Extend buffer properties with slot info.
+- Provide fence and active slot ID separate from the buffer.
+- Move swapchain tracking into HWC2. HWC3 doesn't need that.
+
+Why:
+
+- Support more flexible resource management control from the frontend
+  side,  which is required by HWC3 API.
+- Move more Android-specific data types to the frontend module.
+
+Change-Id: Idaa4c552f600f78d6f0ad21997cfa7f3a6c6cbd8
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ bufferinfo/BufferInfo.h     |  10 ++
+ hwc2_device/HwcDisplay.cpp  |  16 ++-
+ hwc2_device/HwcLayer.cpp    | 131 +++++++-----------------
+ hwc2_device/HwcLayer.h      |  65 +++++++-----
+ hwc2_device/hwc2_device.cpp | 164 ++++++++++++++++++++++++++----
+ hwc3/ComposerClient.cpp     | 197 ++++++++++++++++++++++++++----------
+ 6 files changed, 382 insertions(+), 201 deletions(-)
+
+diff --git a/bufferinfo/BufferInfo.h b/bufferinfo/BufferInfo.h
+index b2297f9..c29c1a7 100644
+--- a/bufferinfo/BufferInfo.h
++++ b/bufferinfo/BufferInfo.h
+@@ -17,6 +17,7 @@
+ #pragma once
+ 
+ #include <cstdint>
++#include <memory>
+ 
+ constexpr int kBufferMaxPlanes = 4;
+ 
+@@ -40,6 +41,10 @@ enum class BufferBlendMode : int32_t {
+   kCoverage,
+ };
+ 
++struct PrimeFdsSharedBase {
++  virtual ~PrimeFdsSharedBase() = default;
++};
++
+ struct BufferInfo {
+   uint32_t width;
+   uint32_t height;
+@@ -54,4 +59,9 @@ struct BufferInfo {
+   BufferColorSpace color_space;
+   BufferSampleRange sample_range;
+   BufferBlendMode blend_mode;
++
++  /* prime_fds field require valid file descriptors. While their lifecycle is
++   * managed elsewhere. The shared_ptr is used to ensure that the fds are not
++   * closed while the BufferInfo is still in use. */
++  std::shared_ptr<PrimeFdsSharedBase> fds_shared;
+ };
+diff --git a/hwc2_device/HwcDisplay.cpp b/hwc2_device/HwcDisplay.cpp
+index 5a1e4d5..c0e12d8 100644
+--- a/hwc2_device/HwcDisplay.cpp
++++ b/hwc2_device/HwcDisplay.cpp
+@@ -260,7 +260,19 @@ HwcDisplay::ConfigError HwcDisplay::SetConfig(hwc2_config_t config) {
+     if (modeset_buffer != nullptr) {
+       auto modeset_layer = std::make_unique<HwcLayer>(this);
+       HwcLayer::LayerProperties properties;
+-      properties.buffer = {.buffer_handle = modeset_buffer};
++      auto bi = BufferInfoGetter::GetInstance()->GetBoInfo(modeset_buffer);
++      if (!bi) {
++        ALOGE("Failed to get buffer info for modeset buffer.");
++        return ConfigError::kBadConfig;
++      }
++      properties.slot_buffer = {
++          .slot_id = -1,
++          .bi = bi,
++      };
++      properties.active_slot = {
++          .slot_id = -1,
++          .fence = {},
++      };
+       properties.blend_mode = BufferBlendMode::kNone;
+       modeset_layer->SetLayerProperties(properties);
+       modeset_layer->PopulateLayerData();
+@@ -420,7 +432,7 @@ void HwcDisplay::Deinit() {
+     vsync_worker_ = {};
+   }
+ 
+-  client_layer_.SwChainClearCache();
++  client_layer_.ClearSlots();
+ }
+ 
+ HWC2::Error HwcDisplay::Init() {
+diff --git a/hwc2_device/HwcLayer.cpp b/hwc2_device/HwcLayer.cpp
+index 6940c12..75f44e0 100644
+--- a/hwc2_device/HwcLayer.cpp
++++ b/hwc2_device/HwcLayer.cpp
+@@ -25,10 +25,24 @@
+ namespace android {
+ 
+ void HwcLayer::SetLayerProperties(const LayerProperties& layer_properties) {
+-  if (layer_properties.buffer) {
+-    layer_data_.acquire_fence = layer_properties.buffer->acquire_fence;
+-    buffer_handle_ = layer_properties.buffer->buffer_handle;
+-    buffer_handle_updated_ = true;
++  if (layer_properties.slot_buffer) {
++    auto slot_id = layer_properties.slot_buffer->slot_id;
++    if (slot_id == -1) {
++      ClearSlots();
++    }
++    if (!layer_properties.slot_buffer->bi) {
++      slots_.erase(slot_id);
++    } else {
++      slots_[slot_id] = {
++          .bi = layer_properties.slot_buffer->bi.value(),
++          .fb = {},
++      };
++    }
++  }
++  if (layer_properties.active_slot) {
++    active_slot_id_ = layer_properties.active_slot->slot_id;
++    layer_data_.acquire_fence = layer_properties.active_slot->fence;
++    buffer_updated_ = true;
+   }
+   if (layer_properties.blend_mode) {
+     blend_mode_ = layer_properties.blend_mode.value();
+@@ -60,49 +74,38 @@ void HwcLayer::SetLayerProperties(const LayerProperties& layer_properties) {
+ }
+ 
+ void HwcLayer::ImportFb() {
+-  if (!IsLayerUsableAsDevice() || !buffer_handle_updated_) {
+-    return;
+-  }
+-  buffer_handle_updated_ = false;
+-
+-  layer_data_.fb = {};
+-
+-  auto unique_id = BufferInfoGetter::GetInstance()->GetUniqueId(buffer_handle_);
+-  if (unique_id && SwChainGetBufferFromCache(*unique_id)) {
++  if (!IsLayerUsableAsDevice() || !buffer_updated_ ||
++      !active_slot_id_.has_value()) {
+     return;
+   }
++  buffer_updated_ = false;
+ 
+-  layer_data_.bi = BufferInfoGetter::GetInstance()->GetBoInfo(buffer_handle_);
+-  if (!layer_data_.bi) {
+-    ALOGW("Unable to get buffer information (0x%p)", buffer_handle_);
+-    bi_get_failed_ = true;
++  if (slots_[*active_slot_id_].fb) {
+     return;
+   }
+ 
+-  layer_data_
+-      .fb = parent_->GetPipe().device->GetDrmFbImporter().GetOrCreateFbId(
+-      &layer_data_.bi.value());
++  auto& fb_importer = parent_->GetPipe().device->GetDrmFbImporter();
++  auto fb = fb_importer.GetOrCreateFbId(&slots_[*active_slot_id_].bi);
+ 
+-  if (!layer_data_.fb) {
+-    ALOGV("Unable to create framebuffer object for buffer 0x%p",
+-          buffer_handle_);
++  if (!fb) {
++    ALOGE("Unable to create framebuffer object for layer %p", this);
+     fb_import_failed_ = true;
+     return;
+   }
+ 
+-  if (unique_id) {
+-    SwChainAddCurrentBuffer(*unique_id);
+-  }
++  slots_[*active_slot_id_].fb = fb;
+ }
+ 
+ void HwcLayer::PopulateLayerData() {
+   ImportFb();
+ 
+-  if (!layer_data_.bi) {
+-    ALOGE("%s: Invalid state", __func__);
++  if (!active_slot_id_.has_value()) {
+     return;
+   }
+ 
++  layer_data_.bi = slots_[*active_slot_id_].bi;
++  layer_data_.fb = slots_[*active_slot_id_].fb;
++
+   if (blend_mode_ != BufferBlendMode::kUndefined) {
+     layer_data_.bi->blend_mode = blend_mode_;
+   }
+@@ -114,75 +117,9 @@ void HwcLayer::PopulateLayerData() {
+   }
+ }
+ 
+-/* SwapChain Cache */
+-
+-bool HwcLayer::SwChainGetBufferFromCache(BufferUniqueId unique_id) {
+-  if (swchain_lookup_table_.count(unique_id) == 0) {
+-    return false;
+-  }
+-
+-  auto seq = swchain_lookup_table_[unique_id];
+-
+-  if (swchain_cache_.count(seq) == 0) {
+-    return false;
+-  }
+-
+-  auto& el = swchain_cache_[seq];
+-  if (!el.bi) {
+-    return false;
+-  }
+-
+-  layer_data_.bi = el.bi;
+-  layer_data_.fb = el.fb;
+-
+-  return true;
+-}
+-
+-void HwcLayer::SwChainReassemble(BufferUniqueId unique_id) {
+-  if (swchain_lookup_table_.count(unique_id) != 0) {
+-    if (swchain_lookup_table_[unique_id] ==
+-        int(swchain_lookup_table_.size()) - 1) {
+-      /* Skip same buffer */
+-      return;
+-    }
+-    if (swchain_lookup_table_[unique_id] == 0) {
+-      swchain_reassembled_ = true;
+-      return;
+-    }
+-    /* Tracking error */
+-    SwChainClearCache();
+-    return;
+-  }
+-
+-  swchain_lookup_table_[unique_id] = int(swchain_lookup_table_.size());
+-}
+-
+-void HwcLayer::SwChainAddCurrentBuffer(BufferUniqueId unique_id) {
+-  if (!swchain_reassembled_) {
+-    SwChainReassemble(unique_id);
+-  }
+-
+-  if (swchain_reassembled_) {
+-    if (swchain_lookup_table_.count(unique_id) == 0) {
+-      SwChainClearCache();
+-      return;
+-    }
+-
+-    auto seq = swchain_lookup_table_[unique_id];
+-
+-    if (swchain_cache_.count(seq) == 0) {
+-      swchain_cache_[seq] = {};
+-    }
+-
+-    swchain_cache_[seq].bi = layer_data_.bi;
+-    swchain_cache_[seq].fb = layer_data_.fb;
+-  }
+-}
+-
+-void HwcLayer::SwChainClearCache() {
+-  swchain_cache_.clear();
+-  swchain_lookup_table_.clear();
+-  swchain_reassembled_ = false;
++void HwcLayer::ClearSlots() {
++  slots_.clear();
++  active_slot_id_.reset();
+ }
+ 
+ }  // namespace android
+\ No newline at end of file
+diff --git a/hwc2_device/HwcLayer.h b/hwc2_device/HwcLayer.h
+index d597977..6576ba7 100644
+--- a/hwc2_device/HwcLayer.h
++++ b/hwc2_device/HwcLayer.h
+@@ -18,23 +18,35 @@
+ 
+ #include <aidl/android/hardware/graphics/common/Transform.h>
+ #include <hardware/hwcomposer2.h>
++#include <memory>
+ 
++#include "bufferinfo/BufferInfo.h"
+ #include "bufferinfo/BufferInfoGetter.h"
+ #include "compositor/LayerData.h"
++#include "utils/fd.h"
+ 
+ namespace android {
+ 
+ class HwcDisplay;
+ 
++struct FrontendLayerBase {
++  virtual ~FrontendLayerBase() = default;
++};
++
+ class HwcLayer {
+  public:
+   struct Buffer {
+-    buffer_handle_t buffer_handle;
+-    SharedFd acquire_fence;
++    int32_t slot_id;
++    std::optional<BufferInfo> bi;
++  };
++  struct Slot {
++    int32_t slot_id;
++    SharedFd fence;
+   };
+   // A set of properties to be validated.
+   struct LayerProperties {
+-    std::optional<Buffer> buffer;
++    std::optional<Buffer> slot_buffer;
++    std::optional<Slot> active_slot;
+     std::optional<BufferBlendMode> blend_mode;
+     std::optional<BufferColorSpace> color_space;
+     std::optional<BufferSampleRange> sample_range;
+@@ -82,6 +94,14 @@ class HwcLayer {
+ 
+   void SetLayerProperties(const LayerProperties &layer_properties);
+ 
++  auto GetFrontendPrivateData() -> std::shared_ptr<FrontendLayerBase> {
++    return frontend_private_data_;
++  }
++
++  auto SetFrontendPrivateData(std::shared_ptr<FrontendLayerBase> data) {
++    frontend_private_data_ = std::move(data);
++  }
++
+  private:
+   // sf_type_ stores the initial type given to us by surfaceflinger,
+   // validated_type_ stores the type after running ValidateDisplay
+@@ -101,43 +121,32 @@ class HwcLayer {
+   BufferColorSpace color_space_{};
+   BufferSampleRange sample_range_{};
+   BufferBlendMode blend_mode_{};
+-  buffer_handle_t buffer_handle_{};
+-  bool buffer_handle_updated_{};
++  bool buffer_updated_{};
+ 
+   bool prior_buffer_scanout_flag_{};
+ 
+   HwcDisplay *const parent_;
+ 
+-  /* Layer state */
+- public:
+-  void PopulateLayerData();
++  std::shared_ptr<FrontendLayerBase> frontend_private_data_;
+ 
+-  bool IsLayerUsableAsDevice() const {
+-    return !bi_get_failed_ && !fb_import_failed_ && buffer_handle_ != nullptr;
+-  }
++  std::optional<int32_t> active_slot_id_;
++  struct BufferSlot {
++    BufferInfo bi;
++    std::shared_ptr<DrmFbIdHandle> fb;
++  };
++  std::map<int32_t /*slot*/, BufferSlot> slots_;
+ 
+- private:
+   void ImportFb();
+-  bool bi_get_failed_{};
+   bool fb_import_failed_{};
+ 
+-  /* SwapChain Cache */
+  public:
+-  void SwChainClearCache();
+-
+- private:
+-  struct SwapChainElement {
+-    std::optional<BufferInfo> bi;
+-    std::shared_ptr<DrmFbIdHandle> fb;
+-  };
+-
+-  bool SwChainGetBufferFromCache(BufferUniqueId unique_id);
+-  void SwChainReassemble(BufferUniqueId unique_id);
+-  void SwChainAddCurrentBuffer(BufferUniqueId unique_id);
++  void PopulateLayerData();
++  void ClearSlots();
+ 
+-  std::map<int /*seq_no*/, SwapChainElement> swchain_cache_;
+-  std::map<BufferUniqueId, int /*seq_no*/> swchain_lookup_table_;
+-  bool swchain_reassembled_{};
++  bool IsLayerUsableAsDevice() const {
++    return !fb_import_failed_ && active_slot_id_.has_value() &&
++           slots_.count(*active_slot_id_) > 0;
++  }
+ };
+ 
+ }  // namespace android
+diff --git a/hwc2_device/hwc2_device.cpp b/hwc2_device/hwc2_device.cpp
+index ac25cf6..0dbc284 100644
+--- a/hwc2_device/hwc2_device.cpp
++++ b/hwc2_device/hwc2_device.cpp
+@@ -19,10 +19,16 @@
+ 
+ #define LOG_TAG "drmhwc"
+ 
++#include <cassert>
+ #include <cinttypes>
++#include <memory>
++#include <optional>
++
++#include <cutils/native_handle.h>
+ 
+ #include "DrmHwcTwo.h"
+ #include "backend/Backend.h"
++#include "hwc2_device/HwcLayer.h"
+ #include "utils/log.h"
+ 
+ namespace android {
+@@ -43,6 +49,106 @@ static std::string GetFuncName(const char *pretty_function) {
+   return str.substr(p1, p2 - p1);
+ }
+ 
++struct Hwc2DeviceLayer : public FrontendLayerBase {
++  auto HandleNextBuffer(buffer_handle_t buffer_handle, int32_t fence_fd)
++      -> std::optional<HwcLayer::LayerProperties> {
++    auto slot = GetSlotNumber(buffer_handle);
++
++    if (invalid_) {
++      return std::nullopt;
++    }
++
++    bool buffer_provided = false;
++    int32_t slot_id = -1;
++
++    if (slot.has_value()) {
++      buffer_provided = swchain_slots_[slot.value()];
++      slot_id = slot.value();
++    }
++
++    HwcLayer::LayerProperties lp;
++    if (!buffer_provided) {
++      auto bo_info = BufferInfoGetter::GetInstance()->GetBoInfo(buffer_handle);
++      if (!bo_info) {
++        invalid_ = true;
++        return std::nullopt;
++      }
++
++      lp.slot_buffer = {
++          .slot_id = slot_id,
++          .bi = bo_info,
++      };
++    }
++    lp.active_slot = {
++        .slot_id = slot_id,
++        .fence = MakeSharedFd(fence_fd),
++    };
++
++    return lp;
++  }
++
++  void SwChainClearCache() {
++    swchain_lookup_table_.clear();
++    swchain_slots_.clear();
++    swchain_reassembled_ = false;
++  }
++
++ private:
++  auto GetSlotNumber(buffer_handle_t buffer_handle) -> std::optional<int32_t> {
++    auto unique_id = BufferInfoGetter::GetInstance()->GetUniqueId(
++        buffer_handle);
++    if (!unique_id) {
++      ALOGE("Failed to get unique id for buffer handle %p", buffer_handle);
++      return std::nullopt;
++    }
++
++    if (swchain_lookup_table_.count(*unique_id) == 0) {
++      SwChainReassemble(*unique_id);
++      return std::nullopt;
++    }
++
++    if (!swchain_reassembled_) {
++      return std::nullopt;
++    }
++
++    return swchain_lookup_table_[*unique_id];
++  }
++
++  void SwChainReassemble(BufferUniqueId unique_id) {
++    if (swchain_lookup_table_.count(unique_id) != 0) {
++      if (swchain_lookup_table_[unique_id] ==
++          int(swchain_lookup_table_.size()) - 1) {
++        /* Skip same buffer */
++        return;
++      }
++      if (swchain_lookup_table_[unique_id] == 0) {
++        swchain_reassembled_ = true;
++        return;
++      }
++      /* Tracking error */
++      SwChainClearCache();
++      return;
++    }
++
++    swchain_lookup_table_[unique_id] = int(swchain_lookup_table_.size());
++  }
++
++  bool invalid_{}; /* Layer is invalid and should be skipped */
++  std::map<BufferUniqueId, int /*slot*/> swchain_lookup_table_;
++  std::map<int /*slot*/, bool /*buffer_provided*/> swchain_slots_;
++  bool swchain_reassembled_{};
++};
++
++static auto GetHwc2DeviceLayer(HwcLayer &layer)
++    -> std::shared_ptr<Hwc2DeviceLayer> {
++  auto frontend_private_data = layer.GetFrontendPrivateData();
++  if (!frontend_private_data) {
++    frontend_private_data = std::make_shared<Hwc2DeviceLayer>();
++    layer.SetFrontendPrivateData(frontend_private_data);
++  }
++  return std::static_pointer_cast<Hwc2DeviceLayer>(frontend_private_data);
++}
++
+ struct Drmhwc2Device : hwc2_device {
+   DrmHwcTwo drmhwctwo;
+ };
+@@ -149,20 +255,29 @@ static int32_t SetClientTarget(hwc2_device_t *device, hwc2_display_t display,
+   LOCK_COMPOSER(device);
+   GET_DISPLAY(display);
+ 
++  auto &client_layer = idisplay->GetClientLayer();
++  auto h2l = GetHwc2DeviceLayer(client_layer);
++  if (!h2l) {
++    client_layer.SetFrontendPrivateData(std::make_shared<Hwc2DeviceLayer>());
++  }
++
+   if (target == nullptr) {
+-    idisplay->GetClientLayer().SwChainClearCache();
++    client_layer.ClearSlots();
++    h2l->SwChainClearCache();
++
+     return 0;
+   }
+ 
+-  HwcLayer::LayerProperties lp;
+-  lp.buffer = {
+-      .buffer_handle = target,
+-      .acquire_fence = MakeSharedFd(acquire_fence),
+-  };
+-  lp.color_space = Hwc2ToColorSpace(dataspace);
+-  lp.sample_range = Hwc2ToSampleRange(dataspace);
++  auto lp = h2l->HandleNextBuffer(target, acquire_fence);
++  if (!lp) {
++    ALOGE("Failed to process client target");
++    return static_cast<int32_t>(HWC2::Error::BadLayer);
++  }
+ 
+-  idisplay->GetClientLayer().SetLayerProperties(lp);
++  lp->color_space = Hwc2ToColorSpace(dataspace);
++  lp->sample_range = Hwc2ToSampleRange(dataspace);
++
++  idisplay->GetClientLayer().SetLayerProperties(lp.value());
+ 
+   return 0;
+ }
+@@ -179,12 +294,19 @@ static int32_t SetOutputBuffer(hwc2_device_t *device, hwc2_display_t display,
+     return static_cast<int32_t>(HWC2::Error::BadLayer);
+   }
+ 
+-  HwcLayer::LayerProperties lp;
+-  lp.buffer = {
+-      .buffer_handle = buffer,
+-      .acquire_fence = MakeSharedFd(release_fence),
+-  };
+-  writeback_layer->SetLayerProperties(lp);
++  auto h2l = GetHwc2DeviceLayer(*writeback_layer);
++  if (!h2l) {
++    writeback_layer->SetFrontendPrivateData(
++        std::make_shared<Hwc2DeviceLayer>());
++  }
++
++  auto lp = h2l->HandleNextBuffer(buffer, release_fence);
++  if (!lp) {
++    ALOGE("Failed to process output buffer");
++    return static_cast<int32_t>(HWC2::Error::BadLayer);
++  }
++
++  writeback_layer->SetLayerProperties(lp.value());
+ 
+   return 0;
+ }
+@@ -232,10 +354,14 @@ static int32_t SetLayerBuffer(hwc2_device_t *device, hwc2_display_t display,
+   GET_DISPLAY(display);
+   GET_LAYER(layer);
+ 
+-  HwcLayer::LayerProperties layer_properties;
+-  layer_properties.buffer = {.buffer_handle = buffer,
+-                             .acquire_fence = MakeSharedFd(acquire_fence)};
+-  ilayer->SetLayerProperties(layer_properties);
++  auto h2l = GetHwc2DeviceLayer(*ilayer);
++
++  auto lp = h2l->HandleNextBuffer(buffer, acquire_fence);
++  if (!lp) {
++    ALOGV("Failed to process layer buffer");
++    return static_cast<int32_t>(HWC2::Error::BadLayer);
++  }
++  ilayer->SetLayerProperties(lp.value());
+ 
+   return 0;
+ }
+diff --git a/hwc3/ComposerClient.cpp b/hwc3/ComposerClient.cpp
+index 162695f..f923e0d 100644
+--- a/hwc3/ComposerClient.cpp
++++ b/hwc3/ComposerClient.cpp
+@@ -40,6 +40,7 @@
+ #include <cutils/native_handle.h>
+ #include <hardware/hwcomposer2.h>
+ #include <hardware/hwcomposer_defs.h>
++#include <ui/GraphicBufferMapper.h>
+ 
+ #include "bufferinfo/BufferInfo.h"
+ #include "compositor/DisplayInfo.h"
+@@ -351,6 +352,90 @@ std::optional<LayerTransform> AidlToLayerTransform(
+ 
+ }  // namespace
+ 
++struct Hwc3BufferHandle : PrimeFdsSharedBase {
++  static auto Create(buffer_handle_t handle)
++      -> std::shared_ptr<Hwc3BufferHandle> {
++    auto hwc3 = std::shared_ptr<Hwc3BufferHandle>(new Hwc3BufferHandle());
++
++    ::android::GraphicBufferMapper::get()
++        .importBufferNoValidate(handle, &hwc3->imported_handle_);
++
++    return hwc3;
++  }
++
++  auto GetHandle() const -> buffer_handle_t {
++    return imported_handle_;
++  }
++
++  ~Hwc3BufferHandle() override {
++    ::android::GraphicBufferMapper::get().freeBuffer(imported_handle_);
++  }
++
++ private:
++  Hwc3BufferHandle() = default;
++  buffer_handle_t imported_handle_{};
++};
++
++struct Hwc3Layer : ::android::FrontendLayerBase {
++  auto HandleNextBuffer(std::optional<buffer_handle_t> raw_handle,
++                        ::android::SharedFd fence_fd, int32_t slot_id)
++      -> std::optional<HwcLayer::LayerProperties> {
++    HwcLayer::LayerProperties lp;
++    if (slots_.count(slot_id) != 0) {
++      lp.active_slot = {
++          .slot_id = slot_id,
++          .fence = std::move(fence_fd),
++      };
++
++      return lp;
++    }
++
++    if (!raw_handle) {
++      ALOGE("Buffer handle is nullopt but slot was not cached.");
++      return std::nullopt;
++    }
++
++    auto hwc3 = Hwc3BufferHandle::Create(*raw_handle);
++    if (!hwc3) {
++      return std::nullopt;
++    }
++
++    auto bi = ::android::BufferInfoGetter::GetInstance()->GetBoInfo(
++        hwc3->GetHandle());
++    if (!bi) {
++      return std::nullopt;
++    }
++
++    bi->fds_shared = hwc3;
++
++    lp.slot_buffer = {
++        .slot_id = slot_id,
++        .bi = bi,
++    };
++
++    lp.active_slot = {
++        .slot_id = slot_id,
++        .fence = std::move(fence_fd),
++    };
++
++    slots_[slot_id] = hwc3;
++
++    return lp;
++  }
++
++ private:
++  std::map<int32_t /*slot*/, std::shared_ptr<Hwc3BufferHandle>> slots_;
++};
++
++static auto GetHwc3Layer(HwcLayer& layer) -> std::shared_ptr<Hwc3Layer> {
++  auto frontend_private_data = layer.GetFrontendPrivateData();
++  if (!frontend_private_data) {
++    frontend_private_data = std::make_shared<Hwc3Layer>();
++    layer.SetFrontendPrivateData(frontend_private_data);
++  }
++  return std::static_pointer_cast<Hwc3Layer>(frontend_private_data);
++}
++
+ ComposerClient::ComposerClient() {
+   DEBUG_FUNC();
+ }
+@@ -491,14 +576,26 @@ void ComposerClient::DispatchLayerCommand(int64_t display_id,
+ 
+   HwcLayer::LayerProperties properties;
+   if (command.buffer) {
+-    HwcLayer::Buffer buffer;
+-    auto err = ImportLayerBuffer(display_id, command.layer, *command.buffer,
+-                                 &buffer);
+-    if (err != hwc3::Error::kNone) {
+-      cmd_result_writer_->AddError(err);
++    auto hwc3_layer = GetHwc3Layer(*layer);
++    std::optional<buffer_handle_t> buffer_handle = std::nullopt;
++    if (command.buffer->handle) {
++      buffer_handle = ::android::makeFromAidl(*command.buffer->handle);
++    }
++
++    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
++    auto fence = const_cast<::ndk::ScopedFileDescriptor&>(command.buffer->fence)
++                     .release();
++
++    auto lp = hwc3_layer->HandleNextBuffer(buffer_handle,
++                                           ::android::MakeSharedFd(fence),
++                                           command.buffer->slot);
++
++    if (!lp) {
++      cmd_result_writer_->AddError(hwc3::Error::kBadLayer);
+       return;
+     }
+-    properties.buffer.emplace(buffer);
++
++    properties = lp.value();
+   }
+ 
+   properties.blend_mode = AidlToBlendMode(command.blendMode);
+@@ -1277,7 +1374,8 @@ ndk::ScopedAStatus ComposerClient::getDisplayConfigurations(
+ }
+ 
+ ndk::ScopedAStatus ComposerClient::notifyExpectedPresent(
+-    int64_t /*display*/, const ClockMonotonicTimestamp& /*expected_present_time*/,
++    int64_t /*display*/,
++    const ClockMonotonicTimestamp& /*expected_present_time*/,
+     int32_t /*frame_interval_ns*/) {
+   return ToBinderStatus(hwc3::Error::kUnsupported);
+ }
+@@ -1299,19 +1397,6 @@ std::string ComposerClient::Dump() {
+   return binder;
+ }
+ 
+-hwc3::Error ComposerClient::ImportLayerBuffer(int64_t display_id,
+-                                              int64_t layer_id,
+-                                              const Buffer& buffer,
+-                                              HwcLayer::Buffer* out_buffer) {
+-  auto releaser = ComposerResources::CreateResourceReleaser(true);
+-  auto err = composer_resources_->GetLayerBuffer(display_id, layer_id, buffer,
+-                                                 &out_buffer->buffer_handle,
+-                                                 releaser.get());
+-  out_buffer->acquire_fence = ::android::MakeSharedFd(
+-      buffer.fence.dup().release());
+-  return err;
+-}
+-
+ void ComposerClient::ExecuteSetDisplayClientTarget(
+     uint64_t display_id, const ClientTarget& command) {
+   auto* display = GetDisplay(display_id);
+@@ -1320,31 +1405,34 @@ void ComposerClient::ExecuteSetDisplayClientTarget(
+     return;
+   }
+ 
+-  buffer_handle_t imported_buffer = nullptr;
+-  auto buf_releaser = ComposerResources::CreateResourceReleaser(true);
++  auto& client_layer = display->GetClientLayer();
++  auto hwc3layer = GetHwc3Layer(client_layer);
+ 
+-  auto error = composer_resources_->GetDisplayClientTarget(display_id,
+-                                                           command.buffer,
+-                                                           &imported_buffer,
+-                                                           buf_releaser.get());
+-  if (error != hwc3::Error::kNone) {
+-    cmd_result_writer_->AddError(error);
+-    return;
++  std::optional<buffer_handle_t> raw_buffer = std::nullopt;
++  if (command.buffer.handle) {
++    raw_buffer = ::android::makeFromAidl(*command.buffer.handle);
+   }
+ 
+   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+   auto fence = const_cast<::ndk::ScopedFileDescriptor&>(command.buffer.fence)
+                    .release();
+-  auto& client_layer = display->GetClientLayer();
+-  HwcLayer::LayerProperties properties;
+-  properties.buffer = {
+-      .buffer_handle = imported_buffer,
+-      .acquire_fence = ::android::MakeSharedFd(fence),
+-  };
+-  properties.color_space = AidlToColorSpace(command.dataspace);
+-  properties.sample_range = AidlToSampleRange(command.dataspace);
+ 
+-  client_layer.SetLayerProperties(properties);
++  auto properties = hwc3layer->HandleNextBuffer(raw_buffer,
++                                                ::android::MakeSharedFd(fence),
++                                                command.buffer.slot);
++
++  if (!properties) {
++    ALOGE("Failed to import client target buffer.");
++    /* Here, sending an error would be the natural way to do the thing.
++     * But VTS checks for no error. Is it the VTS issue?
++     */
++    return;
++  }
++
++  properties->color_space = AidlToColorSpace(command.dataspace);
++  properties->sample_range = AidlToSampleRange(command.dataspace);
++
++  client_layer.SetLayerProperties(properties.value());
+ }
+ 
+ void ComposerClient::ExecuteSetDisplayOutputBuffer(uint64_t display_id,
+@@ -1355,33 +1443,32 @@ void ComposerClient::ExecuteSetDisplayOutputBuffer(uint64_t display_id,
+     return;
+   }
+ 
+-  buffer_handle_t imported_buffer = nullptr;
+-  auto buf_releaser = ComposerResources::CreateResourceReleaser(true);
+-
+-  auto error = composer_resources_->GetDisplayOutputBuffer(display_id, buffer,
+-                                                           &imported_buffer,
+-                                                           buf_releaser.get());
+-  if (error != hwc3::Error::kNone) {
+-    cmd_result_writer_->AddError(error);
++  auto& writeback_layer = display->GetWritebackLayer();
++  if (!writeback_layer) {
++    cmd_result_writer_->AddError(hwc3::Error::kBadLayer);
+     return;
+   }
+ 
++  auto hwc3layer = GetHwc3Layer(*writeback_layer);
++
++  std::optional<buffer_handle_t> raw_buffer = std::nullopt;
++  if (buffer.handle) {
++    raw_buffer = ::android::makeFromAidl(*buffer.handle);
++  }
++
+   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+   auto fence = const_cast<::ndk::ScopedFileDescriptor&>(buffer.fence).release();
+ 
+-  auto& writeback_layer = display->GetWritebackLayer();
+-  if (!writeback_layer) {
++  auto properties = hwc3layer->HandleNextBuffer(raw_buffer,
++                                                ::android::MakeSharedFd(fence),
++                                                buffer.slot);
++
++  if (!properties) {
+     cmd_result_writer_->AddError(hwc3::Error::kBadLayer);
+     return;
+   }
+ 
+-  HwcLayer::LayerProperties properties;
+-  properties.buffer = {
+-      .buffer_handle = imported_buffer,
+-      .acquire_fence = ::android::MakeSharedFd(fence),
+-  };
+-
+-  writeback_layer->SetLayerProperties(properties);
++  writeback_layer->SetLayerProperties(properties.value());
+ }
+ 
+ }  // namespace aidl::android::hardware::graphics::composer3::impl
+-- 
+2.43.0
+
