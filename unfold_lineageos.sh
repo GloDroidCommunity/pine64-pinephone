@@ -1,14 +1,10 @@
 #!/bin/bash -ex
 
-echo "LineageOS-21 is not supported yet"
-
-exit 1
-
 LOCAL_PATH=$(pwd)
 
 echo Init repo tree using AOSP manifest
 pushd aosptree
-repo init -u https://github.com/LineageOS/android.git -b refs/heads/lineage-21.0
+repo init -u https://github.com/LineageOS/android.git -b refs/heads/lineage-22.0
 cd .repo/manifests
 rm default.xml
 cp ${LOCAL_PATH}/manifests/lineage-static.xml lineage.xml
